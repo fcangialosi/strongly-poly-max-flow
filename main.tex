@@ -151,7 +151,7 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
     to an ordinary maximum flow problem with demand constraint.
     
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing
-    the set of \emph{tight arcs}---that is, the edges $e$ such that $\gie = 1$. Since regular maximum
+    the set of \emph{tight edges}---that is, the edges $e$ such that $\gie = 1$. Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
     algorithm to compute a set of tight arcs consistent with a dual optimal solution. This problem
     is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
@@ -165,7 +165,19 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
     suppose we solve the equivalent problem instance $(\biu, \giij)$. Then the new constraint
     becomes $\mu_i' = \mu_j'$. In order to avoid working with extra constraints, we might
     as well remove one of the variables entirely by collapsing the edge $(i, j)$, leaving a single
-    vertex with a single dual variable.
+    vertex $j$ with a single dual variable $\mu_j$. It remains to set the demand $b_j$ so
+    that the problem remains equivalent. Rewritten in terms of the variables in
+    the modified problem, the relevant terms of the dual objective are
+    \[ \mu_t' \left(\frac{b_i^\mu}{\mu_i'} + \frac{b_j^\mu}{\mu_j'}\right)
+     = \mu_t' \frac{b_i^\mu + b_j^\mu}{\mu_j'}. \]
+	So the operation of collapsing $i$ into $j$ along $(i, j)$ and summing their demands
+	preserves the objective and constraints.
+	
+	The algorithm adds one additional simplification: if the contraction leads to parallel edges,
+	only the one with the highest gain is maintained. This is motivated by the primal problem: in
+	the absence of edge capacity constraints, there is no reason to send flow along an edge of
+	lower gain when one of higher gain is available. Thus, culling parallel arcs preserves the
+	essential features of the problem.
 
 \section{The Initial Strongly Polynomial Algorithm}
 \subsection{Introduced Notations and Concepts}
