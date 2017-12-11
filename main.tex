@@ -1,14 +1,17 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage[letterpaper, margin=1in]{geometry}
 \usepackage{microtype}
+\usepackage{enumitem}
 \usepackage{biblatex}
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{commath}
 \usepackage{color}
+\usepackage{wrapfig}
+
 \addbibresource{main.bib}
 
 \newtheorem{theorem}{Theorem}[section]
@@ -17,9 +20,43 @@
 \newtheorem{alg}[theorem]{Algorithm}
 \newtheorem{claim}[theorem]{Claim}
 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+% Commonly used symbols
+\newcommand{\fiu}{f_{i}^{\mu}}
+\newcommand{\dfiu}{\nabla \fiu}
+\newcommand{\biu}{b_{i}^{\mu}}
+\newcommand{\vnott}{V \setminus t}
+\newcommand{\din}{\delta^{in}}
+\newcommand{\dout}{\delta^{out}}
+\newcommand{\vpos}{V^{t}}
+\newcommand{\vneg}{V^{s}}
 
 \newcommand{\rewrite}[1]{\textcolor{red}{#1}}
 \newcommand{\todo}[1]{\colorbox{yellow}{TODO: #1}}
+
+\newcommand{\lpeq}[1] {
+\begin{equation*}
+\begin{aligned}
+#1
+\end{aligned}
+\end{equation*}
+}
+\newcommand{\lpone}[3] {
+& \underset{}{\text{#1}}
+&& #2 \\
+& \text{s.t.}
+&& #3 
+}
+\newcommand{\lptwo}[4] {
+\lpone{#1}{#2}{#3}\\
+&&& #4
+}
+\newcommand{\lpthree}[5] {
+\lptwo{#1}{#2}{#3}{#4}\\
+&&& #5
+}
 
 \title{Strongly Polynomial Algorithms for Generalized Flow Maximization}
 \author{Frank Cangialosi, Katie Lewis, David Palmer}
@@ -136,12 +173,108 @@ Drawing inspiration from the Simplex algorithm, the first step in this algorithm
     
     In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to max$_{i \in V -t}$ $\nabla$f$_i^\mu$ - b$_i^\mu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which is reduces f$^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nabla$f$_i^\mu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $b_i^\mu - 1 \leq \nabla f_i^\mu \leq b_i^\mu + 2 \quad \forall i \in V-t $; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nabla f_i^\mu \geq b_i^\mu$ because it must be feasible. After rounding, $\nabla f_i^\mu \geq b_i^\mu - 1$ because $\nabla f_i^\mu$ decreases by at most 1. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of Ex(f,$\mu$) in Section~\ref{sec:lp}. Since we scale $\nabla f_i^\mu$ down by the maximum excess in the initial solution, the maximum in Ex(f,$\mu$) will never be $>$2. This gives the upper bound $\nabla f_i^\mu \leq b_i^\mu + 2$ on $\nabla f_i^\mu$. 
 
-    \subsection{Plentiful Nodes}
-Recall that the primary method of progress in this algorithm involves identifying contractible arcs and then contracting them until a dual optimal solution is found. Prior work called such arcs ``abundant'' and used scaling to find them directly. A key novelty in this algorithm is the concept of finding them indirectly via a ``plentiful'' node. A ``plentiful'' node $i$ with respect to our current primal-dual solution pair $(f,u)$ is one whose scaled absolute demand $|b_i^{\mu}|$ is large relative to the size of the graph, specifically: $|b_i^{\mu}| \ge 3n(d_i + 1)$. The existence of a plentiful node $i$ ensures that there exists a contractible arc $e$ incident to $i$. \todo{Proof}
+\subsection{Plentiful Nodes}
 
-It is important to notice that, just as with the definition of an abundant  arc, this definition depends only on the size of the graph, which is a key property that will keep our algorithm strongly polynomial because we will be iteratively re-scaling the node demands until one of them satisfies this property.
+\subsubsection{Movation}
 
-Intuitively, one can think of the calculation of $\alpha$ as solving the following LP.
+Recall that the primary method of progress in this algorithm involves
+identifying contractible arcs (\todo{define}) and then contracting them until a dual optimal
+solution is found. Prior work called such arcs ``abundant'' and used scaling to
+find them directly. A key novelty in this algorithm is the concept of finding
+them indirectly via a ``plentiful'' node. 
+\begin{definition}
+We say that a node $i$ is \textbf{plentiful} with respect
+to our current primal-dual solution pair $(f,u)$ if its scaled absolute
+demand $|b_i^{\mu}|$ is large relative to the size of the graph, specifically:
+$|b_i^{\mu}| \ge 3n(d_i + 1)$.
+\end{definition}
+
+It is important to notice that, just as with the definition of an abundant  arc,
+this definition depends only on the size of the graph, which is a key property
+that will keep our algorithm strongly polynomial because we will be iteratively
+re-scaling the node demands until one of them satisfies this property.
+
+\begin{theorem} Assume $\mu$ from the fitting pair $(f,\mu)$ is safe.
+Then the existence of a plentiful node $i$ ensures
+that there exists a contractible arc $e$ incident to $i$.
+\end{theorem}
+\begin{proof}
+\todo{Prove theorem 3.1 more succinctly and clearly}. General idea: 
+\end{proof}
+\todo{Example of why this fails if $\mu$ is not safe. See appendix to 2017.}
+
+\subsubsection{Subroutine}
+
+For an input fitting pair $(f,u)$ without a plentiful node, the algorithm
+repeatedly alternates between two steps which adjust the primal and dual
+solutions until at least one node becomes plentiful.
+
+First, the primal solution is improved by augmenting as much flow as possible,
+one unit at a time, along tight arcs in the residual graph 
+from nodes with excess to either nodes with deficit, or the sink.
+It only augments along tight arcs \rewrite{because}. Formally, if we let
+$D$ (``desintations'') be the union of the sink $t$ and all nodes with 
+deficit ($\nabla f_i^{\mu} < b_i^{\mu}$), and let $S$ (``sources'') be
+the set of all nodes that both have excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$)
+and have a tight path in the residual graph to a node in $D$, then the algorithm
+continues augmenting until $S$ is empty.
+
+Once it is not possible to augment any more flow, the second step scales down
+the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$,
+which is chosen to be the largest value that \rewrite{does not violate} any of the dual
+constraints~(\ref{eq:dual}) or produces a plentiful node. 
+Although it is not necessary in practice, for clarify of explanation, one can think of choosing the scaling factor $\alpha$ as solving
+the following LP:
+\lpeq{\lpthree{max}
+{\alpha}
+{\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
+{\dfiu - \biu \le 1}
+{\nexists\ \text{plentiful}\ i \in \vpos}
+}
+\begin{wrapfigure}{hR}{0.5\textwidth}
+\centering
+\includegraphics[width=0.35\textwidth]{water.pdf}
+\caption{
+\label{fig:alpha}
+Informal analogy for the maximization of scaling parameter $\alpha$.
+Each pipe represents a constraint. $\alpha$ can only be increased until
+one of them becomes tight as increasing it further would leak into
+the lowest pipe and violate that constraint.
+At each step, the order of which constraint becomes tight first may be different.
+}
+\end{wrapfigure}
+Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to filling
+a basin with water as much as possible without any of the water leaking into one
+of three pipes, where each pipe represents a constraint and its height in the basin
+represents the value of $\alpha$ at which point it becomes tight.
+
+Thus, $\alpha$ is chosen such that one of the following constraints becomes
+tight, or, in other words, one of the following becomes true corresponding to
+each constraint, respectively:
+\begin{enumerate}[itemsep=-1mm]
+	\item An edge entering $S$ becomes tight, and thus a new node is added to $S$
+	\item A node in $S$ has excess $>1$, which allows us to augment flow from it
+	\item A pseudosink node becomes plentiful
+\end{enumerate}
+
+If (3) is true, we're done. If (1) or (2) are true, it ensures that we will now
+be able to make progress in the next iteration of the first step. Similarly, the
+augmentations in the first step
+
+Although it is conceptually easier to imagine increasing $\alpha$ continuously
+until one of these constraints becomes tight, in practice, it is possible to
+calculate $\alpha$ arithmetically in $O(n)$ by picking a value for each node
+that would satisfy one of the tightness conditions and then choosing the minimum
+such value so that only one of the constraints become tight and none are
+violated.
+The details of calculating the value are not particularly insightful, but the
+fact that it can be done is important for the running time analysis.
+
+We now make some important claims about the variables as the algorithm
+progresses that allow us to prove its correctness: i.e. that it terminates,
+producting a plentiful node.
+We prove further that it terminates in strongly polynomial time in the following
+section.
 
 \begin{claim}
 $f^{\mu}$ remains unchanged throughout~\ref{alg:ppn}
@@ -154,19 +287,32 @@ By definition, only arcs $(i,j) \in S$ are
 $f^{\mu}$ is always integral.
 \end{corollary}
 \begin{proof}
-The augmentation step clearly maintains integrality of $f^{\mu}$ because we always augment by 1 unit at a time. The only other part of the algorithm that modifies the primal solution is the relabeling of $f_e$, and by the previous claim (~\ref{claim:fsame}), this never changes the value of $f^{\mu}$.
+The augmentation step clearly maintains integrality of $f^{\mu}$ because we always augment by 1 unit at a time. The only other part of the algorithm that modifies the primal solution is the relabeling of $f_e$, and by the previous claim (\ref{claim:fsame}), this never changes the value of $f^{\mu}$.
 \end{proof}
 
-\begin{alg}[Produce Plentiful Node]
-Text
-\end{alg}
+\subsubsection{Running Time Analysis}
 
-    \subsection{Contraction}
+\subsection{Contraction}
+
 Once we have produced a plentiful node, finding a contractible arc is straightforward. 
-    \subsection{Expand to Original}
-    \subsection{Compute Primal}
-    \subsection{Amortized Analysis}
+
+The purpose of contraction is that it reduces the size of the graph by one node,
+which puts a strongly polynomial bound of $n$ on the number of contraction
+operations. 
+\subsection{Expand to Original}
+\subsection{Compute Primal}
+\subsection{Amortized Analysis}
+
+
+
+
+
 \section{Discussion and Future Work}
+
+\subsection{Non-triviality of a strongly polynomial algorithm}
+
+\todo{Explain} why applying ideas from strongly polynomial algorithms for
+min-cost flow was not straightforward. 
 
 \nocite{*}
 \printbibliography
