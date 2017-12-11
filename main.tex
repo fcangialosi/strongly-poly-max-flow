@@ -42,6 +42,7 @@
     \todo{Add more notation? eg define excess, surplus?}, \todo{Add example diagram}
     
     \subsection{Linear Program Formulation}
+    \label{sec:lp}
     
     The generalized flow maximization problem with demands can be formulated as the following LP:
     
@@ -123,12 +124,12 @@ Drawing inspiration from the Simplex algorithm, the first step in this algorithm
     
     In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to max$_{i \in V -t}$ $\nabla$f$_i^\mu$ - b$_i^\mu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which is reduces f$^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nabla$f$_i^\mu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation below.
     \begin{align*}
-    	\text{Lower Bound:}
+    	\text{Lower Bound:} \\
     	\text{Initially,} \nabla f_i^\mu \geq b_i^\mu \text{because of feasibility} \\
         \text{After rounding,} \nabla f_i^\mu \geq b_i^\mu - 1 \text{because} \nabla f_i^\mu \text{decreases by at most 1} \\
         \text{Upper Bound:} \\
         \text{After scaling and dividing} \nabla f_i^\mu \text{by the max excess, } \\
-        \text{Using the definition of Ex(f,\mu) in Section 2.2} \\
+        \text{Using the definition of Ex(f,$\mu$) in Section~\ref{sec:lp}} \\
         \text{Therefore, we have the final result: } \quad
     	b_i^\mu - 1 \leq \nabla f_i^\mu \leq b_i^\mu + 2 \quad \forall i \in V-t 
     \end{align*}
