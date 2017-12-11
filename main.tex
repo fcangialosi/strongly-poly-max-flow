@@ -24,16 +24,19 @@
 \newtheorem{definition}{Definition}[section]
 
 % Commonly used symbols
-\newcommand{\fiu}{f_{i}^{\mu}}
-\newcommand{\nfiu}{\nabla \fiu}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\fu}{f^{\mu}}
+\newcommand{\nfi}{\nabla f_i}
+\newcommand{\nfiu}{\nabla \fu_i}
 \newcommand{\biu}{b_{i}^{\mu}}
 \newcommand{\gie}{\gamma_{e}^{\mu}}
 \newcommand{\giij}{\gamma_{ij}^{\mu}}
 \newcommand{\vnott}{V \setminus t}
-\newcommand{\din}{\delta^{in}}
-\newcommand{\dout}{\delta^{out}}
-\newcommand{\vpos}{V^{t}}
-\newcommand{\vneg}{V^{s}}
+\newcommand{\din}{\delta^{\text{in}}}
+\newcommand{\dout}{\delta^{\text{out}}}
+\newcommand{\vsrc}{V^{t}}
+\newcommand{\vsink}{V^{s}}
+\newcommand{\vz}{V^{0}}
 
 \newcommand{\rewrite}[1]{\textcolor{red}{#1}}
 \newcommand{\todo}[1]{\colorbox{yellow}{TODO: #1}}
@@ -71,19 +74,23 @@
     
     Until recently, the best known algorithms were all weakly polynomial. In 2013, \cite{Vegh2013} developed the first strongly polynomial algorithm (i.e. one that depends only on the number of nodes and edges in the graph, and is independent of the size of their values). In 2017, \cite{Olver2017} built on this work and developed an algorithm that is faster by a factor of almost $O(n^2)$, resulting in a running time that is as fast as the best weakly polynomial algorithms even for small parameter values. These algorithms take advantage of the structural similarities between the generalized maximum flow problem and the minimum cost flow problem by adapting techniques from well-known combinatorial min cost flow algorithms. 
     
-	\subsection{Structure and Contributions of the Paper} In this paper, we aim to familiarize the reader with the recent algorithmic developments for the generalized flow maximization problem and provide intuition for the techniques used to achieve a strongly polynomial result. In Section 2, we more formally define the problem as a linear program and give an overview of the notation used in the rest of the paper. In Section 3, we develop the key techniques shared by both algorithms used to achieve a strongly polynomial bound for this problem. In Section 4, we describe Végh's original $O(n^3m^2)$ strongly polynomial algorithm developed in 2014 and present a more intuitive and detailed analysis than the original paper. In Section 5, we describe Olver and Végh's faster $O((m + n\ log\ n)mn\ log(n^2 / m))$ algorithm and highlight key aspects of the analysis that led way to the improved running time efficiency. Finally, in Section 6, we conclude with open questions and present a few ideas for future work. \todo{Update when we're done.}
+	\subsection{Structure and Contributions of the Paper} In this paper, we aim to familiarize the reader with the recent algorithmic developments for the generalized flow maximization problem and provide intuition for the techniques used to achieve a strongly polynomial result. In Section 2, we more formally define the problem as a linear program and give an overview of the notation used in the rest of the paper. In Section 3, we develop the key techniques shared by both algorithms used to achieve a strongly polynomial bound for this problem. In Section 4, we describe Végh's original $O(n^3m^2)$ strongly polynomial algorithm developed in 2014 and present a more intuitive and detailed analysis than the original paper. In Section 5, we describe Olver and Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key aspects of the analysis that led way to the improved running time efficiency. Finally, in Section 6, we conclude with open questions and present a few ideas for future work. \todo{Update when we're done.}
     
 \section{Preliminaries}
 
 	\subsection{Network Notation}
-    Let $G=(V,E)$ denote a directed graph with $n=\abs{V}$ and $m=\abs{E}$ and sink node $t \in V$. We define $\gamma \in \mathbb{R}_{>0}^E$ to be the vector of gains and $b \in \mathbb{R}^{V \setminus t}$ to be the vector of node demands. In this paper, we analyze networks with demands rather than capacities; however, this can easily be transformed into the capacitated (standard) representation \cite{Vegh2013}. We define $\delta^-(S)$ and $\delta^+(S)$ as the set of incoming and outgoing arcs of the subset S $\subseteq$ V. We denote the net flow as $\nabla$f$_i$ $\coloneqq$ $\sum_{e \in \Delta^-(i)}$ $\gamma_e$f$_e$ - $\sum_{e \in \Delta^+(i)}$ f$_e$. The residual graph is defined as G$_f$(V,E$_f$), where the set of edges E$_f$ = E $\cup$ $\{$ ji: ij $\in$ E, f$_{ij}$ $>$ 0 $\}$ contains the original edges and reverse arcs. We define $\gamma_{ji}$ $\coloneqq$ $\frac{1}{\gamma_{ij}}$ and f$_{ji}$ $\coloneqq$ -$\gamma_{ij}f_{ij}$. If a cycle C in the residual graph has $\prod_{e \in C}$ $\gamma_e$ $>$ 1, we call the cycle a flow generating cycle.
+    Let $G=(V,E)$ denote a directed graph with $n=\abs{V}$ and $m=\abs{E}$ and sink node $t \in V$. We define $\gamma \in \R_{>0}^E$ to be the vector of gains and $b \in \R^{V \setminus t}$ to be the vector of node demands. In this paper, we analyze networks with demands rather than capacities; however, this can easily be transformed into the capacitated (standard) representation \cite{Vegh2013}. We define $\din(S)$ and $\dout(S)$ as the set of incoming and outgoing arcs of the subset S $\subseteq$ V. We denote the net flow as
+    \[ \nfi \coloneqq \sum_{e \in \din} \gamma_e f_e - \sum_{e \in \dout} f_e.\]
+The residual graph is defined as G$_f$(V,E$_f$), where the set of edges E$_f$ = E $\cup$ $\{$ ji: ij $\in$ E, f$_{ij}$ $>$ 0 $\}$ contains the original edges and reverse arcs. We define $\gamma_{ji}$ $\coloneqq$ $\frac{1}{\gamma_{ij}}$ and f$_{ji}$ $\coloneqq$ -$\gamma_{ij}f_{ij}$. If a cycle C in the residual graph has $\prod_{e \in C}$ $\gamma_e$ $>$ 1, we call the cycle a flow generating cycle.
     
-    \todo{Add more notation? eg define excess, surplus?}, \todo{Add example diagram}
+\todo{Add more notation? eg define excess, surplus?}, \todo{Add example diagram}
+
+One can intuitively think of the nodes $i$ where $b_i < 0$ as being sources, \rewrite{because}. We denote this set of nodes $\vsrc$. Similarly, one can think of the nodes where $b_i > 0$ as being sinks \rewrite{because}. We denote this set of nodes $\vsink$. We denote the remaining nodes with zero demand as $\vz$
     
     \subsection{Linear Program Formulation}
     \label{sec:lp}
-    
-    The generalized flow maximization problem with demands can be formulated as the following LP:
+
+	We formulate the generalized flow maximization problem with demands as in the 2017 paper~\cite{Olver2017}:
     
         \begin{align*}\tag{P}
         \text{max} \quad
@@ -93,6 +100,8 @@
         f &\geq 0
         \end{align*}        
 
+\todo{Show what it looks like to directly take the dual}\\
+\todo{Say if you set $\mu$ to $X$ you get the dual as they described in the paper in the paper}
 \noindent The corresponding dual:
  
         \begin{align*}\tag{D}
@@ -100,8 +109,8 @@
         \mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
         \text{s.t.} \quad
         \mu_j &\geq \gamma_{ij}\mu_i \quad \forall ij \in E \\
-        \mu_t &\in \mathbb{R}_{++} \\
-        \mu_i &\in \mathbb{R}_{++} \cup \infty \quad \forall i \in V \setminus t
+        \mu_t &\in \R_{++} \\
+        \mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
         \end{align*}  
         
 A feasible solution, $\mu$, to the dual is known as feasible labeling. We can interpret a label $\mu_i$ as a changing in the base unit of measurement  at node i (for example measuring in pennies instead of dollars). We can transform the dual problem to be comparable to the original problem by relabeling the flow, net flow, gains, and demands as follows:
@@ -135,17 +144,23 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
     A solution to the dual problem specifies, by complementary slackness, the arcs on which an optimal
     primal solution may send flow. Moreover, applying the dual labels regularizes the problem, reducing
     it to an ordinary circulation problem. Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
-    \[ \sum_{j \in \delta^-(i)} \gamma^\mu_{ij} f^\mu_{ij} - \sum_{j \in \delta^+(i)} f^\mu_{ji}
+    \[ \sum_{j \in \din(i)} \giij \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}
      = \nabla f^{\mu} \geq b^{\mu}, \]
-    but $\gamma^{\mu}_{ij} = 1$ whenever $f_{ij} \neq 0$. So the dual solution reduces the primal problem
+    but $\giij = 1$ whenever $f_{ij} \neq 0$. So the dual solution reduces the primal problem
     to an ordinary maximum flow problem with demand constraint.
-     
-    This suggests an algorithm that 
+    
+    In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing
+    the set of \emph{tight arcs}---that is, the edges $e$ such that $\gie = 1$. Since regular maximum
+    flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
+    algorithm to compute a set of tight arcs consistent with a dual optimal solution. This problem is inherently
+    combinatorial, 
     
     \subsection{Contracting Arcs}
     
 
 \section{The Initial Strongly Polynomial Algorithm}
+\subsection{Introduced Notations and Concepts}
+
 \section{A Faster Strongly Polynomial Algorithm} The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} introduces several new conceptual ideas that combine the techniques and insight from Section 3. In this section, we will give an overview and analysis of their algorithm. We will also provide a more clear distinction between the previous techniques used and the new insights provided by this algorithm (and why they matter). A highlight of the difficulties in previous algorithms and the subsequent solutions from this algorithm are summarized in Table~\ref{tab:improvements}.
 
 \begin{table}[H]
@@ -166,6 +181,18 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
 \end{table}
     \subsection{Additional Notation and Concepts}
 At each iteration of the algorithm we ensure that we have a \textbf{fitting pair} of primal-dual solutions $(f,u)$ such that $\mu$ is a feasible dual solution, and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. \todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.} Notice that this relaxed definition does not require that $f$ is feasible (i.e. we allow the net flow $\nabla f $ to be less than its demand $b$). Rather than going through extra work of maintaining a feasible $f$ at each step, a key contribution is simply ensuring that a feasible $f$ \textit{exists} for the $\mu$ in our fitting pair. We denote such a $\mu$ as \textbf{safe}. Further, since all arcs in $f$ are tight, this definition ensures that the scaled $f$, $f^{\mu}$, is a ``regular'' flow and thus one can use any traditional algorithm to manipulate it. As a result, given a fitting pair where the dual solution is optimal, one can find an optimal primal solution by solving a feasible circulation problem \todo{why the circulation problem?}. 
+
+%%% TEMP %%% 
+They want the set of tight edges, only at any given time actually have a dual solution. Only operations that happen to the edges are contractions or adding more tight edges, so tight edges never get removed. Inductive. The way to ensure tight edges never have to be removed is the safety property: ensure that their set of tight edges is always satisfiable, some flow that will only be supported on that set. Safety property can be maintained with the label update. 
+
+Safety property is existence of a flow. Un-safety is equivalent to existence of Hoffman's property / cut. Scaling constructed so that it never breaks any of these sets. If there's a set that's violated in $\mu'$, then if you take the set excluding the parts that were modified then it must have already been violated. Modification only increased the values of $\biu$ inside $S$.
+
+If there's a violated set, divided into two pieces, part in $S$, part not in $S$. One of them had to already be violated. Assume $\mu$ is safe and for the sake of contradiction that $\mu'$ is not safe. Then prove that if that were the case $\mu$ must have not been safe. 
+$S$ is maximal subset that contains $Q$ and has no tight edges coming into it or out of it. Any modification done to $S$ is not going to change tight cuts because they must be either entirely inside or outside, not across the boundary, so scaled equally. 
+
+
+
+%%% TEMP %%%
 
     \subsection{Finding a feasible flow}
 Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
@@ -232,7 +259,7 @@ the following LP:
 {\alpha}
 {\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
 {\nfiu - \biu \le 1}
-{\nexists\ \text{plentiful}\ i \in \vpos}
+{\nexists\ \text{plentiful}\ i \in \vsink}
 }
 \begin{figure}[b!]
 \centering
