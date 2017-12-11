@@ -1,5 +1,172 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{biblatex}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{commath}
+\usepackage{color}
+\addbibresource{Generalized_Max_Flow.bib}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{alg}[theorem]{Algorithm}
+\newtheorem{claim}[theorem]{Claim}
+
+
+\newcommand{\rewrite}[1]{\textcolor{red}{#1}}
+\newcommand{\todo}[1]{\colorbox{yellow}{TODO: #1}}
+
+\title{Strongly Polynomial Algorithms for Generalized Flow Maximization}
+\author{Frank Cangialosi, Katie Lewis, David Palmer}
+\date{}
+
 \begin{document}
-(Type your content here.)
+\maketitle
+\section{Introduction}
+	\subsection{Problem Definition} As in the traditional flow problem, given a graph $G = (V,E)$, the generalized maximum flow problem aims to maximize the total flow delivered to the sink node t $\in$ V. Unlike the original flow problem however, each edge contains a gain factor $\gamma_e$ $>$ 0, which scales the flow passing through that edge. Intuitively, this rescaling can be thought of in terms of real world examples such as exchange rates between currencies or physical transformations due to energy dissipation. The generalized maximum flow problem lacks several nice properties that are present in the traditional maximum flow problem, which makes it more challenging to solve. For example, the generalized problem is usually thought to be \rewrite{non-integral and, due to the scaling,} the total supply is not necessarily equal to the total demand. Additionally, the maximum flow-minimum cut theorem no longer applies since the flow along a path is not equal at every edge along that path.
+    
+    Until recently, the best known algorithms were all weakly polynomial. In 2013, \cite{Vegh2013} developed the first strongly polynomial algorithm (i.e. one that depends only on the number of nodes and edges in the graph, and is independent of the size of their values). In 2017, \cite{Olver2017} built on this work and developed an algorithm that is faster by a factor of almost $O(n^2)$, resulting in a running time that is as fast as the best weakly polynomial algorithms even for small parameter values. These algorithms take advantage of the structural similarities between the generalized maximum flow problem and the minimum cost flow problem by adapting techniques from well-known combinatorial min cost flow algorithms. 
+    
+	\subsection{Structure and Contributions of the Paper} In this paper, we aim to familiarize the reader with the recent algorithmic developments for the generalized flow maximization problem and provide intuition for the techniques used to achieve a strongly polynomial result. In Section 2, we more formally define the problem as a linear program and give an overview of the notation used in the rest of the paper. In Section 3, we develop the key techniques shared by both algorithms used to achieve a strongly polynomial bound for this problem. In Section 4, we describe Végh's original $O(n^3m^2)$ strongly polynomial algorithm developed in 2014 and present a more intuitive and detailed analysis than the original paper. In Section 5, we describe Olver and Végh's faster $O((m + n\ log\ n)mn\ log(n^2 / m))$ algorithm and highlight key aspects of the analysis that led way to the improved running time efficiency. Finally, in Section 6, we conclude with open questions and present a few ideas for future work. \todo{Update when we're done.}
+    
+\section{Preliminaries}
+
+	\subsection{Network Notation}
+    Let $G=(V,E)$ denote a directed graph with $n=\abs{V}$ and $m=\abs{E}$ and sink node $t \in V$. We define $\gamma \in \mathbb{R}_{>0}^E$ to be the vector of gains and $b \in \mathbb{R}^{V \setminus t}$ to be the vector of node demands. In this paper, we analyze networks with demands rather than capacities; however, this can easily be transformed into the capacitated (standard) representation \cite{Vegh2013}. We define $\delta^-(S)$ and $\delta^+(S)$ as the set of incoming and outgoing arcs of the subset S $\subseteq$ V. We denote the net flow as $\nabla$f$_i$ $\coloneqq$ $\sum_{e \in \Delta^-(i)}$ $\gamma_e$f$_e$ - $\sum_{e \in \Delta^+(i)}$ f$_e$. The residual graph is defined as G$_f$(V,E$_f$), where the set of edges E$_f$ = E $\cup$ $\{$ ji: ij $\in$ E, f$_{ij}$ $>$ 0 $\}$ contains the original edges and reverse arcs. We define $\gamma_{ji}$ $\coloneqq$ $\frac{1}{\gamma_{ij}}$ and f$_{ji}$ $\coloneqq$ -$\gamma_{ij}f_{ij}$. If a cycle C in the residual graph has $\prod_{e \in C}$ $\gamma_e$ $>$ 1, we call the cycle a flow generating cycle.
+    
+    \todo{Add more notation? eg define excess, surplus?}, \todo{Add example diagram}
+    
+    \subsection{Linear Program Formulation}
+    
+    The generalized flow maximization problem with demands can be formulated as the following LP:
+    
+        \begin{align*}\tag{P}
+        \text{max} \quad
+        \nabla f_t& \\
+        \text{s.t.} \quad
+        \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
+        f &\geq 0
+        \end{align*}        
+
+\noindent The corresponding dual:
+ 
+        \begin{align*}\tag{D}
+        \text{max} \quad
+        \mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
+        \text{s.t.} \quad
+        \mu_j &\geq \gamma_{ij}\mu_i \quad \forall ij \in E \\
+        \mu_t &\in \mathbb{R}_{++} \\
+        \mu_i &\in \mathbb{R}_{++} \cup \infty \quad \forall i \in V \setminus t
+        \end{align*}  
+        
+A feasible solution, $\mu$, to the dual is known as feasible labeling. We can interpret a label $\mu_i$ as a changing in the base unit of measurement  at node i (for example measuring in pennies instead of dollars). We can transform the dual problem to be comparable to the original problem by relabeling the flow, net flow, gains, and demands as follows:
+
+\begin{align*}
+f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
+\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \quad
+\gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
+b_i^\mu \coloneqq \frac{b_i}{\mu_i} \quad
+\end{align*}
+
+An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma_e^\mu$=1. The excess and deficit of a node i in the relabeled graph is defined as:
+
+
+\begin{align*}
+Ex(f,\mu) \coloneqq \sum_{i \in V - t} max\{ \nabla	f_i^\mu - b_i^\mu, 2 \} \\
+Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
+\end{align*}
+
+\todo{Explanation of the dual variables and constraints, and intuition behind them}
+  
+\section{Motivating Ideas and Techniques}
+	\subsection{Solving Dual}
+    	* Talk about idea of solving dual 
+        	* Key insight about this algorithm is that they maintain f$^{\mu}$ (without any extra work apparently) to be integral
+            * Allows normal flow algorithms 
+            * Is maintaining solution that is "close enough to feasible primal" with complementary slackness unique to this algorithm?
+            * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
+    \subsection{Contracting Arcs}
+    
+
+\section{The Initial Strongly Polynomial Algorithm}
+\section{A Faster Strongly Polynomial Algorithm} The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} introduces several new conceptual ideas that combine the techniques and insight from Section 3. In this section, we will give an overview and analysis of their algorithm. We will also provide a more clear distinction between the previous techniques used and the new insights provided by this algorithm (and why they matter). A highlight of the difficulties in previous algorithms and the subsequent solutions from this algorithm are summarized in Table~\ref{tab:improvements}.
+
+\begin{table}[H]
+\begin{center}
+    \begin{tabular}{ | p{7cm} | p{7cm} |}
+    \hline
+    Challenges in Previous Algorithms  & Solutions from New Algorithm \\ \hline
+    Non-integral flow values & Only store relabeled flow $f^{\mu}$ which stays integral throughout the algorithm until the last step of computing optimum \\ \hline
+    Initial cycle-canceling algorithm to eliminate flow generating cycles & Two phase method (similar to simplex) where feasible solution found in first phase is used to start the second phase; this solution is faster than the cycle-canceling subroutine \\ \hline
+    Complex methods for maintaining feasible flow & Relax flow feasibility (node demands do not have to be met) and use complementary slackness properties to keep feasible primal solution "within reach" \\ \hline
+    No guarantee of abundant arc appearing in strongly polynomial number of steps \cite{Radzik2004} &  Continuous scaling\\ \hline
+    Complicated multiplicative potential analysis \cite{Vegh2013} & Additive potential analysis \\
+    \hline
+    \end{tabular}
+\end{center}
+\caption{Key Improvements of New Algorithm}
+\label{tab:improvements}
+\end{table}
+    \subsection{Additional Notation and Concepts}
+At each iteration of the algorithm we ensure that we have a \textbf{fitting pair} of primal-dual solutions $(f,u)$ such that $\mu$ is a feasible dual solution, and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. \todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.} Notice that this relaxed definition does not require that $f$ is feasible (i.e. we allow the net flow $\nabla f $ to be less than its demand $b$). Rather than going through extra work of maintaing a feasible $f$ at each step, a key contribution is simply ensuring that a feasible $f$ \textit{exists} for the $\mu$ in our fitting pair. We denote such a $\mu$ as \textbf{safe}. Further, since all arcs in $f$ are tight, this definition ensures that the scaled $f$, $f^{\mu}$, is a ``regular'' flow and thus one can use any traditional algorithm to manipulate it. As a result, given a fitting pair where the dual solution is optimal, one can find an optimal primal solution by solving a feasible circulation problem \todo{why the circulation problem?}. 
+
+    \subsection{Finding a feasible flow}
+Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
+    
+    \subsection{Scaling and Rounding} 
+    Since the second phase of the algorithm relies on the relabeled flow, f$^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair (f,$\mu$) and corresponding feasible relabeled flow f$^\mu$ and setting a lower bound of $\lfloor$$\nabla$f$_i^\mu$ $\rfloor$ and an upper bound of $\lceil$$\nabla$f$_i^\mu$$\rceil$. The corresponding integral relabeled max flow on each edge e$_{ij}$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of f$_{ij}^\mu$ remains unchanged because if f$_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, f$_{ij}^\mu$ remains integral after the initial rounding.
+    
+    In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to max$_{i \in V -t}$ $\nabla$f$_i^\mu$ - b$_i^\mu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which is reduces f$^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nabla$f$_i^\mu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation below.
+    \begin{align*}
+    	\text{Lower Bound:}
+    	\text{Initially, \nabla f_i^\mu \geq b_i^\mu because of feasibility} \\
+        \text{After rounding, \nabla f_i^\mu \geq b_i^\mu - 1 because nabla f_i^\mu decreases by at most 1} \\
+        \text{Upper Bound:}
+        \text{After scaling, }
+        \text{Using the definition of Ex(f,\mu) in Section 2.2}
+        \text{Therefore, we have the final result: } \quad
+    	b_i^\mu - 1 \leq \nabla f_i^\mu \leq b_i^\mu + 2 \quad \forall i \in V-t \\
+    \end{align*}
+ 
+    
+    \subsection{Plentiful Nodes}
+Recall that the primary method of progress in this algorithm involves identifying contractible arcs and then contracting them until a dual optimal solution is found. Prior work called such arcs ``abundant'' and used scaling to find them directly. A key novelty in this algorithm is the concept of finding them indirectly via a ``plentiful'' node. A ``plentiful'' node $i$ with respect to our current primal-dual solution pair $(f,u)$ is one whose scaled absolute demand $|b_i^{\mu}|$ is large relative to the size of the graph, specifically: $|b_i^{\mu}| \ge 3n(d_i + 1)$. The existence of a plentiful node $i$ ensures that there exists a contractible arc $e$ incident to $i$. \todo{Proof}
+
+It is important to notice that, just as with the definition of an abundant  arc, this definition depends only on the size of the graph, which is a key property that will keep our algorithm strongly polynomial because we will be iteratively re-scaling the node demands until one of them satisfies this property.
+
+Intuitively, one can think of the calculation of $\alpha$ as solving the following LP.
+
+\begin{claim}
+$f^{\mu}$ remains unchanged throughout~\ref{alg:ppn}
+\label{claim:fsame}
+\end{claim} 
+\begin{proof}
+By definition, only arcs $(i,j) \in S$ are 
+\end{proof}
+\begin{corollary}
+$f^{\mu}$ is always integral.
+\end{corollary}
+\begin{proof}
+The augmentation step clearly maintains integrality of $f^{\mu}$ beause we always augment by 1 unit at a time. The only other part of the algorithm that modifies the primal solution is the relabeling of $f_e$, and by the previous claim (~\ref{claim:fsame}), this never changes the value of $f^{\mu}$.
+\end{proof}
+
+\begin{alg}[Produce Plentiful Node]
+Text
+\end{alg}
+
+    \subsection{Contraction}
+Once we have produced a plentiful node, finding a contractible arc is straightforward. 
+    \subsection{Expand to Original}
+    \subsection{Compute Primal}
+    \subsection{Amortized Analysis}
+\section{Discussion and Future Work}
+
+\nocite{*}
+\printbibliography
 \end{document}
+ 
