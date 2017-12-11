@@ -205,7 +205,8 @@ that there exists a contractible arc $e$ incident to $i$.
 \end{proof}
 \todo{Example of why this fails if $\mu$ is not safe. See appendix to 2017.}
 
-\subsubsection{Subroutine}
+\subsubsection{Subroutine: Producing Plentiful Nodes}
+\label{sec:sub-ppn}
 
 For an input fitting pair $(f,u)$ without a plentiful node, the algorithm
 repeatedly alternates between two steps which adjust the primal and dual
@@ -215,7 +216,7 @@ First, the primal solution is improved by augmenting as much flow as possible,
 one unit at a time, along tight arcs in the residual graph 
 from nodes with excess to either nodes with deficit, or the sink.
 It only augments along tight arcs \rewrite{because}. Formally, if we let
-$D$ (``desintations'') be the union of the sink $t$ and all nodes with 
+$D$ (``destinations'') be the union of the sink $t$ and all nodes with 
 deficit ($\nabla f_i^{\mu} < b_i^{\mu}$), and let $S$ (``sources'') be
 the set of all nodes that both have excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$)
 and have a tight path in the residual graph to a node in $D$, then the algorithm
@@ -233,7 +234,7 @@ the following LP:
 {\nfiu - \biu \le 1}
 {\nexists\ \text{plentiful}\ i \in \vpos}
 }
-\begin{wrapfigure}{hR}{0.5\textwidth}
+\begin{figure}[b!]
 \centering
 \includegraphics[width=0.35\textwidth]{figs/water.pdf}
 \caption{
@@ -244,7 +245,7 @@ one of them becomes tight as increasing it further would leak into
 the lowest pipe and violate that constraint.
 At each step, the order of which constraint becomes tight first may be different.
 }
-\end{wrapfigure}
+\end{figure}
 Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to filling
 a basin with water as much as possible without any of the water leaking into one
 of three pipes, where each pipe represents a constraint and its height in the basin
@@ -274,12 +275,12 @@ fact that it can be done is important for the running time analysis.
 
 We now make some important claims about the variables as the algorithm
 progresses that allow us to prove its correctness: i.e. that it terminates,
-producting a plentiful node.
-We prove further that it terminates in strongly polynomial time in the following
-section.
+producing a plentiful node.
+We prove further that it terminates in strongly polynomial time and derive an upper bound 
+in the following section.
 
 \begin{claim}
-$f^{\mu}$ remains unchanged throughout~\ref{alg:ppn}
+$f^{\mu}$ remains unchanged throughout the subroutine.
 \label{lem:fsame}
 \end{claim} 
 \begin{proof}
@@ -296,7 +297,7 @@ claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 \end{proof}
 \begin{claim}
 	For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
-	strictly increases $|\biu|$. For all other nodes, $|\biu|$ remainds unchanged.
+	strictly increases $|\biu|$. For all other nodes, $|\biu|$ remains unchanged.
 \end{claim}
 \begin{proof}
 	First, trivially, scaling a node with zero demand cannot change its value
@@ -323,12 +324,14 @@ claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 	which is only possible if $\alpha > 1$.
 \end{proof}
 
-In summary, we have shown that this algorithm strictly increases $\biu$ towards
-the definition of a plentiful node, and thus 
-Since we have proven that our conditions required in the rest of the analysis
-($f_u$ integral and $(f,u)$ a fitting pair) are maintaied 
+In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
+the definition of a plentiful node. Thus, the subroutine will eventually produce one. We have also shown that the updates it makes to $f$ and $\mu$ do not violate any of the previous conditions stated for being able to ultimately derive a primal optimal solution once our fitting pair finds the dual optimal. 
 
 \subsubsection{Running Time Analysis}
+
+We now leverage potential analysis to derive an upper bound on the amount of work required for the subroutine introduced in Section~\ref{sec:sub-ppn} to terminate, showing that it is strongly polynomial, and confirming the analysis found in the paper. 
+
+\todo{Proof}
 
 \subsection{Contraction}
 
