@@ -91,6 +91,18 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
             * Allows normal flow algorithms 
             * Is maintaining solution that is "close enough to feasible primal" with complementary slackness unique to this algorithm?
             * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
+            
+	The algorithm solves the primal generalized flow problem by first solving the dual problem.
+    A solution to the dual problem specifies, by complementary slackness, the arcs on which an optimal
+    primal solution may send flow. Moreover, applying the dual labels regularizes the problem, reducing
+    it to an ordinary circulation problem. Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
+    \[ \sum_{j \in \delta^-(i)} \gamma^\mu_{ij} f^\mu_{ij} - \sum_{j \in \delta^+(i)} f^\mu_{ji}
+     = \nabla f^{\mu} \geq b^{\mu}, \]
+    but $\gamma^{\mu}_{ij} = 1$ whenever $f_{ij} \neq 0$. So the dual solution reduces the primal problem
+    to an ordinary maximum flow problem with demand constraint.
+     
+    This suggests an algorithm that 
+    
     \subsection{Contracting Arcs}
     
 
