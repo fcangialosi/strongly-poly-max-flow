@@ -39,6 +39,9 @@
 \newcommand{\vsink}{V^{s}}
 \newcommand{\vz}{V^{0}}
 
+\DeclareMathOperator{\Ex}{Ex}
+\DeclareMathOperator{\Def}{Def}
+
 \newcommand{\rewrite}[1]{\textcolor{red}{#1}}
 \newcommand{\todo}[1]{\colorbox{yellow}{TODO: #1}}
 
@@ -82,7 +85,16 @@
 	\subsection{Network Notation}
     Let $G=(V,E)$ denote a directed graph with $n=\abs{V}$ and $m=\abs{E}$ and sink node $t \in V$. We define $\gamma \in \R_{>0}^E$ to be the vector of gains and $b \in \R^{V \setminus t}$ to be the vector of node demands. In this paper, we analyze networks with demands rather than capacities; however, this can easily be transformed into the capacitated (standard) representation \cite{Vegh2013}. We define $\din(S)$ and $\dout(S)$ as the set of incoming and outgoing arcs of the subset S $\subseteq$ V. We denote the net flow as
     \[ \nfi \coloneqq \sum_{e \in \din} \gamma_e f_e - \sum_{e \in \dout} f_e.\]
-The residual graph is defined as G$_f$(V,E$_f$), where the set of edges E$_f$ = E $\cup$ $\{$ ji: ij $\in$ E, f$_{ij}$ $>$ 0 $\}$ contains the original edges and reverse arcs. We define $\gamma_{ji}$ $\coloneqq$ $\frac{1}{\gamma_{ij}}$ and f$_{ji}$ $\coloneqq$ -$\gamma_{ij}f_{ij}$. If a cycle C in the residual graph has $\prod_{e \in C}$ $\gamma_e$ $>$ 1, we call the cycle a flow generating cycle.
+    The residual graph is defined as $G_f = (V, E_f)$, where the residual edges are defined
+    as for regular flow:
+    \[ E_f = E \cup \{ (j, i) \mid (i, j) \in E, f_{ij} > 0 \}. \]
+    The gains on reverse arcs are inverted:
+    \[ \gamma_{ji} \coloneqq \frac{1}{\gamma_{ij}}, \]
+    and flows are negated:
+    \[ f_{ji} \coloneqq -\gamma_{ij}f_{ij}. \]
+    If a cycle C in the residual graph has $\prod_{e \in C} \gamma_e > 1$,
+    we call the cycle a ``flow-generating cycle.'' This captures the idea that sending
+    a unit of flow around the cycle yields a net surplus.
     
 \todo{Add more notation? eg define excess, surplus?}, \todo{Add example diagram}
 
@@ -127,8 +139,8 @@ An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma
 
 
 \begin{align*}
-Ex(f,\mu) \coloneqq \sum_{i \in V - t} max\{ \nabla	f_i^\mu - b_i^\mu, 2 \} \\
-Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
+\Ex(f,\mu)  &\coloneqq \sum_{i \in V \setminus t} \max \{ \nfiu - \biu, 2 \} \\
+\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
 \end{align*}
 
 \todo{Explanation of the dual variables and constraints, and intuition behind them}
@@ -221,7 +233,7 @@ Drawing inspiration from the Simplex algorithm, the first step in this algorithm
     \subsection{Scaling and Rounding} 
     Since the second phase of the algorithm relies on the relabeled flow, f$^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair (f,$\mu$) and corresponding feasible relabeled flow f$^\mu$ and setting a lower bound of $\lfloor$$\nabla$f$_i^\mu$ $\rfloor$ and an upper bound of $\lceil$$\nabla$f$_i^\mu$$\rceil$. The corresponding integral relabeled max flow on each edge e$_{ij}$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of f$_{ij}^\mu$ remains unchanged because if f$_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, f$_{ij}^\mu$ remains integral after the initial rounding.
     
-    In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to max$_{i \in V -t}$ $\nabla$f$_i^\mu$ - b$_i^\mu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which is reduces f$^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nabla$f$_i^\mu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $b_i^\mu - 1 \leq \nabla f_i^\mu \leq b_i^\mu + 2 \quad \forall i \in V-t $; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nabla f_i^\mu \geq b_i^\mu$ because it must be feasible. After rounding, $\nabla f_i^\mu \geq b_i^\mu - 1$ because $\nabla f_i^\mu$ decreases by at most 1. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of Ex(f,$\mu$) in Section~\ref{sec:lp}. Since we scale $\nabla f_i^\mu$ down by the maximum excess in the initial solution, the maximum in Ex(f,$\mu$) will never be $>$2. This gives the upper bound $\nabla f_i^\mu \leq b_i^\mu + 2$ on $\nabla f_i^\mu$. 
+    In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to max$_{i \in V -t}$ $\nabla$f$_i^\mu$ - b$_i^\mu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which is reduces f$^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nabla$f$_i^\mu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $b_i^\mu - 1 \leq \nabla f_i^\mu \leq b_i^\mu + 2 \quad \forall i \in V-t $; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nabla f_i^\mu \geq b_i^\mu$ because it must be feasible. After rounding, $\nabla f_i^\mu \geq b_i^\mu - 1$ because $\nabla f_i^\mu$ decreases by at most 1. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of $\Ex(f, \mu)$ in Section~\ref{sec:lp}. Since we scale $\nabla f_i^\mu$ down by the maximum excess in the initial solution, the maximum in $\Ex(f,\mu)$ will never be $>2$. This gives the upper bound $\nabla f_i^\mu \leq b_i^\mu + 2$ on $\nabla f_i^\mu$. 
 
 \subsection{Plentiful Nodes}
 
@@ -362,9 +374,9 @@ claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 	always greater than $1$ because $\giij < 1$ (by the feasibility of the dual).
 
 	From the terminating condition of the augmentation step (the lack of any nodes
-	in $S$ having excess), we know $Ex(f) = \nfiu - \biu < 1$. Since, by
+	in $S$ having excess), we know $\Ex(f) = \nfiu - \biu < 1$. Since, by
 	Lemma~\ref{lem:fsame}, $\nfiu$ is unchanged and only nodes in $\vsrc$ (i.e. $b_i<0$)
-	can have excess, the only way for to make $Ex(f) \ge 1$ is if $\biu$ becomes
+	can have excess, the only way for to make $\Ex(f) \ge 1$ is if $\biu$ becomes
 	more negative, which only happens if $\alpha > 1$. 
 	
 	Finally, we start out with the assumption that there are no plentiful nodes.
