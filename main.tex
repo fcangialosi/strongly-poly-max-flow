@@ -25,8 +25,10 @@
 
 % Commonly used symbols
 \newcommand{\fiu}{f_{i}^{\mu}}
-\newcommand{\dfiu}{\nabla \fiu}
+\newcommand{\nfiu}{\nabla \fiu}
 \newcommand{\biu}{b_{i}^{\mu}}
+\newcommand{\gie}{\gamma_{e}^{\mu}}
+\newcommand{\giij}{\gamma_{ij}^{\mu}}
 \newcommand{\vnott}{V \setminus t}
 \newcommand{\din}{\delta^{in}}
 \newcommand{\dout}{\delta^{out}}
@@ -228,7 +230,7 @@ the following LP:
 \lpeq{\lpthree{max}
 {\alpha}
 {\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
-{\dfiu - \biu \le 1}
+{\nfiu - \biu \le 1}
 {\nexists\ \text{plentiful}\ i \in \vpos}
 }
 \begin{wrapfigure}{hR}{0.5\textwidth}
@@ -278,7 +280,7 @@ section.
 
 \begin{claim}
 $f^{\mu}$ remains unchanged throughout~\ref{alg:ppn}
-\label{claim:fsame}
+\label{lem:fsame}
 \end{claim} 
 \begin{proof}
 By definition, only arcs $(i,j) \in S$ are 
@@ -287,8 +289,44 @@ By definition, only arcs $(i,j) \in S$ are
 $f^{\mu}$ is always integral.
 \end{corollary}
 \begin{proof}
-The augmentation step clearly maintains integrality of $f^{\mu}$ because we always augment by 1 unit at a time. The only other part of the algorithm that modifies the primal solution is the relabeling of $f_e$, and by the previous claim (\ref{claim:fsame}), this never changes the value of $f^{\mu}$.
+The augmentation step clearly maintains integrality of $f^{\mu}$ because we
+always augment by 1 unit at a time. The only other part of the algorithm that
+modifies the primal solution is the relabeling of $f_e$, and by the previous
+claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 \end{proof}
+\begin{claim}
+	For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
+	strictly increases $|\biu|$. For all other nodes, $|\biu|$ remainds unchanged.
+\end{claim}
+\begin{proof}
+	First, trivially, scaling a node with zero demand cannot change its value
+	($0\cdot\mu=0$), and the algorithm only updates $\mu_i$ for $i \in S$. Recall
+	that $\biu$ is defined as $\frac{b_i}{\mu_i}$, and thus, if $\mu_i\leftarrow \mu_i / \alpha$,
+	then $\biu \leftarrow \frac{b_i}{\mu_i / \alpha} = \alpha\frac{b_i}{\mu_i} = \alpha \biu$. 
+	Now it suffices to prove that $\alpha > 1$ always holds when any of the three
+	constraints become tight.
+	
+	By construction, before rescaling, $S$ has no tight
+	incoming arcs. Recall $\giij = \gamma_i\frac{u_i}{u_j}$. In order for an
+	incoming arc $i \notin S, j\in S$ to become tight (1), we must have $\giij=1$:
+	since we only scale values in $S$, $\alpha$ must be ${1}/{\giij}$, which is
+	always greater than $1$ because $\giij < 1$ (by the feasibility of the dual).
+
+	From the terminating condition of the augmentation step (the lack of any nodes
+	in $S$ having excess), we know $Ex(f) = \nfiu - \biu < 1$. Since, by
+	Lemma~\ref{lem:fsame}, $\nfiu$ is unchanged and only nodes in $\vneg$ (i.e. $b_i<0$)
+	can have excess, the only way for to make $Ex(f) \ge 1$ is if $\biu$ becomes
+	more negative, which only happens if $\alpha > 1$. 
+	
+	Finally, we start out with the assumption that there are no plentiful nodes.
+	In order for a node to become plentiful (3), its demand $\biu$ must increase,
+	which is only possible if $\alpha > 1$.
+\end{proof}
+
+In summary, we have shown that this algorithm strictly increases $\biu$ towards
+the definition of a plentiful node, and thus 
+Since we have proven that our conditions required in the rest of the analysis
+($f_u$ integral and $(f,u)$ a fitting pair) are maintaied 
 
 \subsubsection{Running Time Analysis}
 
