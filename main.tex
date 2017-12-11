@@ -113,7 +113,7 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
 \label{tab:improvements}
 \end{table}
     \subsection{Additional Notation and Concepts}
-At each iteration of the algorithm we ensure that we have a \textbf{fitting pair} of primal-dual solutions $(f,u)$ such that $\mu$ is a feasible dual solution, and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. \todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.} Notice that this relaxed definition does not require that $f$ is feasible (i.e. we allow the net flow $\nabla f $ to be less than its demand $b$). Rather than going through extra work of maintaing a feasible $f$ at each step, a key contribution is simply ensuring that a feasible $f$ \textit{exists} for the $\mu$ in our fitting pair. We denote such a $\mu$ as \textbf{safe}. Further, since all arcs in $f$ are tight, this definition ensures that the scaled $f$, $f^{\mu}$, is a ``regular'' flow and thus one can use any traditional algorithm to manipulate it. As a result, given a fitting pair where the dual solution is optimal, one can find an optimal primal solution by solving a feasible circulation problem \todo{why the circulation problem?}. 
+At each iteration of the algorithm we ensure that we have a \textbf{fitting pair} of primal-dual solutions $(f,u)$ such that $\mu$ is a feasible dual solution, and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. \todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.} Notice that this relaxed definition does not require that $f$ is feasible (i.e. we allow the net flow $\nabla f $ to be less than its demand $b$). Rather than going through extra work of maintaining a feasible $f$ at each step, a key contribution is simply ensuring that a feasible $f$ \textit{exists} for the $\mu$ in our fitting pair. We denote such a $\mu$ as \textbf{safe}. Further, since all arcs in $f$ are tight, this definition ensures that the scaled $f$, $f^{\mu}$, is a ``regular'' flow and thus one can use any traditional algorithm to manipulate it. As a result, given a fitting pair where the dual solution is optimal, one can find an optimal primal solution by solving a feasible circulation problem \todo{why the circulation problem?}. 
 
     \subsection{Finding a feasible flow}
 Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
@@ -126,11 +126,11 @@ Drawing inspiration from the Simplex algorithm, the first step in this algorithm
     	\text{Lower Bound:}
     	\text{Initially,} \nabla f_i^\mu \geq b_i^\mu \text{because of feasibility} \\
         \text{After rounding,} \nabla f_i^\mu \geq b_i^\mu - 1 \text{because} \nabla f_i^\mu \text{decreases by at most 1} \\
-        \text{Upper Bound:}
+        \text{Upper Bound:} \\
         \text{After scaling and dividing} \nabla f_i^\mu \text{by the max excess, } \\
         \text{Using the definition of Ex(f,\mu) in Section 2.2} \\
         \text{Therefore, we have the final result: } \quad
-    	b_i^\mu - 1 \leq \nabla f_i^\mu \leq b_i^\mu + 2 \quad \forall i \in V-t \\
+    	b_i^\mu - 1 \leq \nabla f_i^\mu \leq b_i^\mu + 2 \quad \forall i \in V-t 
     \end{align*}
  
     
