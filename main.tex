@@ -29,7 +29,8 @@
 \newcommand{\nfi}{\nabla f_i}
 \newcommand{\nfiu}{\nabla \fu_i}
 \newcommand{\biu}{b_{i}^{\mu}}
-\newcommand{\gie}{\gamma_{e}^{\mu}}
+\newcommand{\gij}{\gamma_{ij}}
+\newcommand{\gie}{\gij^{\mu}}
 \newcommand{\giij}{\gamma_{ij}^{\mu}}
 \newcommand{\vnott}{V \setminus t}
 \newcommand{\din}{\delta^{\text{in}}}
@@ -135,7 +136,7 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
 \section{Motivating Ideas and Techniques}
 	\subsection{Solving Dual}
     	* Talk about idea of solving dual 
-        	* Key insight about this algorithm is that they maintain f$^{\mu}$ (without any extra work apparently) to be integral
+        	* Key insight about this algorithm is that they maintain $f^{\mu}$ (without any extra work apparently) to be integral
             * Allows normal flow algorithms 
             * Is maintaining solution that is "close enough to feasible primal" with complementary slackness unique to this algorithm?
             * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
@@ -152,11 +153,19 @@ Def(f,\mu) \coloneqq \sum_{i \in V -t} max \{ b_i^\mu - \nabla f_i^\mu, 0\}
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing
     the set of \emph{tight arcs}---that is, the edges $e$ such that $\gie = 1$. Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
-    algorithm to compute a set of tight arcs consistent with a dual optimal solution. This problem is inherently
-    combinatorial, 
+    algorithm to compute a set of tight arcs consistent with a dual optimal solution. This problem
+    is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
     
     \subsection{Contracting Arcs}
-    
+    To organize the search for tight edges, the algorithm inductively decimates the graph.
+    Suppose an edge $(i, j)$ is known to be tight for any dual-optimal solution $\mu$. This
+    imposes a constraint $\giij = 1$ for all such $\mu$, or, i.e., $\gij \mu_i = \mu_j$.
+    Imposing a constraint of this form reduces the dimension of the solution
+    space by one and is equivalent to removing one variable from optimization. Indeed,
+    suppose we solve the equivalent problem instance $(\biu, \giij)$. Then the new constraint
+    becomes $\mu_i' = \mu_j'$. In order to avoid working with extra constraints, we might
+    as well remove one of the variables entirely by collapsing the edge $(i, j)$, leaving a single
+    vertex with a single dual variable.
 
 \section{The Initial Strongly Polynomial Algorithm}
 \subsection{Introduced Notations and Concepts}
