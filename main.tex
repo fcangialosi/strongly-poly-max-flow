@@ -38,6 +38,7 @@
 \newcommand{\vsrc}{V^{t}}
 \newcommand{\vsink}{V^{s}}
 \newcommand{\vz}{V^{0}}
+\newcommand{\fp}{(f,\mu)}
 
 \DeclareMathOperator{\Ex}{Ex}
 \DeclareMathOperator{\Def}{Def}
@@ -418,6 +419,18 @@ claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 	Finally, we start out with the assumption that there are no plentiful nodes.
 	In order for a node to become plentiful (3), its demand $\biu$ must increase,
 	which is only possible if $\alpha > 1$.
+\end{proof}
+\begin{lemma}
+	The rescaling of $\mu$ during produce-plentiful-node does not break 
+	the safety of $\mu$, i.e. that there is a corresponding feasible primal
+	solution even though we haven't kept track of it (~\ref{lem:usafe}).
+\end{lemma}
+\begin{proof}
+The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
+where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
+is safe before running the subroutine. For sake of contradiction, assume that
+after running the subroutine, the updated labels $u_i' = \frac{u_i}{\alpha}$, 
+	\todo{finish}
 \end{proof}
 
 In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
