@@ -30,7 +30,7 @@
 \newcommand{\nfiu}{\nabla \fu_i}
 \newcommand{\biu}{b_{i}^{\mu}}
 \newcommand{\gij}{\gamma_{ij}}
-\newcommand{\gie}{\gij^{\mu}}
+\newcommand{\geu}{\gamma_e^{\mu}}
 \newcommand{\giij}{\gamma_{ij}^{\mu}}
 \newcommand{\vnott}{V \setminus t}
 \newcommand{\din}{\delta^{\text{in}}}
@@ -169,7 +169,7 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
     to an ordinary maximum flow problem with demand constraint.
     
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing
-    the set of \emph{tight edges}---that is, the edges $e$ such that $\gie = 1$. Since regular maximum
+    the set of \emph{tight edges}---that is, the edges $e$ such that $\geu = 1$. Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
     algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
     is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
@@ -202,11 +202,11 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 	$f_e > 0$, then $e$ is tight with respect to \emph{every} dual optimal solution---that
 	is, $e$ is contractible. So a primal optimal flow provides a certificate for contractibility.
 	It would seem this is of no use to us, as computing a primal optimal flow is the entire
-	problem we are trying to solve. But an optimal flow is a vastly superfluous certificate
-	for contractibility. Note that we only need to know that \emph{some}
-	primal optimal flow is supported on a particular edge $e$.
+	problem we are trying to solve. However, an optimal flow is a vastly superfluous certificate.
+	Note that we only need to know that \emph{some}
+	primal optimal flow is supported on one particular edge $e$.
 	
-	Suppose we had some flow $g$
+	Suppose we had some flow $g$ for which $g_e$ was very large, and 
 	
 
 \section{The Initial Strongly Polynomial Algorithm}
