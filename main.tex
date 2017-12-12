@@ -227,6 +227,7 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 \end{table}
 This algorithm introduces the notion of a \textit{conservative labeling}, which helps to identify the highest gain augmenting paths on which to push flow. We define $\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is a feasible solution to (D) and all edges with positive flow are tight (ie. $\gie$ = 1 if f$_{ij} > 0$ for ij $\in$ E). \todo{draw comparison between conservative labeling and fitting pair -- same except conservative labeling requires f to be a FEASIBLE sol to P whereas fitting pair relaxes this constraint}. We define R$_i$ as the total flow incoming to node i on non-tight arcs ($\gie$ $<$ 1). This
 
+
 \section{A Faster Strongly Polynomial Algorithm} The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} introduces several new conceptual ideas that combine the techniques and insight from Section 3. In this section, we will give an overview and analysis of their algorithm. We will also provide a more clear distinction between the previous techniques used and the new insights provided by this algorithm (and why they matter). A highlight of the difficulties in previous algorithms and the subsequent solutions from this algorithm are summarized in Table~\ref{tab:improvements}.
 
 \begin{table}[H]
