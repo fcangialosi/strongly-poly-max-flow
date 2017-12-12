@@ -194,6 +194,21 @@ An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma
 \section{The Initial Strongly Polynomial Algorithm}
 \subsection{Introduced Notations and Concepts}
 
+\begin{table}[H]
+\begin{center}
+    \begin{tabular}{ | p{7cm} | p{7cm} |}
+    \hline
+    Challenges in Previous Algorithms  & Solutions from Algorithm \\ \hline
+    Non-integral flow values & Only store relabeled flow $f^{\mu}$ which stays integral throughout the algorithm until the last step of computing optimum \\ \hline
+    Initial cycle-canceling algorithm to eliminate flow generating cycles & Two phase method (similar to simplex) where feasible solution found in first phase is used to start the second phase; this solution is faster than the cycle-canceling subroutine \\ \hline
+    Complex methods for maintaining feasible flow & Relax flow feasibility (node demands do not have to be met) and use complementary slackness properties to keep feasible primal solution "within reach" \\
+    \hline
+    \end{tabular}
+\end{center}
+\caption{Key Improvements of Initial Algorithm}
+\label{tab:improvementsInitial}
+\end{table}
+This algorithm introduces the notion of a \textit{conservative labeling}, which helps to identify the highest gain augmenting paths on which to push flow. We define $\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is a feasible solution to (D) and all edges with positive flow are tight (ie. $\gij$ = 1 if f$_{ij} > 0$ for ij $\in$ E). \todo{draw comparison between conservative labeling and fitting pair -- same except conservative labeling requires f to be a FEASIBLE sol to P whereas fitting pair relaxes this constraint}. 
 \section{A Faster Strongly Polynomial Algorithm} The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} introduces several new conceptual ideas that combine the techniques and insight from Section 3. In this section, we will give an overview and analysis of their algorithm. We will also provide a more clear distinction between the previous techniques used and the new insights provided by this algorithm (and why they matter). A highlight of the difficulties in previous algorithms and the subsequent solutions from this algorithm are summarized in Table~\ref{tab:improvements}.
 
 \begin{table}[H]
