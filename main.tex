@@ -211,9 +211,9 @@ An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma
     \begin{tabular}{ | p{7cm} | p{7cm} |}
     \hline
     Challenges in Previous Algorithms  & Solutions from Algorithm \\ \hline
-    Non-integral flow values & Only store relabeled flow $f^{\mu}$ which stays integral throughout the algorithm until the last step of computing optimum \\ \hline
+    "Abundant arc" might not appear in strongly polynomial number of steps \cite{Radzik2004} & Continuous Scaling Method  \\ \hline
     Initial cycle-canceling algorithm to eliminate flow generating cycles & Two phase method (similar to simplex) where feasible solution found in first phase is used to start the second phase; this solution is faster than the cycle-canceling subroutine \\ \hline
-    Complex methods for maintaining feasible flow & Relax flow feasibility (node demands do not have to be met) and use complementary slackness properties to keep feasible primal solution "within reach" \\
+    Augmentation along highest gain paths introduce flow generating cycles; must run cycle-canceling algorithms in every scaling phase \cite{} &  \\
     \hline
     \end{tabular}
 \end{center}
@@ -262,12 +262,13 @@ Drawing inspiration from the Simplex algorithm, the first step in this algorithm
     
     In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to $\max_{i \in V \setminus t} \nfiu - \biu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which is reduces $f^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nfiu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $\biu - 1 \leq \nfiu \leq \biu + 2 \quad \forall i \in V \setminus t $; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nfiu \geq \biu$ because it must be feasible. After rounding, $\nfiu \geq \biu - 1$ because $\nfiu$ decreases by at most $1$ during rounding. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of $\Ex(f, \mu)$ in Section~\ref{sec:lp}. Since we scale $\nfiu$ down by the maximum excess in the initial solution, the maximum in $\Ex(f,\mu)$ will never be more than $2$. This gives the upper bound $\nfiu \leq \biu + 2$. 
 
+$S$ is formulated so that it doesn't cut any tight edges. 
 \subsection{Plentiful Nodes}
 
-\subsubsection{Movation}
+\subsubsection{Motivation}
 
 Recall that the primary method of progress in this algorithm involves
-identifying contractible arcs (\todo{define}) and then contracting them until a dual optimal
+identifying contractible arcs and then contracting them until a dual optimal
 solution is found. Prior work called such arcs ``abundant'' and used scaling to
 find them directly. A key novelty in this algorithm is the concept of finding
 them indirectly via a ``plentiful'' node. 
