@@ -232,9 +232,26 @@ This algorithm uses a scaling-type technique with scale factor $\Delta$. For $\D
 \end{table}
 This algorithm extends the scaling technique in the FAT-PATH algorithm \cite{Goldberg:1991:CAG:105014.105022} by introducing \textit{continuous scaling}. The key ideas that lead to improvements in this algorithm, as compared to previous algorithms, are summarized in Table~\ref{tab:improvementsInitial}. At a high-level, the continuous scaling method either (i) pushes $\Delta$ units of flow along a tight path from high relabeled excess nodes to low relabeled excess nodes (including the sink) or (ii) increases certain labels and decreases $\Delta$ by the same factor $\alpha$. Unlike previous scaling methods used for the generalized flow problem, this algorithm does not have distinct $\Delta$-phases; instead, $\Delta$ is updated continuously. This method is more adaptive and prevents "over-shooting" when relabeling (i.e. increasing the labels too much in comparison to the $\Delta$ value such that relabeled flow values never allow arcs to be abundant). The algorithm also introduces $\Delta$-feasible pairs, which are defined in the previous section. As $\Delta$ changes, the algorithm maintains a $\Delta$-feasible pair, which ensures that there is a "reachable" feasible solution to (P). By definition, if (f,$\mu$) is a $\Delta$-feasible pair and the flow on non-tight arcs is set to zero, then the resulting flow is a feasible solution to (P). Given this, the algorithm only needs to run a cycle-canceling algorithm once on the initial solution and then feasibility is maintained throughout the rest of the algorithm. \todo{explain why we can't have flow generating cycles in feasible solution (or is this self-explanatory?)}. The overall runtime of this algorithm as explained in this paper is O(n$^3$m$^2$logn); however, this runtime can be decreased by a factor of log(n) by performing extra bookkeeping on flow values from previous iterations. This is explained in detail along with proofs of polynomially-bounded number sizes in Végh's full version of the paper \cite{article}. Section 4.3 explains the overall continuous scaling concepts in more detail and Sections 4.4-4.6 analyze the three main subroutines used in this algorithm. A further improved strongly polynomial algorithm is explained in Section 5. 
 \subsection{Continuous Scaling Details}
+\todo{might be helpful to have diagram with sets N, T$_0$ and T as well as j nodes connected to T}
 \subsection{Tight-Flow Subroutine}
+The tight-flow subroutine is used at initialization to find initial feasible flow f and at termination to find an optimal solution to (P). It is also used in the Filtration subroutine (Section 4.6). The main result and pseudocode are shown below. 
+\begin{theorem}
+If $\mu$ is an optimal solution to (D), then Tight-Flow(V,$\mu$) returns an optimal solution to (P). \todo{this theorem is verbatim from paper-- another way to phrase it?}
+\end{theorem}
+
+\begin{align*}
+&\text{\textbf{Input:} Node set S $\subseteq$ V and labeling $\mu$ that is feasible solution to (D) wrt S} \\
+&\text{\textbf{Output:} Flow f' such that $\mu$ restricted to S is a conservative labeling for f'} \\
+&\text{Add source node s and edges si $\forall i \in$ S -t} \\
+&\text{Set upper and lower bound capacities, u and l, as follows: } \\
+&\quad \text{For all tight arcs ij: u$_{ij}$=$\infty$ and l$_{ij}$=0} \\
+&\quad \text{For all arcs si: u$_{si}$=-b$_i^\mu$ and $l_{si}$=-$\infty$} \\
+&\text{Run max flow x on node set S $\cup$ $\{$s$\}$ and the set of tight edges} \\
+&\text{Return f' such that f'$_{ij}$ = x$_{ij}\mu_i$ if edge ij is tight and f'$_{ij}$ otherwise}
+\end{align*}
 
 \subsection{Elementary Step Subroutine}
+
 \subsection{Filtration}
 
 
