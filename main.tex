@@ -83,12 +83,12 @@
 \section{Preliminaries}
 
 	\subsection{Network Notation}
-    Let $G=(V,E)$ denote a directed graph with $n=\abs{V}$ and $m=\abs{E}$ and sink node $t \in V$. We define $\gamma \in \R_{>0}^E$ to be the vector of gains and $b \in \R^{V \setminus t}$ to be the vector of node demands. In this paper, we analyze networks with demands rather than capacities; however, this can easily be transformed into the capacitated (standard) representation \cite{Vegh2013}. We define $\din(S)$ and $\dout(S)$ as the set of incoming and outgoing arcs of the subset S $\subseteq$ V. We denote the net flow as
+    Let $G=(V,E)$ denote a directed graph with $n=\abs{V}$ and $m=\abs{E}$ and sink node $t \in V$. We define $\gamma \in \R_{>0}^E$ to be the vector of gains and $b \in \R^{V \setminus t}$ to be the vector of node demands. In this paper, we analyze networks with demands rather than capacities; however, this can easily be transformed into the capacitated (standard) representation \cite{Vegh2013}. We define $\din(S)$ and $\dout(S)$ as the set of incoming and outgoing edges of the subset S $\subseteq$ V. We denote the net flow as
     \[ \nfi \coloneqq \sum_{e \in \din} \gamma_e f_e - \sum_{e \in \dout} f_e.\]
     The residual graph is defined as $G_f = (V, E_f)$, where the residual edges are defined
     as for regular flow:
     \[ E_f = E \cup \{ (j, i) \mid (i, j) \in E, f_{ij} > 0 \}. \]
-    The gains on reverse arcs are inverted:
+    The gains on reverse edges are inverted:
     \[ \gamma_{ji} \coloneqq \frac{1}{\gamma_{ij}}, \]
     and flows are negated:
     \[ f_{ji} \coloneqq -\gamma_{ij}f_{ij}. \]
@@ -135,7 +135,7 @@ f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
 b_i^\mu \coloneqq \frac{b_i}{\mu_i} \quad
 \end{align*}
 
-An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma_e^\mu$=1. The excess and deficit of a node i in the relabeled graph is defined as:
+An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamma_e^\mu$=1. The excess and deficit of a node i in the relabeled graph is defined as:
 
 
 \begin{align*}
@@ -154,7 +154,7 @@ An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma
             * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
             
 	The algorithm solves the primal generalized flow problem by first solving the dual problem.
-    A solution to the dual problem specifies, by complementary slackness, the arcs on which an optimal
+    A solution to the dual problem specifies, by complementary slackness, the edges on which an optimal
     primal solution may send flow. Moreover, applying the dual labels regularizes the problem, reducing
     it to an ordinary circulation problem. Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
     \[ \sum_{j \in \din(i)} \giij \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}
@@ -165,10 +165,10 @@ An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing
     the set of \emph{tight edges}---that is, the edges $e$ such that $\gie = 1$. Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
-    algorithm to compute a set of tight arcs consistent with a dual optimal solution. This problem
+    algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
     is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
     
-    \subsection{Contracting Arcs}
+    \subsection{Contracting edges}
     To organize the search for tight edges, the algorithm inductively decimates the graph.
     Suppose an edge $(i, j)$ is known to be tight for any dual-optimal solution $\mu$. This
     imposes a constraint $\giij = 1$ for all such $\mu$, or, i.e., $\gij \mu_i = \mu_j$.
@@ -188,7 +188,7 @@ An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma
 	The algorithm adds one additional simplification: if the contraction leads to parallel edges,
 	only the one with the highest gain is maintained. This is motivated by the primal problem: in
 	the absence of edge capacity constraints, there is no reason to send flow along an edge of
-	lower gain when one of higher gain is available. Thus, culling parallel arcs preserves the
+	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
 	essential features of the problem.
 	
 	\subsection{Certificates}
@@ -211,7 +211,7 @@ An arc in the relabeled graph is known as tight with respect to $\mu$ if $\gamma
     \begin{tabular}{ | p{7cm} | p{7cm} |}
     \hline
     Challenges in Previous Algorithms  & Solutions from Algorithm \\ \hline
-    "Abundant arc" might not appear in strongly polynomial number of steps \cite{Radzik2004} & Continuous Scaling Method  \\ \hline
+    "Abundant edge" might not appear in strongly polynomial number of steps \cite{Radzik2004} & Continuous Scaling Method  \\ \hline
     Initial cycle-canceling algorithm to eliminate flow generating cycles & Two phase method (similar to simplex) where feasible solution found in first phase is used to start the second phase; this solution is faster than the cycle-canceling subroutine \\ \hline
     Augmentation along highest gain paths introduce flow generating cycles; must run cycle-canceling algorithms in every scaling phase \cite{} &  \\
     \hline
@@ -231,7 +231,7 @@ This algorithm introduces the notion of a \textit{conservative labeling}, which 
     Non-integral flow values & Only store relabeled flow $f^{\mu}$ which stays integral throughout the algorithm until the last step of computing optimum \\ \hline
     Initial cycle-canceling algorithm to eliminate flow generating cycles & Two phase method (similar to simplex) where feasible solution found in first phase is used to start the second phase; this solution is faster than the cycle-canceling subroutine \\ \hline
     Complex methods for maintaining feasible flow & Relax flow feasibility (node demands do not have to be met) and use complementary slackness properties to keep feasible primal solution "within reach" \\ \hline
-    No guarantee of abundant arc appearing in strongly polynomial number of steps \cite{Radzik2004} &  Continuous scaling\\ \hline
+    No guarantee of abundant edge appearing in strongly polynomial number of steps \cite{Radzik2004} &  Continuous scaling\\ \hline
     Complicated multiplicative potential analysis \cite{Vegh2013} & Additive potential analysis \\
     \hline
     \end{tabular}
@@ -240,7 +240,7 @@ This algorithm introduces the notion of a \textit{conservative labeling}, which 
 \label{tab:improvements}
 \end{table}
     \subsection{Additional Notation and Concepts}
-At each iteration of the algorithm we ensure that we have a \textbf{fitting pair} of primal-dual solutions $(f,u)$ such that $\mu$ is a feasible dual solution, and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. \todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.} Notice that this relaxed definition does not require that $f$ is feasible (i.e. we allow the net flow $\nabla f $ to be less than its demand $b$). Rather than going through extra work of maintaining a feasible $f$ at each step, a key contribution is simply ensuring that a feasible $f$ \textit{exists} for the $\mu$ in our fitting pair. We denote such a $\mu$ as \textbf{safe}. Further, since all arcs in $f$ are tight, this definition ensures that the scaled flow $f^{\mu}$ is a ``regular'' flow and thus one can use any traditional algorithm to manipulate it. As a result, given a fitting pair where the dual solution is optimal, one can find an optimal primal solution by solving a feasible circulation problem \todo{why the circulation problem?}. 
+At each iteration of the algorithm we ensure that we have a \textbf{fitting pair} of primal-dual solutions $(f,u)$ such that $\mu$ is a feasible dual solution, and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. \todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.} Notice that this relaxed definition does not require that $f$ is feasible (i.e. we allow the net flow $\nabla f $ to be less than its demand $b$). Rather than going through extra work of maintaining a feasible $f$ at each step, a key contribution is simply ensuring that a feasible $f$ \textit{exists} for the $\mu$ in our fitting pair. We denote such a $\mu$ as \textbf{safe}. Further, since all edges in $f$ are tight, this definition ensures that the scaled flow $f^{\mu}$ is a ``regular'' flow and thus one can use any traditional algorithm to manipulate it. As a result, given a fitting pair where the dual solution is optimal, one can find an optimal primal solution by solving a feasible circulation problem \todo{why the circulation problem?}. 
 
 %%% TEMP %%% 
 They want the set of tight edges, only at any given time actually have a dual solution. Only operations that happen to the edges are contractions or adding more tight edges, so tight edges never get removed. Inductive. The way to ensure tight edges never have to be removed is the safety property: ensure that their set of tight edges is always satisfiable, some flow that will only be supported on that set. Safety property can be maintained with the label update. 
@@ -268,8 +268,8 @@ $S$ is formulated so that it doesn't cut any tight edges.
 \subsubsection{Motivation}
 
 Recall that the primary method of progress in this algorithm involves
-identifying contractible arcs and then contracting them until a dual optimal
-solution is found. Prior work called such arcs ``abundant'' and used scaling to
+identifying contractible edges and then contracting them until a dual optimal
+solution is found. Prior work called such edges ``abundant'' and used scaling to
 find them directly. A key novelty in this algorithm is the concept of finding
 them indirectly via a ``plentiful'' node. 
 \begin{definition}
@@ -279,14 +279,14 @@ demand $|b_i^{\mu}|$ is large relative to the size of the graph, specifically:
 $|b_i^{\mu}| \ge 3n(d_i + 1)$.
 \end{definition}
 
-It is important to notice that, just as with the definition of an abundant  arc,
+It is important to notice that, just as with the definition of an abundant  edge,
 this definition depends only on the size of the graph, which is a key property
 that will keep our algorithm strongly polynomial because we will be iteratively
 re-scaling the node demands until one of them satisfies this property.
 
 \begin{theorem} Assume $\mu$ from the fitting pair $(f,\mu)$ is safe.
 Then the existence of a plentiful node $i$ ensures
-that there exists a contractible arc $e$ incident to $i$.
+that there exists a contractible edge $e$ incident to $i$.
 \end{theorem}
 \begin{proof}
 \todo{Prove theorem 3.1 more succinctly and clearly}. General idea: 
@@ -301,9 +301,9 @@ repeatedly alternates between two steps which adjust the primal and dual
 solutions until at least one node becomes plentiful.
 
 First, the primal solution is improved by augmenting as much flow as possible,
-one unit at a time, along tight arcs in the residual graph 
+one unit at a time, along tight edges in the residual graph 
 from nodes with excess to either nodes with deficit, or the sink.
-It only augments along tight arcs \rewrite{because}. Formally, if we let
+It only augments along tight edges \rewrite{because}. Formally, if we let
 $D$ (``destinations'') be the union of the sink $t$ and all nodes with 
 deficit ($\nabla f_i^{\mu} < b_i^{\mu}$), and let $S$ (``sources'') be
 the set of all nodes that both have excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$)
@@ -372,7 +372,7 @@ $f^{\mu}$ remains unchanged throughout the subroutine.
 \label{lem:fsame}
 \end{claim} 
 \begin{proof}
-By definition, only arcs $(i,j) \in S$ are 
+By definition, only edges $(i,j) \in S$ are 
 \end{proof}
 \begin{corollary}
 $f^{\mu}$ is always integral.
@@ -397,8 +397,8 @@ claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 	constraints become tight.
 	
 	By construction, before rescaling, $S$ has no tight
-	incoming arcs. Recall $\giij = \gamma_i\frac{u_i}{u_j}$. In order for an
-	incoming arc $i \notin S, j\in S$ to become tight (1), we must have $\giij=1$:
+	incoming edges. Recall $\giij = \gamma_i\frac{u_i}{u_j}$. In order for an
+	incoming edge $i \notin S, j\in S$ to become tight (1), we must have $\giij=1$:
 	since we only scale values in $S$, $\alpha$ must be ${1}/{\giij}$, which is
 	always greater than $1$ because $\giij < 1$ (by the feasibility of the dual).
 
@@ -424,7 +424,7 @@ We now leverage potential analysis to derive an upper bound on the amount of wor
 
 \subsection{Contraction}
 
-Once we have produced a plentiful node, finding a contractible arc is straightforward. 
+Once we have produced a plentiful node, finding a contractible edge is straightforward. 
 
 The purpose of contraction is that it reduces the size of the graph by one node,
 which puts a strongly polynomial bound of $n$ on the number of contraction
