@@ -211,7 +211,7 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
     that the problem remains equivalent. Rewritten in terms of the variables in
     the modified problem, the relevant terms of the dual objective are
     \[ \mu_t' \left(\frac{b_i^\mu}{\mu_i'} + \frac{b_j^\mu}{\mu_j'}\right)
-     = \mu_t' \frac{b_i^\mu + b_j^\mu}{\mu_j'}. \]
+     = \mu_t' \left(\frac{b_i^\mu + b_j^\mu}{\mu_j'}\right). \]
 	So the operation of collapsing $i$ into $j$ along $(i, j)$ and summing their demands
 	preserves the objective and constraints.
 	
@@ -236,10 +236,48 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 	
 	In fact, the algorithm goes one step further. Instead of maintaining a feasible flow
 	fitting the dual solution $\mu$, it maintains a ``pseudoflow'' along with a guarantee
-	that there is a feasible flow also fitting $\mu$.
+	that there is a feasible flow also fitting $\mu$. In order for this to work, $\mu$
+	must be such that a feasible flow fitting it exists, even if that flow is never
+	computed. If this condition holds, $\mu$ is called \emph{safe}. An equivalent
+	formulation of safety, which is easier to reason about, is as follows. To simplify
+	the exposition, we define 
+	\begin{definition}
+		Given dual labels $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ such that
+		$\din(S) \cap E^\mu = \varnothing$. An \textbf{outward-loose cut}
+		is such that $\dout(S) \cap E^\mu = \varnothing$. A \textbf{bi-loose cut}
+		is both inward- and outward-loose.
+	\end{definition}
+	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts.
+	If $f$ is feasible, then it follows that the total demand inside an inward-loose
+	cut is negative. It turns out that this is a sufficient condition for the existence
+	of a feasible fitting flow.
 	\begin{lemma}[Certificate for Safety]
-		
+	$\mu$ is safe if and only if for any inward-loose cut $S$,
+	\[ \sum_{i \in S} \biu \leq 0. \]
 	\end{lemma}
+	This is Lemma 2.3 in \cite{Olver2017}, where it is described as a corollary of Hoffman's Circulation
+	Theorem, \cite{Schrijver} Theorem 11.2. We provide a proof for completeness:
+	\begin{proof}
+		Suppose the cut condition holds. Let $f$ be a function on tight edges minimizing
+		the total deficit $\Def(f, \mu) = \sum_i \min\{0, \biu - \nfiu\}$. Let
+		$T^+$, $T^-$ be the sets of vertices with excess and deficit, respectively:
+		\begin{align*}
+			T^+ &= \{i \in V \mid \nfiu > \biu \} \\
+			T^- &= \{i \in V \mid \nfiu < \biu \}.
+		\end{align*}
+		Consider the residual graph of $f$ in the tight graph. If there were a path
+		connecting $T^+$ to $T^-$, then we could augment along the path
+		to reduce the total deficit. Therefore, there is no such path. Consider the
+		set $T$ of nodes reachable from $T-$ along tight edges (including reverse edges).
+		As $T \cap T^+ = \varnothing$,
+		\[ \sum_{i \in T} \nfiu - \biu = \sum_{i \in T^-} \nfiu - \biu < 0. \]
+		But by definition, $T$ is bi-loose. Therefore, the total flow across $T$ is zero, and
+		so
+		\[ 0 = \sum_{e \in \din(T)} f_e - \sum_{e \in \dout(T)} f_e
+		     = \sum_{i \in T} \nfiu < \sum_{i \in T} \biu, \]
+		contradicting our assumption. It follows that $T^- = \varnothing$, i.e., $f$
+		is feasible.
+	\end{proof}
 	
 
 \section{The Initial Strongly Polynomial Algorithm}
