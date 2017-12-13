@@ -165,7 +165,7 @@ f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
 b_i^\mu \coloneqq \frac{b_i}{\mu_i} \quad
 \end{align*}
 
-An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamma_e^\mu$=1. The excess and deficit of a node i in the relabeled graph is defined as:
+An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamma_e^\mu =1$. The excess and deficit of a node i in the relabeled graph is defined as:
 
 
 \begin{align*}
@@ -230,7 +230,16 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 	Note that we only need to know that \emph{some}
 	primal optimal flow is supported on one particular edge $e$.
 	
-	Suppose we had some flow $g$ for which $g_e$ was very large, and 
+	Suppose we had any flow $g$, and we could bound the difference between $g$ and an optimal
+	flow $f^*$. Then if $g$ had a sufficiently large value on some edge $e$, we would know that
+	$f^*_e \neq 0$.
+	
+	In fact, the algorithm goes one step further. Instead of maintaining a feasible flow
+	fitting the dual solution $\mu$, it maintains a ``pseudoflow'' along with a guarantee
+	that there is a feasible flow also fitting $\mu$.
+	\begin{lemma}[Certificate for Safety]
+		
+	\end{lemma}
 	
 
 \section{The Initial Strongly Polynomial Algorithm}
