@@ -281,6 +281,35 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 		contradicting our assumption. It follows that $T^- = \varnothing$, i.e., $f$
 		is feasible.
 	\end{proof}
+    So long as $\mu$ remains safe, we can obtain a feasible fitting flow $f$ at any time
+    by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
+    
+    \begin{lemma} \label{lem.dist}
+    Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some optimal flow $g^*$
+    uniformly ``close'' to $g$:
+    \[ \|(g^*)^\mu - g^\mu\|_\infty < \Ex(g, \mu) + \Def(g, \mu). \]
+    \end{lemma}
+    \begin{proof}
+    As $g$ fits $\mu$, $g$ is supported on the tight edges $E^\mu$. As
+    $\mu$ is safe, there is some feasible flow supported in $E^\mu$. We first
+    look for a feasible flow $\tilde{g}$ close to $g$. To that end, consider the
+    difference $f^\mu = \tilde{g}^\mu - g^\mu$, which is also supported in $E^\mu$.
+    (If $f_{ij}$ are negative, we think of this as positive flow on the reverse edge $(j, i)$.)
+    Now minimize $\|f^\mu\|_1$, the total volume of difference,
+    among all feasible fitting flows $\tilde{g}$. Adding cycles only increases $\|f^\mu\|_1$.
+    Because $f$ is minimal with respect to this norm, it is acyclic. Thus it is a sum of
+    paths whose total flow value can be measured at their endpoints:
+    \[ \|f^\mu\|_\infty \leq \sum_i \max\{0, \nfiu\} = \sum_i \max\{0, -\nfiu\} = \frac{1}{2}\sum_i |\nfiu|
+     = \frac{1}{2}\sum_i |\nabla \tilde{g}^\mu_i - \nabla g^\mu_i|. \]
+    
+    
+    \end{proof}
+    
+    Lemma \ref{lem.dist} leads naturally to a concrete characterization of contractible edges:
+    \begin{lemma}
+    Suppose $(g, \mu)$ is a fitting pair, $\mu$ is safe, and $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$.
+    Then $e$ is contractible.
+    \end{lemma}
 	
 
 \section{The Initial Strongly Polynomial Algorithm}
@@ -404,7 +433,7 @@ Drawing inspiration from the Simplex algorithm, the first step in this algorithm
     \subsection{Scaling and Rounding} 
     Since the second phase of the algorithm relies on the relabeled flow, $f^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair $(f, \mu)$ and corresponding feasible relabeled flow $f^\mu$ and setting a lower bound of $\lfloor \nabla f_i^\mu \rfloor$ and an upper bound of $\lceil \nabla f_i^\mu \rceil$. The corresponding integral relabeled max flow on each edge $e_{ij}$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of $f_{ij}^\mu$ remains unchanged because if $f_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, $f_{ij}^\mu$ remains integral after the initial rounding.
     
-    In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to $\max_{i \in V \setminus t} \nfiu - \biu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which is reduces $f^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nfiu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $\biu - 1 \leq \nfiu \leq \biu + 2 \quad \forall i \in V \setminus t $; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nfiu \geq \biu$ because it must be feasible. After rounding, $\nfiu \geq \biu - 1$ because $\nfiu$ decreases by at most $1$ during rounding. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of $\Ex(f, \mu)$ in Section~\ref{sec:lp}. Since we scale $\nfiu$ down by the maximum excess in the initial solution, the maximum in $\Ex(f,\mu)$ will never be more than $2$. This gives the upper bound $\nfiu \leq \biu + 2$. 
+    In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to $\max_{i \in V \setminus t} \nfiu - \biu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which reduces $f^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nfiu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $\biu - 1 \leq \nfiu \leq \biu + 2 \quad \forall i \in V \setminus t $; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nfiu \geq \biu$ because it must be feasible. After rounding, $\nfiu \geq \biu - 1$ because $\nfiu$ decreases by at most $1$ during rounding. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of $\Ex(f, \mu)$ in Section~\ref{sec:lp}. Since we scale $\nfiu$ down by the maximum excess in the initial solution, the maximum in $\Ex(f,\mu)$ will never be more than $2$. This gives the upper bound $\nfiu \leq \biu + 2$. 
 
 $S$ is formulated so that it doesn't cut any tight edges. 
 \subsection{Plentiful Nodes}
