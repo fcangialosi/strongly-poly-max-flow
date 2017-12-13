@@ -24,6 +24,9 @@
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 
+\theoremstyle{definition}
+\newtheorem{subroutine}{Subroutine}
+
 % Commonly used symbols
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\fu}{f^{\mu}}
@@ -40,6 +43,7 @@
 \newcommand{\vsink}{V^{s}}
 \newcommand{\vz}{V^{0}}
 \newcommand{\fp}{(f,\mu)}
+\newcommand{\fiju}{f_{ij}^{\mu}}
 
 \newcommand{\xands}{X \cap S}
 \newcommand{\xnots}{X \setminus S}
@@ -343,31 +347,34 @@ be unbounded.} \todo{Describe.}
 \includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
 \caption{
 \label{fig:unsafe}
-Simple example showing how unsafe $\mu$ causes problems.
+\rewrite{Simple example showing how unsafe $\mu$ causes problems.}\todo{Keep?}
 }
 \end{figure}
 
 \subsubsection{Subroutine: Producing Plentiful Nodes}
 \label{sec:sub-ppn}
 
-For an input fitting pair $(f,u)$ without a plentiful node, the algorithm
-repeatedly alternates between two steps which adjust the primal and dual
-solutions until at least one node becomes plentiful.
-
-First, the primal solution is improved by augmenting as much flow as possible,
+\begin{subroutine}
+For an input fitting pair $(f,u)$ without a plentiful node,
+continue executing the following two steps until at least one node becomes
+plentiful.
+\begin{enumerate}
+\item First, improve the primal solution by augmenting as much flow as possible,
 one unit at a time, along tight edges in the residual graph 
 from nodes with excess to either nodes with deficit, or the sink.
-It only augments along tight edges \rewrite{because}. Formally, if we let
+It only augments along tight edges \rewrite{because}. Formally, let
 $D$ (``destinations'') be the union of the sink $t$ and all nodes with 
 deficit ($\nabla f_i^{\mu} < b_i^{\mu}$), and let $S$ (``sources'') be
 the set of all nodes that both have excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$)
-and have a tight path in the residual graph to a node in $D$, then the algorithm
-continues augmenting until $S$ is empty.
-
-Once it is not possible to augment any more flow, the second step scales down
+and have a tight path in the residual graph to a node in $D$, then
+continue augmenting until $S$ is empty.
+\item Once it is not possible to augment any more flow, the second step scales down
 the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$,
 which is chosen to be the largest value that \rewrite{does not violate} any of the dual
-constraints~(\ref{eq:dual}) or produces a plentiful node. 
+constraints~(\ref{eq:dual}) or produces a plentiful node.
+\end{enumerate}
+\end{subroutine}
+
 Although it is not necessary in practice, for clarify of explanation, one can think of choosing the scaling factor $\alpha$ as solving
 the following LP:
 \lpeq{\lpthree{max}
@@ -419,15 +426,31 @@ fact that it can be done is important for the running time analysis.
 We now make some important claims about the variables as the algorithm
 progresses that allow us to prove its correctness: i.e. that it terminates,
 producing a plentiful node.
-We prove further that it terminates in strongly polynomial time and derive an upper bound 
-in the following section.
+In the following section,
+we further prove that it terminates in strongly polynomial time and derive
+an upper bound on the running time.
 
-\begin{claim}
+\begin{lemma}
 $f^{\mu}$ remains unchanged throughout the subroutine.
 \label{lem:fsame}
-\end{claim} 
+\end{lemma} 
 \begin{proof}
-By definition, only edges $(i,j) \in S$ are 
+	We must show that, for all edges $(i,j)$, $f_{ij}^{\mu}$ does not change.
+	Recall that $f_{ij}^{\mu} = \frac{f_{ij}}{\mu_i}$. There
+	are four possible cases for $i,j$:
+	\begin{enumerate}
+		\item Both outside of $S$. The subroutine only scales $i \in S$, so $\mu_i$ 
+			does not change, and thus nor does $\fiju$.
+		\item Both inside of $S$. The subroutine scales both $f_{ij}$ and $\mu$ by
+			$\alpha$, which cancel each other out in the definition of $\fiju$.
+		\item Only $i$ in $S$, which implies $i,j \in \dout(S)$. Then $f_{ij}=0$,
+			because otherwise there would be a tight residal edge $j,i \in \din(S)$,
+			and by definition $S$ has no incoming tight edges.
+		\item Only $j$ in $S$, which implies $i,j \in \din(S)$. Again, incoming edges
+			are not tight by definition of $S$ and we only augment along tight edges,
+			so $f_{ij}$ is not augmented. Also, if $i \notin S$, then $\mu_i$ doesn't
+			change.
+	\end{enumerate}
 \end{proof}
 \begin{corollary}
 $f^{\mu}$ is always integral.
@@ -435,13 +458,14 @@ $f^{\mu}$ is always integral.
 \begin{proof}
 The augmentation step clearly maintains integrality of $f^{\mu}$ because we
 always augment by 1 unit at a time. The only other part of the algorithm that
-modifies the primal solution is the relabeling of $f_e$, and by the previous
-claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
+modifies the primal solution is the relabeling of $f_e$, and by
+Lemma~\ref{lem:fsame}, this never changes the value of $f^{\mu}$.
 \end{proof}
 \begin{lemma}
 	\label{lem:scaling}
 	For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
 	strictly increases $|\biu|$. For all other nodes, $|\biu|$ remains unchanged.
+	\todo{Show S cannot be empty?}
 \end{lemma}
 \begin{proof}
 	First, trivially, scaling a node with zero demand cannot change its value
@@ -479,7 +503,7 @@ where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
 is safe before running the subroutine. For sake of contradiction, assume that
 after running the subroutine, the updated labeling $\mu'$,
 is no longer safe. That is, there exists some subset of vertices $X \subseteq \vnott$  
-without any incoming tight arcs ($\{\gamma_e^{\mu'} < 1\ \forall\ e \in \din(X)\} = \varnothing$)
+without any incoming tight edges ($\{\gamma_e^{\mu'} < 1\ \forall\ e \in \din(X)\} = \varnothing$)
 and where all nodes have positive demand $b^{\mu'}(X) > 0$.
 
 Suppose we divide $X$ into two parts: the subset of vertices in $S$, $X \cap S$, and those
@@ -493,7 +517,7 @@ $b^{\mu}(X \setminus S)$ must be positive.
 Now consider the set of edges coming into each of these subsets...
 
 Therefore, since neither of the two parts of $X$
-have any tight incoming arcs under $\mu$ and at least one of them
+have any tight incoming edges under $\mu$ and at least one of them
 must have strictly positive node demands, at least one of them
 violates the safety conditions of $\mu$ and thus $\mu$ was not safe.
 This is a contradiction, and thus if $\mu$ was safe, $\mu'$ must also be safe.
