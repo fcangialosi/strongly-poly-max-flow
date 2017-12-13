@@ -89,11 +89,6 @@
     
 	\subsection{Structure and Contributions of the Paper} In this paper, we aim to familiarize the reader with the recent algorithmic developments for the generalized flow maximization problem and provide intuition for the techniques used to achieve a strongly polynomial result. In Section 2, we more formally define the problem as a linear program and give an overview of the notation used in the rest of the paper. In Section 3, we develop the key techniques shared by both algorithms used to achieve a strongly polynomial bound for this problem. In Section 4, we describe Végh's original $O(n^3m^2)$ strongly polynomial algorithm developed in 2014 and present a more intuitive and detailed analysis than the original paper. In Section 5, we describe Olver and Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key aspects of the analysis that led way to the improved running time efficiency. Finally, in Section 6, we conclude with open questions and present a few ideas for future work. \todo{Update when we're done.}
     
-Start with a feasible fitting flow. Find something closs in l1-norm (sum), decompose into paths to bound the difference between them. The difference between them is a flow and can't have any cycles because.
-Important that $\mu$ be safe, because it assumes that there is a fitting pair and feasible $\mu$
-
-If value of pseudoflow on edge is really high then optimal flow must have some flow on that edge becasue optimal flow has to be close enough to the pseudoflow
-    
 \section{Preliminaries}
 
 	\subsection{Network Notation}
@@ -101,21 +96,26 @@ If value of pseudoflow on edge is really high then optimal flow must have some f
 	%An instance of the generalized flow problem is specified as	
 	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$,
 	$t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
-	across the edges. Although we have typically seen networks defined in terms of
-	edge capacities, recent work on the generalized problem define networks using
-	node demands instead. 
-	and $b \in \R^{V \setminus t}$ is the vector of node demands.
+	across the edges. Although we have typically seen flow constraints defined in terms of
+	edge capacities, recent work on the generalized problem define flow
+	constraints using node demands $b \in \R^{V \setminus t}$ instead (and leave
+	edge capacities unbounded). Thus, an instance of the generalized flow problem
+	is specified as $(G, t, \gamma, b)$.
+	We adopt this formulation in our paper for
+	convenience of analysis. As shown in~\cite{Vegh2013}, any problem defined with
+	node demands can be easily transformed to an equivalent problem with
+	capacities. 
+
 	Although there is no explicit specification of a source node, the concept of
 	node demands generalizes the concept of having multiple sources and multiple
 	sinks: nodes with negative demand $-b$ act as sources because they can create
 	up to $b$ units of flow, and nodes with positive demand $b$ act as sinks 
-	because they consume at least $b$ units of flow. Thus, we denote the subset of
+	because they consume at least $b$ units of flow. Thus, (excluding $t$), we denote the subset of
 	vertices with negative demand as $\vsrc$, the subset of vertices with positive
 	demand as $\vsink$, and the remaining nodes with zero demand as $\vz$.
-	Then, an instance of the generalized flow problem is specified as $(G, t, \gamma, b)$.
 
-	
-		In this paper, we analyze networks with demands rather than capacities; however, this can easily be transformed into the capacitated (standard) representation \cite{Vegh2013}. We define $\din(S)$ and $\dout(S)$ as the set of incoming and outgoing edges of the subset S $\subseteq$ V. We denote the net flow as
+
+		We define $\din(S)$ and $\dout(S)$ as the set of incoming and outgoing edges of the subset S $\subseteq$ V. We denote the net flow as
     \[ \nfi \coloneqq \sum_{e \in \din} \gamma_e f_e - \sum_{e \in \dout} f_e.\]
     The residual graph is defined as $G_f = (V, E_f)$, where the residual edges are defined
     as for regular flow:
@@ -334,7 +334,9 @@ Safety property is existence of a flow. Un-safety is equivalent to existence of 
 If there's a violated set, divided into two pieces, part in $S$, part not in $S$. One of them had to already be violated. Assume $\mu$ is safe and for the sake of contradiction that $\mu'$ is not safe. Then prove that if that were the case $\mu$ must have not been safe. 
 $S$ is maximal subset that contains $Q$ and has no tight edges coming into it or out of it. Any modification done to $S$ is not going to change tight cuts because they must be either entirely inside or outside, not across the boundary, so scaled equally. 
 
-
+Start with a feasible fitting flow. Find something closs in l1-norm (sum), decompose into paths to bound the difference between them. The difference between them is a flow and can't have any cycles because.
+Important that $\mu$ be safe, because it assumes that there is a fitting pair and feasible $\mu$
+If value of pseudoflow on edge is really high then optimal flow must have some flow on that edge becasue optimal flow has to be close enough to the pseudoflow
 
 %%% TEMP %%%
 
@@ -530,6 +532,15 @@ Lemma~\ref{lem:fsame}, this never changes the value of $f^{\mu}$.
 	which is only possible if $\alpha > 1$.
 \end{proof}
 \begin{lemma}
+	\label{lem:still-fit}
+	$\fp$ remains a fitting pair throughout the subroutine.
+\end{lemma}
+\begin{proof}
+	In order to be a fitting pair, we must have the following relationship between
+	$f$ and $\mu$: when $f_{ij} > 0$, $u_i \le \gij u_j$, and when $f_{ij} = 0$, 
+	$u_i = \gij u_j$. 
+\end{proof}
+\begin{lemma}
 	The rescaling of $\mu$ during produce-plentiful-node does not break 
 	the safety of $\mu$, i.e. that there is a corresponding feasible primal
 	solution even though we haven't kept track of it (~\ref{lem:usafe}).
@@ -540,7 +551,7 @@ where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
 is safe before running the subroutine. For sake of contradiction, assume that
 after running the subroutine, the updated labeling $\mu'$,
 is no longer safe. That is, there exists some subset of vertices $X \subseteq \vnott$  
-without any incoming tight edges ($\{\gamma_e^{\mu'} < 1\ \forall\ e \in \din(X)\} = \varnothing$)
+without any incoming tight edges ($\{\gamma_e^{\mu'} = 1\ \forall\ e \in \din(X)\} = \varnothing$)
 and where all nodes have positive demand $b^{\mu'}(X) > 0$.
 
 Suppose we divide $X$ into two parts: the subset of vertices in $S$, $X \cap S$, and those
@@ -592,6 +603,7 @@ operations.
 \todo{Explain} why applying ideas from strongly polynomial algorithms for
 min-cost flow was not straightforward. 
 
+\setlength{\bibitemsep}{0pt}
 \nocite{*}
 \printbibliography
 \end{document}
