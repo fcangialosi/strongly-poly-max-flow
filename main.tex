@@ -9,9 +9,10 @@
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{commath}
-\usepackage{color}
+\usepackage{color, soul}
 \usepackage{wrapfig}
 \usepackage{xfrac}
+\usepackage{hyperref}
 
 \addbibresource{main.bib}
 
@@ -52,7 +53,7 @@
 \DeclareMathOperator{\Def}{Def}
 
 \newcommand{\rewrite}[1]{\textcolor{red}{#1}}
-\newcommand{\todo}[1]{\colorbox{yellow}{TODO: #1}}
+\newcommand{\todo}[1]{\hl{TODO: #1}}
 
 \newcommand{\lpeq}[1] {
 \begin{equation*}
@@ -256,7 +257,7 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 	\[ \sum_{i \in S} \biu \leq 0. \]
 	\end{lemma}
 	This is Lemma 2.3 in \cite{Olver2017}, where it is described as a corollary of Hoffman's Circulation
-	Theorem, \cite{Schrijver} Theorem 11.2. We provide a proof for completeness:
+	Theorem, Theorem 11.2 in \cite{Schrijver2002}. We provide a proof for completeness:
 	\begin{proof}
 		Suppose the cut condition holds. Let $f$ be a function on tight edges minimizing
 		the total deficit $\Def(f, \mu) = \sum_i \min\{0, \biu - \nfiu\}$. Let
@@ -268,11 +269,13 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 		Consider the residual graph of $f$ in the tight graph. If there were a path
 		connecting $T^+$ to $T^-$, then we could augment along the path
 		to reduce the total deficit. Therefore, there is no such path. Consider the
-		set $T$ of nodes reachable from $T^-$ along tight edges (including reverse edges).
-		As $T \cap T^+ = \varnothing$,
+		set $T$ of nodes from which $T^-$ is reachable along tight edges (including reverse edges).
+		The absence of a residual path from $T^+$ to $T^-$
+        implies that $T \cap T^+ = \varnothing$, whence
 		\[ \sum_{i \in T} \nfiu - \biu = \sum_{i \in T^-} \nfiu - \biu < 0. \]
-		But by definition, $T$ is bi-loose. Therefore, the total flow across $T$ is zero, and
-		so
+		By definition, $T$ is inward-loose. Therefore, the total flow into $T$ is zero.
+        Moreover, the total flow out of $T$ is zero, for otherwise there would be
+        residual tight edges into $T$. So
 		\[ 0 = \sum_{e \in \din(T)} f_e - \sum_{e \in \dout(T)} f_e
 		     = \sum_{i \in T} \nfiu < \sum_{i \in T} \biu, \]
 		contradicting our assumption. It follows that $T^- = \varnothing$, i.e., $f$
@@ -284,7 +287,7 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
 \subsection{Introduced Notations and Concepts}
 The initial strongly polynomial algorithm introduced by Végh \cite{Vegh2013} introduces the notion of a \textit{conservative labeling}, which helps to identify the highest gain augmenting paths on which to push flow. We define $\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is a feasible solution to (D) and all edges with positive flow are tight (i.e. $\geu = 1$ if $f_{ij} > 0$ for $(i, j) \in E$). We define $R_i$ as the total flow incoming to node i on non-tight arcs ($\geu < 1$). \todo{add intuition}
 
-This algorithm uses a scaling-type technique with scale factor $\Delta$. For $\Delta \geq 0$, a $\Delta$-fat graph is defined as a graph containing all forward edges ij and the reverse edges ji such that $f_{ij}^\mu > \Delta$. $\mu$ is a $\Delta$-conservative labeling for f, or alternatively $(f, \mu)$ are a $\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight arcs ij, (ii) $\mu_t$ = 1, and (iii) $\mu_i > 0, e_i \geq R_i \quad \forall i \in V -t$. The scaling algorithm aims to identify $\textit{contractible}$ edges \cite{Orlin1988}, edges that are tight in every optimal dual solution, in a strongly polynomial number of steps. We denote contractible edges as \emph{abundant} and define these edges as having $f_{ij}^\mu \geq 17m\Delta$. \todo{explain?} Once the algorithm identifies an abundant arc, it can contract the arc and reduce the size of the graph. The algorithm terminates once the graph reduces to one node; this allows us to give a strongly polynomial bound on the number of iterations of this algorithm.
+This algorithm uses a scaling-type technique with scale factor $\Delta$. For $\Delta \geq 0$, a $\Delta$-fat graph is defined as a graph containing all forward edges ij and the reverse edges ji such that $f_{ij}^\mu > \Delta$. $\mu$ is a $\Delta$-conservative labeling for f, or alternatively $(f, \mu)$ are a $\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight arcs ij, (ii) $\mu_t$ = 1, and (iii) $\mu_i > 0, e_i \geq R_i \quad \forall i \in V -t$. The scaling algorithm aims to identify $\textit{contractible}$ edges \cite{Orlin1988}, edges that are tight in every optimal dual solution, in a strongly polynomial number of steps. We denote contractible edges as \emph{abundant} and define these edges as having $f_{ij}^\mu \geq 17m\Delta$. Once the algorithm identifies an abundant arc, it can contract the arc and reduce the size of the graph. The algorithm terminates once the graph reduces to one node; this allows us to give a strongly polynomial bound on the number of iterations of this algorithm.
 
 \subsection{Algorithm Overview} 
 \begin{table}[H]
@@ -308,8 +311,8 @@ The continuous scaling algorithm makes the following assumptions: (i) every node
 While finding and contracting edges, the algorithm maintains several sets as defined below:
 
 \begin{align*}
-&\text{N: set containing sink and "low excess" nodes with e$_i^\mu <$ (d$_i$+1)$\Delta$} \\
-&\text{T$_0$: set of ``high excess'' nodes with e$_i^\mu \geq$ (d$_i$+2)$\Delta$} \\
+&\text{N: set containing sink and ``low relabeled excess'' nodes with e$_i^\mu <$ (d$_i$+1)$\Delta$} \\
+&\text{T$_0$: set of ``high relabeled excess'' nodes with e$_i^\mu \geq$ (d$_i$+2)$\Delta$} \\
 &\text{T: set of nodes reachable on a tight path from T$_0$ in $\Delta$-fat graph} \\ 
 &\text{D: set of nodes i $\in$ V -t with $\abs{b_i^\mu} \geq \frac{\Delta}{n}$}
 \end{align*}
@@ -347,7 +350,7 @@ If $\mu$ is an optimal solution to (D), then Tight-Flow(V,$\mu$) returns an opti
 \end{align*}
 
 \subsection{Elementary Step Subroutine}
-The elementary step subroutine is the relabeling step in which some value $\alpha > 1$ is used to decrease $\Delta$ and increase labels $\mu_i$ for $i \in T$. The $\alpha$ chosen is maximized such that the modified pair (f',$\mu$') is $\Delta'$-feasible. This alpha is the minimum of either min$\{\delta_i: i \in V \setminus T \}$ or min$\{\frac{1}{\giij}: ij \in E[T, V\setminus T\}$. In addition to $\Delta$ and the labels in set T, the flow on edges from V$\setminus$T to T and f 
+The elementary step subroutine is the relabeling step in which some value $\alpha > 1$ is used to decrease $\Delta$ and increase labels $\mu_i$ for $i \in T$. The lengthy explanation for how $\alpha$ is chosen can be found in \cite{article}; however, intuitively, the $\alpha$ chosen is maximized such that the modified pair (f',$\mu$') is $\Delta'$-feasible and the excess for each node remains within an upper bound (no inflation). In addition to $\Delta$ and the labels in set T, the flow on edges from V$\setminus$T to T and the flow on non-tight edges contained in V$\setminus$T are reduced by a factor of $\alpha$. Once all values have been rescaled by $\alpha$, the sets T and T$_0$ are modified accordingly.  
 
 \subsection{Filtration}
 The filtration subroutine is used to ``clean up'' the set of nodes V $\setminus$ T if all of the nodes have a high amount of excess in comparison to the demand. The filtration algorithm reduces the relabeled excess of these nodes, which increases the number of ``low excess'' nodes to push flow to. The filtration algorithm runs tight-flow on V$\setminus$T, which returns a new flow f'. The flow values are modified as follows: 
