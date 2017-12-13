@@ -11,6 +11,7 @@
 \usepackage{commath}
 \usepackage{color}
 \usepackage{wrapfig}
+\usepackage{xfrac}
 
 \addbibresource{main.bib}
 
@@ -39,6 +40,9 @@
 \newcommand{\vsink}{V^{s}}
 \newcommand{\vz}{V^{0}}
 \newcommand{\fp}{(f,\mu)}
+
+\newcommand{\xands}{X \cap S}
+\newcommand{\xnots}{X \setminus S}
 
 \DeclareMathOperator{\Ex}{Ex}
 \DeclareMathOperator{\Def}{Def}
@@ -308,10 +312,9 @@ solution is found. Prior work called such edges ``abundant'' and used scaling to
 find them directly. A key novelty in this algorithm is the concept of finding
 them indirectly via a ``plentiful'' node. 
 \begin{definition}
-We say that a node $i$ is \textbf{plentiful} with respect
-to our current primal-dual solution pair $(f,u)$ if its scaled absolute
-demand $|b_i^{\mu}|$ is large relative to the size of the graph, specifically:
-$|b_i^{\mu}| \ge 3n(d_i + 1)$.
+A node $i$ is \textbf{plentiful} with respect
+to the current primal-dual solution pair $(f,u)$ if its scaled absolute
+demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
 \end{definition}
 
 It is important to notice that, just as with the definition of an abundant  edge,
@@ -324,9 +327,21 @@ Then the existence of a plentiful node $i$ ensures
 that there exists a contractible edge $e$ incident to $i$.
 \end{theorem}
 \begin{proof}
-\todo{Prove theorem 3.1 more succinctly and clearly}. General idea: 
+\todo{Prove theorem 3.1 more succinctly and clearly}.
 \end{proof}
-\todo{Example of why this fails if $\mu$ is not safe. See appendix to 2017.}
+
+\rewrite{The safety of $\mu$ is important because, without it, the distance between
+the primal solution we keep track of, $g$, and the optimal solution, $g^*$, could
+be unbounded.} \todo{Describe.}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
+\caption{
+\label{fig:unsafe}
+Simple example showing how unsafe $\mu$ causes problems.
+}
+\end{figure}
 
 \subsubsection{Subroutine: Producing Plentiful Nodes}
 \label{sec:sub-ppn}
@@ -380,12 +395,13 @@ each constraint, respectively:
 \begin{enumerate}[itemsep=-1mm]
 	\item An edge entering $S$ becomes tight, and thus a new node is added to $S$
 	\item A node in $S$ has excess $>1$, which allows us to augment flow from it
-	\item A pseudosink node becomes plentiful
+	\item A node becomes plentiful
 \end{enumerate}
 
 If (3) is true, we're done. If (1) or (2) are true, it ensures that we will now
-be able to make progress in the next iteration of the first step. Similarly, the
-augmentations in the first step
+be able to make progress in the next iteration of the first step. Below, we show
+in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
+that the algorithm can make progress in the second step. 
 
 Although it is conceptually easier to imagine increasing $\alpha$ continuously
 until one of these constraints becomes tight, in practice, it is possible to
@@ -393,7 +409,7 @@ calculate $\alpha$ arithmetically in $O(n)$ by picking a value for each node
 that would satisfy one of the tightness conditions and then choosing the minimum
 such value so that only one of the constraints become tight and none are
 violated.
-The details of calculating the value are not particularly insightful, but the
+The details of calculating the value are not particularly insightful so we omit them here, but the
 fact that it can be done is important for the running time analysis.
 
 We now make some important claims about the variables as the algorithm
@@ -418,10 +434,11 @@ always augment by 1 unit at a time. The only other part of the algorithm that
 modifies the primal solution is the relabeling of $f_e$, and by the previous
 claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 \end{proof}
-\begin{claim}
+\begin{lemma}
+	\label{lem:scaling}
 	For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
 	strictly increases $|\biu|$. For all other nodes, $|\biu|$ remains unchanged.
-\end{claim}
+\end{lemma}
 \begin{proof}
 	First, trivially, scaling a node with zero demand cannot change its value
 	($0\cdot\mu=0$), and the algorithm only updates $\mu_i$ for $i \in S$. Recall
@@ -456,8 +473,27 @@ claim (\ref{lem:fsame}), this never changes the value of $f^{\mu}$.
 The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
 where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
 is safe before running the subroutine. For sake of contradiction, assume that
-after running the subroutine, the updated labels $u_i' = \frac{u_i}{\alpha}$, 
-	\todo{finish}
+after running the subroutine, the updated labeling $\mu'$,
+is no longer safe. That is, there exists some subset of vertices $X \subseteq \vnott$  
+without any incoming tight arcs ($\{\gamma_e^{\mu'} < 1\ \forall\ e \in \din(X)\} = \varnothing$)
+and where all nodes have positive demand $b^{\mu'}(X) > 0$.
+
+Suppose we divide $X$ into two parts: the subset of vertices in $S$, $X \cap S$, and those
+not in $S$, $X \setminus S$. Recall that $\mu_i' = \frac{\mu}{\alpha}$ for $i\in S$
+and $\mu' = \mu$ for $i \notin S$. Then we can rewrite the node demands under $\mu'$
+in terms of the demands under $\mu$ as follows:
+$$b^{\mu'}(X) = \frac{1}{\alpha}b^{\mu}(X \cap S) + b^{\mu}(X \setminus S)$$
+If, as we assumed, $b^{\mu'}(X) > 0$, then either $b^{\mu}(X \cap S)$ or 
+$b^{\mu}(X \setminus S)$ must be positive.
+\todo{Fill in details. Isn't $S$ different for $\mu$ and $\mu'$?}
+Now consider the set of edges coming into each of these subsets...
+
+Therefore, since neither of the two parts of $X$
+have any tight incoming arcs under $\mu$ and at least one of them
+must have strictly positive node demands, at least one of them
+violates the safety conditions of $\mu$ and thus $\mu$ was not safe.
+This is a contradiction, and thus if $\mu$ was safe, $\mu'$ must also be safe.
+
 \end{proof}
 
 In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
