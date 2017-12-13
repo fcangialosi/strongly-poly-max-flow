@@ -347,7 +347,7 @@ If $\mu$ is an optimal solution to (D), then Tight-Flow(V,$\mu$) returns an opti
 \end{align*}
 
 \subsection{Elementary Step Subroutine}
-The elementary step subroutine is the relabeling step in which some value $\alpha > 1$ is used to decrease $\Delta$ and increase labels $\mu_i$ for $i \in T$. The $\alpha$ chosen is maximized such that the modified pair (f',$\mu$') is $\Delta'$-feasible. This alpha is the minimum of either min$\{\delta_i: i \in V \setminus T \}$ or min$\{\frac{1}{\giij}: ij \in E[T, V\setminus T\}$. In addition to $\Delta$ and the labels in set T, the flow on edges from  
+The elementary step subroutine is the relabeling step in which some value $\alpha > 1$ is used to decrease $\Delta$ and increase labels $\mu_i$ for $i \in T$. The $\alpha$ chosen is maximized such that the modified pair (f',$\mu$') is $\Delta'$-feasible. This alpha is the minimum of either min$\{\delta_i: i \in V \setminus T \}$ or min$\{\frac{1}{\giij}: ij \in E[T, V\setminus T\}$. In addition to $\Delta$ and the labels in set T, the flow on edges from V$\set 
 
 \subsection{Filtration}
 The filtration subroutine is used to ``clean up'' the set of nodes V $\setminus$ T if all of the nodes have a high amount of excess in comparison to the demand. The filtration algorithm reduces the relabeled excess of these nodes, which increases the number of ``low excess'' nodes to push flow to. The filtration algorithm runs tight-flow on V$\setminus$T, which returns a new flow f'. The flow values are modified as follows: 
