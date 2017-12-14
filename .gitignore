@@ -4,3 +4,5 @@
 *.out
 *.xml
 main.pdf
+main.bbl
+main.blg
