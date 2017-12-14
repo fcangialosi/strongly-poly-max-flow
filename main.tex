@@ -321,9 +321,18 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
     
     Lemma \ref{lem.dist} leads naturally to a concrete characterization of contractible edges:
     \begin{lemma}
-    Suppose $(g, \mu)$ is a fitting pair, $\mu$ is safe, and $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$.
+    Suppose $(g, \mu)$ is a fitting pair (with $g$ not necessarily feasible),
+    $\mu$ is safe, and $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$.
     Then $e$ is contractible.
     \end{lemma}
+    
+    This observation inspires the structure of the algorithm. In each phase, its
+    goal is to increase the flow values while keeping the total excess and deficit
+    bounded. The only way to do this is to increase the demand values. Thus, the algorithm
+    consists of alternating scaling and augmentation phases. In the scaling phases, the
+    dual variables $\mu$ are adjusted so that the values $|\biu|$ will increase. In the
+    complementary augmentation phases, excesses and deficits of the fitting flow are
+    cancelled to preserve boundedness.
 	
 
 \section{The Initial Strongly Polynomial Algorithm}
