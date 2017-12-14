@@ -170,31 +170,51 @@
 	This captures the idea of arbitrage: sending a unit of flow around the cycle
 	generates a net surplus.
 
-    \subsection{Linear Program Formulation}
-    \label{sec:lp}
+
+
+
+
+	\subsection{Linear Program Formulation}
+	\label{sec:lp}
 
 	We formulate the generalized flow maximization problem with demands as in the 2017 paper~\cite{Olver2017}:
+	\vspace{-0.35cm}
     
-        \begin{align*}\tag{P}
-        \text{max} \quad
-        \nabla f_t& \\
-        \text{s.t.} \quad
-        \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
-        f &\geq 0
-        \end{align*}        
+		\begin{align*}
+		\text{max} \quad
+		\nabla f_t& \\
+		\text{s.t.} \quad \tag{P}
+		\nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
+		f &\geq 0
+		\end{align*}        
 
-\todo{Show what it looks like to directly take the dual}\\
-\todo{Say if you set $\mu$ to $X$ you get the dual as they described in the paper in the paper}
-\noindent The corresponding dual:
- 
-        \begin{align*}\tag{D}
-        \text{max} \quad
-        \mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
-        \text{s.t.} \quad
-        \mu_j &\geq \gamma_{ij}\mu_i \quad \forall ij \in E \\
-        \mu_t &\in \R_{++} \\
-        \mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
-        \end{align*}  
+		\noindent The dual of (P) is shown below on the left. If we set
+		\rewrite{$\mu = \mu$}, we arrive at the formulation on the right,
+		as given in~\cite{Olver2017}:
+
+		\hspace{0.5cm}
+	\begin{minipage}{0.37\textwidth}
+		\begin{align*}
+		\text{max} \quad
+		\mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
+		\text{s.t.} \quad
+		\mu_j &\geq \gamma_{ij}\mu_i \quad \forall ij \in E \\
+		\mu_t &\in \R_{++} \\
+		\mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
+		\end{align*}  
+	\end{minipage}
+	$\xrightarrow{\hspace*{0.25cm}\mu=\mu\hspace*{0.25cm}}$\hfill
+		\hspace{-1.35cm}
+	\begin{minipage}{0.4\textwidth}
+		\begin{align*}
+		\text{max} \quad
+		\mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
+		\text{s.t.} \quad \tag{D}
+		\mu_j &\geq \gamma_{ij}\mu_i \quad \forall ij \in E \\
+		\mu_t &\in \R_{++} \\
+		\mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
+		\end{align*}  
+	\end{minipage}
         
 A feasible solution, $\mu$, to the dual is known as feasible labeling. We can interpret a label $\mu_i$ as a changing in the base unit of measurement  at node i (for example measuring in pennies instead of dollars). We can transform the dual problem to be comparable to the original problem by relabeling the flow, net flow, gains, and demands as follows:
 
