@@ -84,11 +84,48 @@
 \begin{document}
 \maketitle
 \section{Introduction}
-	\subsection{Problem Definition} As in the traditional flow problem, given a graph $G = (V,E)$, the generalized maximum flow problem aims to maximize the total flow delivered to the sink node $t \in V$. Unlike the original flow problem however, each edge contains a gain factor $\gamma_e > 0$, which scales the flow passing through that edge. Intuitively, this rescaling can be thought of in terms of real world examples such as exchange rates between currencies or physical transformations due to energy dissipation. The generalized maximum flow problem lacks several nice properties that are present in the traditional maximum flow problem, which makes it more challenging to solve. For example, the generalized problem is usually thought to be \rewrite{non-integral and, due to the scaling,} the total supply is not necessarily equal to the total demand. Additionally, the maximum flow-minimum cut theorem no longer applies since the flow along a path is not equal at every edge along that path.
+	\subsection{Problem Definition}
+	As in the traditional flow problem, given a
+	graph $G = (V,E)$, the generalized maximum flow problem aims to maximize the
+	total flow delivered to the sink node $t \in V$. Unlike the original flow
+	problem however, each edge contains a gain factor $\gamma_e > 0$, which scales
+	the flow passing through that edge. Intuitively, this scaling can be thought
+	of in terms of real world examples such as exchange rates between currencies
+	or physical transformations due to energy dissipation. The generalized maximum
+	flow problem lacks several nice properties that are present in the traditional
+	maximum flow problem, which makes it more challenging to solve. For example,
+	the generalized problem is usually thought to be \rewrite{non-integral} and,
+	due to the gain factors, the total supply is not necessarily equal to the total
+	demand. Additionally, the maximum flow-minimum cut theorem no longer applies
+	since the flow along a path is not equal at every edge along that path.
     
-    Until recently, the best known algorithms were all weakly polynomial. In 2013, \cite{Vegh2013} developed the first strongly polynomial algorithm (i.e. one that depends only on the number of nodes and edges in the graph, and is independent of the size of their values). In 2017, \cite{Olver2017} built on this work and developed an algorithm that is faster by a factor of almost $O(n^2)$, resulting in a running time that is as fast as the best weakly polynomial algorithms even for small parameter values. These algorithms take advantage of the structural similarities between the generalized maximum flow problem and the minimum cost flow problem by adapting techniques from well-known combinatorial min cost flow algorithms.
+	Until recently, the best known algorithms were all weakly polynomial. In
+	2013, \cite{Vegh2013} developed the first strongly polynomial algorithm
+	(i.e. one that depends only on the number of nodes and edges in the graph,
+	and is independent of the size of their values). In 2017, \cite{Olver2017}
+	built on this work and developed an algorithm that is faster by a factor of
+	almost $O(n^2)$, resulting in a running time that is as fast as the best
+	weakly polynomial algorithms even for small parameter values. These
+	algorithms take advantage of the structural similarities between the
+	generalized maximum flow problem and the minimum cost flow problem by
+	adapting techniques from well-known combinatorial min cost flow algorithms.
     
-	\subsection{Structure and Contributions of the Paper} In this paper, we aim to familiarize the reader with the recent algorithmic developments for the generalized flow maximization problem and provide intuition for the techniques used to achieve a strongly polynomial result. In Section 2, we more formally define the problem as a linear program and give an overview of the notation used in the rest of the paper. In Section 3, we develop the key techniques shared by both algorithms used to achieve a strongly polynomial bound for this problem. In Section 4, we describe Végh's original $O(n^3m^2)$ strongly polynomial algorithm developed in 2014 and present a more intuitive and detailed analysis than the original paper. In Section 5, we describe Olver and Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key aspects of the analysis that led way to the improved running time efficiency. Finally, in Section 6, we conclude with open questions and present a few ideas for future work. \todo{Update when we're done.}
+	\subsection{Structure and Contributions of the Paper}
+	In this paper, we aim to
+	familiarize the reader with the recent algorithmic developments for the
+	generalized flow maximization problem and provide intuition for the techniques
+	used to achieve a strongly polynomial result. In Section 2, we more formally
+	define the problem as a linear program and give an overview of the notation
+	used in the rest of the paper. In Section 3, we develop the key techniques
+	shared by both algorithms used to achieve a strongly polynomial bound for this
+	problem. In Section 4, we describe Végh's original $O(n^3m^2)$ strongly
+	polynomial algorithm developed in 2014 and present a more intuitive and
+	detailed analysis than the original paper. In Section 5, we describe Olver and
+	Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key
+	aspects of the analysis that led way to the improved running time efficiency.
+	Finally, in Section 6, we conclude with open questions and present a few ideas
+	for future work.
+	\todo{Update when we're done.}
     
 \section{Preliminaries}
 
@@ -98,7 +135,7 @@
 	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$,
 	$t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
 	across the edges. Although we have typically seen flow constraints defined in terms of
-	edge capacities, recent work on the generalized problem define flow
+	edge capacities, recent work on the generalized problem defines flow
 	constraints using node demands $b \in \R^{V \setminus t}$ instead (and leave
 	edge capacities unbounded). Thus, an instance of the generalized flow problem
 	is specified as $(G, t, \gamma, b)$.
@@ -115,21 +152,23 @@
 	vertices with negative demand as $\vsrc$, the subset of vertices with positive
 	demand as $\vsink$, and the remaining nodes with zero demand as $\vz$.
 
+	For a subset of the vertices $S \subseteq V$, we define $\din(S)$ and
+	$\dout(S)$ to be the set of incoming and outgoing edges, respectively,
+	and let $d_i = |\din(\{i\}) \cup \dout(\{i\})|$ be the total degree of a
+	node $i \in V$.
 
-		We define $\din(S)$ and $\dout(S)$ as the set of incoming and outgoing edges of the subset S $\subseteq$ V. We denote the net flow as
-    \[ \nfi \coloneqq \sum_{e \in \din} \gamma_e f_e - \sum_{e \in \dout} f_e.\]
-    The residual graph is defined as $G_f = (V, E_f)$, where the residual edges are defined
-    as for regular flow:
-    \[ E_f = E \cup \{ (j, i) \mid (i, j) \in E, f_{ij} > 0 \}. \]
-    The gains on reverse edges are inverted:
-    \[ \gamma_{ji} \coloneqq \frac{1}{\gamma_{ij}}, \]
-    and flows are negated:
-    \[ f_{ji} \coloneqq -\gamma_{ij}f_{ij}. \]
-    If a cycle C in the residual graph has $\prod_{e \in C} \gamma_e > 1$,
-    we call the cycle a ``flow-generating cycle.'' This captures the idea that sending
-    a unit of flow around the cycle yields a net surplus.
+	Then we can define the net flow at a node $i$ as the amount of flow that
+	reaches a node (scaled by the gain factor on the incoming edges) minus the
+	amount of flow that leaves the node: 
+	$$ \nfi \coloneqq \sum_{e \in \din(i)} \gamma_e f_e - \sum_{e \in \dout(i)} f_e.$$
 
-		\todo{Make sure we've defined all notation we use}
+	The residual graph $G_f = (V,E_f)$ is defined as in the traditional problem,
+	except the reverse residual edges $(j,i) \in E_f$ have inverted gain 
+	$\gamma_{ji} = 1 / \gamma_{ij}$ and negated flow $f_{ji} =
+	-\gamma_{ij}f_{ij}$. If the cumulative gain of a cycle $C$ ($\prod_{e \in C} \gamma_e$)
+	in $G_f$ is greater than 1, we call $C$ a ``flow-generating cycle.'' 
+	This captures the idea of arbitrage: sending a unit of flow around the cycle
+	generates a net surplus.
 
     \subsection{Linear Program Formulation}
     \label{sec:lp}
