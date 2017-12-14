@@ -301,6 +301,13 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
     paths whose total flow value can be measured at their endpoints:
     \[ \|f^\mu\|_\infty \leq \sum_i \max\{0, \nfiu\} = \sum_i \max\{0, -\nfiu\} = \frac{1}{2}\sum_i |\nfiu|
      = \frac{1}{2}\sum_i |\nabla \tilde{g}^\mu_i - \nabla g^\mu_i|. \]
+    Now if $\nabla g_i^\mu < b_i^\mu$, then
+    \[ \nfiu = \nabla \tilde{g}_i^\mu - \nabla g_i^\mu
+     = (\nabla \tilde{g}_i^\mu - b_i^\mu) - (\nabla g_i^\mu - b_i^\mu) \geq b_i^\mu - \nabla g_i^\mu, \]
+    as $\nabla \tilde{g}_i^\mu \geq b_i^\mu$ everywhere. So the total value of $f$ is at least
+    $\Def(g, \mu)$. On the other hand, suppose it is more than $\Def(g, \mu)$. Then there
+    is some vertex $i$ where 
+    $\|f\|_1$ can be reduced by canceling paths.
     
     
     \end{proof}
