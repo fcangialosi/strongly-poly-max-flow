@@ -306,9 +306,16 @@ An edge in the relabeled graph is known as tight with respect to $\mu$ if $\gamm
      = (\nabla \tilde{g}_i^\mu - b_i^\mu) - (\nabla g_i^\mu - b_i^\mu) \geq b_i^\mu - \nabla g_i^\mu, \]
     as $\nabla \tilde{g}_i^\mu \geq b_i^\mu$ everywhere. So the total value of $f$ is at least
     $\Def(g, \mu)$. On the other hand, suppose it is more than $\Def(g, \mu)$. Then there
-    is some vertex $i$ where 
-    $\|f\|_1$ can be reduced by canceling paths.
+    is some vertex $i$ where $\nfiu > \max\{0, \biu - \nabla g_i^\mu\}$. So there is some path
+    ending at $i$ whose value can be reduced to reduce $\|f\|_1$, while $\tilde{g}$
+    remains feasible. Therefore, $\|f^\mu\|_\infty \leq \Def(g, \mu)$. Because $\tilde{g}$ is feasible,
+    the paths shipping flow to fill the deficits of $g$ must begin at vertices at which $g$ has
+    excesses. Therefore, $\Ex(\tilde{g}, \mu) \leq \Ex(g, \mu)$.
     
+    The second half of the proof continues along similar lines to show that there is an optimal
+    fitting pair $(g^*, \mu^*)$ with
+    \[ \|(g^*)^\mu - \tilde{g}^\mu\|_\infty \leq \Ex(\tilde{g}, \mu) \leq \Ex(g, \mu). \]
+    The conclusion then follows from the triangle inequality.
     
     \end{proof}
     
