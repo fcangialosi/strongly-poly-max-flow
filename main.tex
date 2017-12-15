@@ -57,8 +57,8 @@
 \DeclareMathOperator{\Ex}{Ex}
 \DeclareMathOperator{\Def}{Def}
 
-\newcommand{\rewrite}[1]{#1}%\textcolor{red}{#1}
-\newcommand{\todo}[1]{}%\hl{TODO: #1}
+\newcommand{\rewrite}[1]{\textcolor{red}{#1}}
+\newcommand{\todo}[1]{\hl{TODO: #1}}
 
 \newcommand{\lpeq}[1] {
 \begin{equation*}
@@ -105,31 +105,34 @@
 	since the flow along a path is not equal at every edge along that path.
     
 	Until recently, the best known algorithms were all weakly polynomial. In
-	2013, \cite{Vegh2013} developed the first strongly polynomial algorithm
+	2013, Végh developed the first strongly polynomial algorithm~\cite{Vegh2013}
 	(i.e. one that depends only on the number of nodes and edges in the graph,
-	and is independent of the size of their values). In 2017, \cite{Olver2017}
-	built on this work and developed an algorithm that is faster by a factor of
+	and is independent of the size of their values). In 2017, Olver and Végh
+	built on this work and developed an algorithm~\cite{Olver2017}
+    that is faster by a factor of
 	almost $O(n^2)$, resulting in a running time that is as fast as the best
 	weakly polynomial algorithms even for small parameter values. These
 	algorithms take advantage of the structural similarities between the
 	generalized maximum flow problem and the minimum cost flow problem by
-	adapting techniques from well-known combinatorial min cost flow algorithms.
+	adapting techniques from well-known combinatorial min cost flow algorithms,
+    namely~\cite{Orlin1988}.
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
 	In this paper, we aim to
 	familiarize the reader with the recent algorithmic developments for the
 	generalized flow maximization problem and provide intuition for the techniques
-	used to achieve a strongly polynomial result. In Section 2, we more formally
+	used to achieve a strongly polynomial result. In Section~\ref{sec:prelim}, we more formally
 	define the problem as a linear program and give an overview of the notation
-	used in the rest of the paper. In Section 3, we develop the key techniques
+	used in the rest of the paper. In Section~\ref{sec:motivate}, we develop the key techniques
 	shared by both algorithms used to achieve a strongly polynomial bound for this
-	problem. In Section 4, we describe Végh's original $O(n^3m^2 \log n)$ strongly
+	problem. In Section~\ref{sec:2013}, we describe Végh's original $O(n^3m^2 \log n)$ strongly
 	polynomial algorithm developed in 2014 and present a more intuitive and
-	detailed analysis than the original paper. In Section 5, we describe Olver and
+	detailed analysis than the original paper. In Section~\ref{sec:2017}, we describe Olver and
 	Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key
 	aspects of the analysis that led way to the improved running time efficiency.
-	Finally, in Section 6, we conclude with open questions and present a few ideas
-	for future work.
+	Finally, in Section~\ref{sec:discussion}, 
+    \rewrite{we conclude with open questions and present a few ideas
+	for future work.}
 	\todo{Update when we're done.}
     
 \section{Preliminaries}\label{sec:prelim}
@@ -146,7 +149,7 @@
 	We adopt this formulation in our paper for
 	convenience of analysis. As shown in~\cite{Vegh2013}, any problem defined with
 	node demands can be easily transformed to an equivalent problem with
-	capacities. 
+	capacities (and vice versa). 
 
 	Although there is no explicit specification of a source node, the concept of
 	node demands generalizes the concept of having multiple sources and multiple
@@ -258,17 +261,33 @@
 	The dual constraint $\gamma_{ij} \mu_i \leq \mu_j$ means that under the labeling $\mu$,
 	it is not possible to create value by converting currencies.
 	The complementary slackness condition means that the currency trading strategy
-	only makes use of the best exchange rates, those that exactly preserve value.
+	only makes trades that exactly preserve value.
+    \todo{Be sure to mention we assume no flow-generating cycles and why we can make this assumption (cancel them).}
 	
-	Given a dual solution, we can transform the gains and demands to obtain a new
-	problem instance. Given a feasible flow, we can also transform the flow values
-	so that they will be feasible for the transformed instance:
+    % $\mu$ is a value assignment. We're rewriting the problem in a different currency. The relabeled dual problem is equiavelnt to the original dual problem, the constraints for tight edges become replace $\mu$ with $\mu'$ in all the constraints. There's a dual problem which solves for $\mu'$ on each vertex, and you can then get a solution to the original problem which is $\mu*\mu'$
+	Given a feasible dual solution $\mu$, we can apply the following \textbf{relabeling} transformation to
+    obtain a new problem instance:
 	\[ f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
 	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \quad
 	\gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
 	b_i^\mu \coloneqq \frac{b_i}{\mu_i} \]
-	The transformed problem is equivalent to the original problem.
-	
+    The relabeled dual problem is
+    \begin{alignat*}{3}
+    \text{max} &\quad &\mu'_t &\sum_{j \in V \setminus t} \frac{b^\mu_j}{\mu'_j}  \\
+    \text{s.t.}
+    &   &\giij \mu'_i &\leq \mu'_j \quad &&\forall\; (i, j) \in E \\
+    &   &\mu'_i &\in \R_{>0} \cup \infty \quad &&\forall\; i \in V \setminus t \\
+    &   &\mu'_t &\in \R_{>0}
+    \end{alignat*}
+	which is equivalent to the original dual problem with variables $\mu \mu'$. In particular,
+    \begin{claim}
+    If $\mu$ is a feasible solution to the original dual problem and
+    $\mu'$ is an optimal solution to the relabeled dual problem with gains
+    $\gamma^\mu$ and demands $b^\mu$,
+    then the vertex-wise product $\mu\mu'$ is an optimal solution to the original dual problem.
+    \end{claim}
+    We will often use relabeling to simplify the problem while preserving its structure.
+    
 	An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
 	For an optimal pair $(f, \mu)$, complementary slackness is exactly the condition that
 	flow only flows along tight edges. We denote the set of tight edges under
@@ -292,7 +311,7 @@
       %      * Is maintaining solution that is "close enough to feasible primal" with complementary slackness unique to this algorithm?
       %      * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
             
-	The algorithm \todo{how about "both"?} solves the primal generalized flow problem by first solving the dual problem.
+	Both algorithms solve the primal generalized flow problem by first solving the dual problem.
     A solution to the dual problem specifies, by complementary slackness, the edges on which an optimal
     primal solution may send flow. Moreover, applying the dual labels regularizes the problem, reducing
     it to an ordinary circulation problem. Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
@@ -308,7 +327,7 @@
     is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
     
     \subsection{Contracting edges}\label{sec:contract}
-    To organize the search for tight edges, the algorithm inductively reduces the graph.
+    To organize the search for tight edges, both algorithms inductively reduce the graph.
     Suppose an edge $(i, j)$ is known to be tight for any dual-optimal solution $\mu$. This
     imposes a constraint $\giij = 1$ for all such $\mu$, or, i.e., $\gij \mu_i = \mu_j$.
     Imposing a constraint of this form reduces the dimension of the solution
@@ -324,7 +343,7 @@
 	So the operation of collapsing $i$ into $j$ along $(i, j)$ and summing their demands
 	preserves the objective and constraints.
 	
-	The algorithm adds one additional simplification: if the contraction leads to parallel edges,
+	We can make one additional simplification: if the contraction leads to parallel edges,
 	only the one with the highest gain is maintained. This is motivated by the primal problem: in
 	the absence of edge capacity constraints, there is no reason to send flow along an edge of
 	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
@@ -436,7 +455,7 @@ This algorithm also extends the scaling technique in the FAT-PATH algorithm
     are no tight paths between nodes of high excess and nodes of low excess, the algorithm checks
     if there are tight paths connecting high excess nodes to nodes not included in sets $T$ or $N$;
     if so, a node along this tight path is added to set $T$. If the algorithm cannot push flow
-    or expand the ``frontier'', then filtration is called to reduce the excess of relatively
+    or expand the ``frontier'', then \filtration is called to reduce the excess of relatively
     isolated nodes. This is useful because it expands the set of ``low excess'' nodes that flow
     can be pushed to, which allows augmentation. It is important to note that this last option
     can only be computed at most $n - 1$ times because once a node is in set $D$, it cannot leave.
@@ -600,7 +619,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	In fact, the algorithm goes one step further. Instead of maintaining a feasible flow
 	fitting the dual solution $\mu$, it maintains a possibly infeasible flow. More precisely,
     at each iteration of the algorithm we ensure that we have a \textbf{fitting pair}
-	of primal and dual solutions $(f,u)$:
+	of primal and dual solutions $(f,\mu)$:
 	\begin{definition}
 	A (not necessarily feasible) flow $f$ is said to \textbf{fit} a feasible dual solution $\mu$
     if it satisfies the putative complementary slackness condition: $f_e > 0 \implies \giij = 1$.
@@ -772,7 +791,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \item \textbf{Scaling:} Once it is not possible to augment any more flow, the second step scales down
     the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$,
     which is chosen to be the largest value that \rewrite{does not violate} any of the dual
-    constraints~(\ref{eq:dual}) or produces a plentiful node.
+    constraints~(D) or produces a plentiful node.
     \end{itemize}
 
     \todo{RE-WRITE AS DJIKSTRAS}
@@ -1013,12 +1032,12 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \end{proof}
 
 
-%\section{Discussion and Future Work}
+\section{Discussion and Future Work}\label{sec:discussion}
 
-%	\subsection{Non-triviality of a strongly polynomial algorithm}
+	\subsection{Non-triviality of a strongly polynomial algorithm
 
-%	\todo{Explain} why applying ideas from strongly polynomial algorithms for
-%	min-cost flow was not straightforward. 
+	\todo{Explain} why applying ideas from strongly polynomial algorithms for
+	min-cost flow was not straightforward. 
 
 \setlength{\bibitemsep}{0pt}
 \nocite{*}
