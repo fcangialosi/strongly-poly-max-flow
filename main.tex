@@ -46,6 +46,11 @@
 \newcommand{\fp}{(f,\mu)}
 \newcommand{\fiju}{f_{ij}^{\mu}}
 
+\newcommand{\tf}{\textsc{Tight-Flow}}
+\newcommand{\ppn}{\textsc{Produce-Plentiful-Node}}
+\newcommand{\filtration}{\textsc{Filtration}}
+\newcommand{\es}{\textsc{Elementary-Step}}
+
 \newcommand{\xands}{X \cap S}
 \newcommand{\xnots}{X \setminus S}
 
@@ -83,8 +88,8 @@
 
 \begin{document}
 \maketitle
-\section{Introduction}
-	\subsection{Problem Definition}
+\section{Introduction}\label{sec:intro}
+	\subsection{Problem Definition}\label{sec:problem}
 	As in the traditional flow problem, given a
 	graph $G = (V,E)$, the generalized maximum flow problem aims to maximize the
 	total flow delivered to the sink node $t \in V$. Unlike the original flow
@@ -110,7 +115,7 @@
 	generalized maximum flow problem and the minimum cost flow problem by
 	adapting techniques from well-known combinatorial min cost flow algorithms.
     
-	\subsection{Structure and Contributions of the Paper}
+	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
 	In this paper, we aim to
 	familiarize the reader with the recent algorithmic developments for the
 	generalized flow maximization problem and provide intuition for the techniques
@@ -127,9 +132,9 @@
 	for future work.
 	\todo{Update when we're done.}
     
-\section{Preliminaries}
+\section{Preliminaries}\label{sec:prelim}
 
-	\subsection{Network Notation}
+	\subsection{Network Notation}\label{sec:notation}
 	%An instance of the generalized flow problem is specified as	
 	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$,
 	$t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
@@ -211,13 +216,14 @@
 	\resizebox{0.37\textwidth}{!}{
 		\fbox{
 	\begin{minipage}{0.35\textwidth}
-	\begin{alignat*}{3}
+	\begin{alignat*}{4}
     \text{min} &\quad &\sum_{i \in V \setminus t} b_i \eta_i \\
     \text{s.t.}
-    &   &\gij \eta_j - \eta_i &\geq 0 \quad &&\forall\; (i, j) \in E[V \setminus t] \\
-    &   &\gamma_{ti} \eta_i &= -1 \quad     &&\forall\; (i, t) \in E \\
-    &   &\eta_i &= -\gamma_{it} \quad       &&\forall\; (t, i) \in E \\
-    &   &\eta_i &\leq 0 \quad               &&\forall\; i \in V \setminus t
+    &   &\gij \eta_j - \eta_i &\geq 0 \quad &&\forall\; &&(i, j) \in E \\
+    &   &                     &             &&          &&\ i, j \neq t \\
+    &   &\gamma_{ti} \eta_i &= -1 \quad     &&\forall\; &&(i, t) \in E \\
+    &   &\eta_i &= -\gamma_{it} \quad       &&\forall\; &&(t, i) \in E \\
+    &   &\eta_i &\leq 0 \quad               &&\forall\; &&i \in V \setminus t
     \end{alignat*}
 	\end{minipage}
 }
@@ -277,6 +283,7 @@
 	\end{align*}
   
 \section{Motivating Ideas and Techniques}
+\label{sec:motivate}
 	\subsection{Solving Dual}
     	%* Talk about idea of solving dual 
       %  	* Key insight about this algorithm is that they maintain $f^{\mu}$ (without any extra work apparently) to be integral
@@ -299,7 +306,7 @@
     algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
     is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
     
-    \subsection{Contracting edges}
+    \subsection{Contracting edges}\label{sec:contract}
     To organize the search for tight edges, the algorithm inductively reduces the graph.
     Suppose an edge $(i, j)$ is known to be tight for any dual-optimal solution $\mu$. This
     imposes a constraint $\giij = 1$ for all such $\mu$, or, i.e., $\gij \mu_i = \mu_j$.
@@ -322,7 +329,7 @@
 	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
 	essential features of the problem.
 	
-	\subsection{Certificates}
+	\subsection{Certificates}\label{sec:cert}
 	Complementary slackness tells us that if there is a primal optimal flow $f$ with
 	$f_e > 0$, then $e$ is tight with respect to \emph{every} dual optimal solution---that
 	is, $e$ is contractible. So a primal optimal flow provides a certificate for contractibility.
@@ -432,11 +439,13 @@
     consists of alternating \emph{scaling} and \emph{augmentation} phases. In the scaling phases, the
     dual variables $\mu$ are adjusted so that the values $|\biu|$ will increase. In the
     complementary augmentation phases, excesses and deficits of the fitting flow are
-    cancelled to preserve boundedness.
+    canceled to preserve boundedness.
 	
 
 \section{The Initial Strongly Polynomial Algorithm}
+\label{sec:13}
 	\subsection{Introduced Notations and Concepts}
+    \label{sec:13-notation}
 	Végh's initial strongly polynomial algorithm \cite{Vegh2013}
 	introduces the notion of a \textit{conservative labeling}, which helps to
 	identify the highest gain augmenting paths on which to push flow.
@@ -458,7 +467,7 @@
 	edges that are tight in every optimal dual solution,
     in a strongly polynomial number of steps. This technique was
     originally developed to study the minimum cost flow problem (\emph{cf.}~\cite{Orlin1988}).
-	Lemma \ref{lem.contractibility} suggests that a large flow value along an edge can
+	Lemma~\ref{lem.contractibility} suggests that a large flow value along an edge can
     serve as a certificate of contractibility. To that end, we define
     \begin{definition}
     An edge $(i, j)$ is \textbf{abundant} at scale $\Delta$ if $f_{ij}^\mu \geq 17m\Delta$.
@@ -468,7 +477,7 @@
 	terminates once the graph reduces to one node; this leads to a
 	strongly polynomial bound on the number of iterations of this algorithm.
 
-	\subsection{Algorithm Overview} 
+	\subsection{Algorithm Overview} \label{sec:13-overview}
 	\begin{table}[H]
 	\begin{center}
 	    \begin{tabular}{ | p{7cm} | p{7cm} |}
@@ -507,11 +516,13 @@
     paper is $O(n^3 m^2 \log n)$; however, this runtime can be decreased by a factor of $\log n$
     by performing extra bookkeeping on flow values from previous iterations.
     This is explained in detail along with proofs of polynomially-bounded number sizes
-    in Végh's full version of the paper~\cite{article}. Section 4.3 explains
-    the overall continuous scaling concepts in more detail and Sections
-    4.4-4.6 analyze the three main subroutines used in this algorithm.
+    in Végh's full version of the paper~\cite{article}.
+    Section~\ref{sec:cs} explains
+ 	the overall continuous scaling concepts in more detail and Sections
+    \ref{sec:tf}-\ref{sec:filtration} analyze the three main subroutines used in this algorithm.
 	 
-	\subsection{Continuous Scaling Details}
+	\subsection{Continuous Scaling Details}\label{sec:cs}
+    
 	The algorithm starts with an initial feasible solution to (P).
     The algorithm first runs a cycle-canceling algorithm on the initial feasible solution,
     which gives a conservative labeling $\mu$ in strongly polynomial time. The bulk of the
@@ -519,7 +530,7 @@
     until the graph is contracted to one node. Once an optimal solution, $\mu$, to (D)
     is found for the contracted graph, it can easily be transformed into an optimal solution to
     (D) for the original graph. This is done by reversing the contraction step (full details
-    are given in \cite{article}). \textsc{Tight-Flow} is then run one last time to convert the
+    are given in \cite{article}). \tf\ is then run one last time to convert the
     optimal dual solution into an optimal solution to (P).
 	
 	While finding and contracting edges, the algorithm maintains several sets as defined below:
@@ -541,54 +552,90 @@
     This is because the ratio $\abs{b_i^\mu} / \Delta$ is non-decreasing. Below is a high-level
     overview of the set of decisions made at each iteration of the ``finding contractible edges''
     part of the algorithm.
+    \todo{Use algorithm package if time}
 	\begin{align*}
-	&\text{IF N $\cap$ T $\neq$ $\varnothing$} \\
-	&\quad \text{Push $\Delta$ units of relabeled flow along tight path from i $\in$ N to j $\in$ T} \\ 
+	&\text{IF $N \cap T \neq \varnothing$} \\
+	&\quad \text{Push $\Delta$ units of relabeled flow along a tight path from $i \in N$ to $j \in T$} \\ 
 	&\quad \text{Update sets accordingly} \\
-	&\text{ELSE N $\cap$ T = $\varnothing$} \\
-	&\quad \text{IF $\exists$ tight path from i $\in$ T to j $\in$ V $\setminus$ T} \\
-	&\quad \quad \text{Add node j to T} \\
+	&\text{ELSE ($N \cap T = \varnothing$)} \\
+	&\quad \text{IF $\exists$ tight path from $i \in T$ to $j \in V \setminus T$} \\
+	&\quad \quad \text{Add node $j$ to $T$} \\
 	&\quad \text{ELSE} \\
-	&\quad \quad \text{IF (V $\setminus$ T) $\cap$ D = $\varnothing$} \\
-	&\quad \quad \quad \text{FILTRATION(V $\setminus$ T)} \\
-	&\quad \quad \text{ELEMENTARY-STEP(T)} 
+	&\quad \quad \text{IF $(V \setminus T) \cap D = \varnothing$} \\
+	&\quad \quad \quad \text{\filtration($V \setminus T$)} \\
+	&\quad \quad \text{\es($T$)} 
 	\end{align*}
 	
-	At the end of each iteration, the algorithm checks if an abundant edge has identified (and if so, it is contracted) or if the termination condition has been met. Once this loop terminates, the graph is expanded and a final max flow computation is run to find the optimal solution to (P).
-	\subsection{Tight-Flow Subroutine}
-	The tight-flow subroutine is used at initialization to find initial feasible flow f and at termination to find an optimal solution to (P). It is also used in the Filtration subroutine (Section 4.6). This algorithm is essentially a standard maximum flow computation on the input set and an added source node. If the max flow computation is infeasible (due to the negative upper bounds), then an error is returned. We present the main theorem given in \cite{Vegh2013} below and also transform their explanation of the subroutine into pseudocode for a more clear representation.
+	At the end of each iteration, the algorithm checks if an abundant edge has
+    identified (and if so, it is contracted) or if the termination condition has been met.
+    Once this loop terminates, the graph is expanded and a final max flow computation
+    is run to find the optimal solution to (P).
+	\subsection{\tf\ Subroutine}\label{sec:tf}
+    
+	The \tf\ subroutine is used at initialization to find an initial feasible flow $f$ and at
+    termination to convert the optimal dual solution to an optimal solution to (P).
+    It is also used in the \filtration\ subroutine (Section~\ref{sec:filtration}).
+    This algorithm is essentially a standard maximum flow computation on the input
+    set and an added source node. If the max flow computation is infeasible (due to the
+    negative upper bounds), then an error is returned. We present the main theorem
+    given in \cite{Vegh2013} below and also transform their explanation of the
+    subroutine into pseudocode for a more clear representation.
 	\begin{theorem}
-	If $\mu$ is an optimal solution to (D), then Tight-Flow(V,$\mu$) returns an optimal solution to (P). \todo{this theorem is verbatim from paper-- another way to phrase it?}
+	If $\mu$ is an optimal solution to (D), then $\tf(V, \mu)$ returns an optimal solution to (P).
+    \todo{this theorem is verbatim from paper---another way to phrase it?}
 	\end{theorem}
 	
 	\begin{align*}
-	&\text{\textbf{Input:} Node set S $\subseteq$ V and labeling $\mu$ that is feasible solution to (D) wrt S} \\
-	&\text{\textbf{Output:} Flow f' such that $\mu$ restricted to S is a conservative labeling for f'} \\
-	&\text{Add source node s and edges si $\forall i \in$ S -t} \\
-	&\text{Set upper and lower bound capacities, u and l, as follows: } \\
-	&\quad \text{For all tight edges ij: u$_{ij}$=$\infty$ and l$_{ij}$=0} \\
-	&\quad \text{For all edges si: u$_{si}$=-b$_i^\mu$ and $l_{si}$=-$\infty$} \\
-	&\text{Run max flow x on node set S $\cup$ $\{$s$\}$ and the set of tight edges} \\
-	&\text{Return f' such that f'$_{ij}$ = x$_{ij}\mu_i$ if edge ij is tight and f'$_{ij}$ otherwise}
-	\end{align*}
+	&\text{\textbf{Input:} Set $S \subseteq V$ with $t \in S$ and labeling $\mu$ that is
+           dual-feasible everywhere in $S$---i.e., $\giij \leq 1$ for all $i, j \in S$} \\
+	&\text{\textbf{Output:} Flow $f'$ such that $(f', \mu)$ is a conservative labeling
+           everywhere in $S$} \\
+	&\text{Add source node $s$ and edges $(s, i)$ for all $i \in S \setminus t$} \\
+	&\text{Set upper and lower bound capacities, $u$ and $l$, as follows: } \\
+	&\quad \text{For all tight edges $(i, j)$: $u_{ij} = \infty$ and $l_{ij} = 0$} \\
+	&\quad \text{For all edges $(s, i)$: $u_{si} = -\biu$ and $l_{si} = -\infty$} \\
+	&\text{Run max flow $x$ on node set $S \cup \{s\}$ and the set of tight edges} \\
+	&\text{Return $f'$ such that}
+    \end{align*}
+    \[ f'_{ij} = \begin{cases} x_{ij} \mu_i & \text{if edge } (i, j) \text{ is tight} \\
+    					       f'_{ij}      & \text{otherwise}
+                 \end{cases}
+    \]
 	
-	\subsection{Elementary Step Subroutine}
-	The elementary step subroutine is the relabeling step in which some value $\alpha > 1$ is used to decrease $\Delta$ and increase labels $\mu_i$ for $i \in T$. The lengthy explanation for how $\alpha$ is chosen can be found in \cite{article}; however, intuitively, the $\alpha$ chosen is maximized such that the modified pair (f',$\mu$') is $\Delta'$-feasible and the excess for each node remains within an upper bound (no inflation). In addition to $\Delta$ and the labels in set T, the flow on edges from V$\setminus$T to T and the flow on non-tight edges contained in V$\setminus$T are reduced by a factor of $\alpha$. Once all values have been rescaled by $\alpha$, the sets T and T$_0$ are modified accordingly.  
+	\subsection{Elementary Step Subroutine}\label{sec:es}
+    
+	In a scaling step, $\Delta$ is continuously scaled down
+    and $\mu_i$ scaled up for $i \in T$. The flow on edges from $V \setminus T$ to $T$ and the flow
+    on non-tight edges contained in $V \setminus T$ are also scaled down. This continues as long
+    as $(f, \mu)$ remains $\Delta$-feasible and as long as the excess for each node $i$
+    remains bounded by a quantity proportional to $\Delta$ and $\mu_i$.
+    Once all values have been rescaled, the sets $T$ and $T_0$ are modified accordingly.  
 	
-	\subsection{Filtration}
-	The filtration subroutine is used to ``clean up'' the set of nodes V $\setminus$ T if all of the nodes have a high amount of excess in comparison to the demand. The filtration algorithm reduces the relabeled excess of these nodes, which increases the number of ``low excess'' nodes to push flow to. The filtration algorithm runs tight-flow on V$\setminus$T, which returns a new flow f'. The flow values are modified as follows: 
-	\begin{align*}
-	&\text{Edges entering T: f$_{ij}$ = 0} \\ 
-	&\text{Edges leaving T: no change} \\
-	&\text{Edges contained in T: no change} \\
-	&\text{Edges contained in V$\setminus$T: f$_{ij}$ = f'$_{ij}$}
-	\end{align*}
+	\subsection{Filtration}\label{sec:filtration}
+    
+	The \filtration\ subroutine is used to ``clean up'' the set of nodes $V \setminus T$ if
+    all of the nodes have a high amount of excess relative to their demands. 
+    It reduces the relabeled excess of these nodes,
+    which increases the number of
+    ``low excess'' nodes to push flow to,
+    and then runs \tf\ on $V\setminus T$,
+    which returns a new flow $f'$. The flow values are modified as follows: 
+	\begin{itemize}[itemsep=-1mm]
+	\item Edges entering $T$: f$_{ij}$ = 0
+	\item Edges leaving $T$: no change
+	\item Edges contained in $T$: no change
+	\item Edges contained in $V\setminus T$: $f_{ij} = f'_{ij}$
+	\end{itemize}
 	
-	If these modifications reduce the excess of a node i enough to either remove i from set T$_0$ (i is no longer a high excess node) or add i to set N $\cap$ T (i is now a reachable low excess node), then the algorithm terminates and the next iteration of the ``finding a contractible edge'' is performed. Otherwise, the algorithm terminates and the elementary step routine is called to relabel.
+	If these modifications reduce the excess of a node $i$ enough to either remove $i$ from set $T_0$
+    ($i$ is no longer a high excess node) or add $i$ to set $N \cap T$ ($i$ is now a reachable
+    low excess node), then the algorithm terminates and the next iteration of the
+    ``finding a contractible edge'' is performed. Otherwise, the algorithm terminates
+    and the elementary step routine is called to relabel.
 
 \section{A Faster Strongly Polynomial Algorithm}
 The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017}
-introduces several new conceptual ideas that combine the techniques and insight from Section 3.
+introduces several new conceptual ideas that combine the techniques and insight from Section~\ref{sec:motivate}.
 In this section, we will give an overview and analysis of their algorithm. We will also
 provide a more clear distinction between the previous techniques used and the new insights
 provided by this algorithm (and why they matter). A highlight of the difficulties in
@@ -636,7 +683,7 @@ summarized in Table~\ref{tab:improvements}.
 	If there's a violated set, divided into two pieces, part in $S$, part not in $S$. One of them had to already be violated. Assume $\mu$ is safe and for the sake of contradiction that $\mu'$ is not safe. Then prove that if that were the case $\mu$ must have not been safe. 
 	$S$ is maximal subset that contains $Q$ and has no tight edges coming into it or out of it. Any modification done to $S$ is not going to change tight cuts because they must be either entirely inside or outside, not across the boundary, so scaled equally. 
 	
-	Start with a feasible fitting flow. Find something closs in l1-norm (sum), decompose into paths to bound the difference between them. The difference between them is a flow and can't have any cycles because.
+	Start with a feasible fitting flow. Find something close in $L_1$-norm (sum), decompose into paths to bound the difference between them. The difference between them is a flow and can't have any cycles because.
 	Important that $\mu$ be safe, because it assumes that there is a fitting pair and feasible $\mu$
 	If value of pseudoflow on edge is really high then optimal flow must have some flow on that edge becasue optimal flow has to be close enough to the pseudoflow
 	
