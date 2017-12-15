@@ -860,7 +860,7 @@ summarized in Table~\ref{tab:improvements}.
 		First, a preliminary lemma. We denote the period between successive contraction
 		steps as an epoch.
 		\begin{lemma}
-		At any node $i \in V^-$, the deficit is at most one. Moreover, at most one augmentation
+		At any node $i \in \vsrc$, the deficit is at most one. Moreover, at most one augmentation
 		ends at such a node during any epoch.
 		\end{lemma}
 		\begin{proof}
@@ -869,7 +869,7 @@ summarized in Table~\ref{tab:improvements}.
 			the adjusted flow is computed with $nabla g_i^\mu \geq \lfloor \biu \rfloor$ everywhere.
 			
 			Between contractions, the deficit can be modified by scaling and augmentation steps.
-			Since $i \in V^-$, $\biu < 0$, and so $\biu$ can only decrease during scaling.
+			Since $i \in \vsrc$, $\biu < 0$, and so $\biu$ can only decrease during scaling.
 			Meanwhile, augmentations only decrease deficits.
 			Once $\nfiu \geq \biu$, no augmentation ending at $i$ will be contemplated unless $i$
 			experiences a deficit again. The only way for this to happen would be for
@@ -880,7 +880,14 @@ summarized in Table~\ref{tab:improvements}.
 			augmentations ending at $i$.
 		\end{proof}
 		
-		\begin{proof}[Proof of Lemma \ref{lem.num-aug}] \todo{Proof}	
+		\begin{proof}[Proof of Lemma \ref{lem.num-aug}]
+		Define two potential functions
+		\begin{align*}
+		\Psi(\mu) &= - \sum_{i \in \vsrc} \biu \\
+		\Phi(\mu) &= \sum_{i \in \vsrc} \nfiu + \Psi(\mu) = \sum_{i \in \vsrc} \nfiu - \biu
+		           \leq \Ex(\mu)
+		\end{align*}
+		\todo{complete proof}
 		\end{proof}
 
 
