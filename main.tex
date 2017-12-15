@@ -264,12 +264,14 @@
 	
 	An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
 	For an optimal pair $(f, \mu)$, complementary slackness is exactly the condition that
-	flow only flows along tight edges.
+	flow only flows along tight edges. We denote the set of all tight edges under
+	$\mu$, $\{\geu = 1\ \forall\ e  \in E\}$, as $\tau(\mu)$. \todo{check that
+	this is used consistently everywhere}
 	
 	Given flow values and labels, the total excess and deficit of the flow with respect
 	to the labels is defined as follows:
 	\begin{align*}
-	\Ex(f,\mu)  &\coloneqq \sum_{i \in V \setminus t} \max \{ \nfiu - \biu, 2 \} \\
+	\Ex(f,\mu)  &\coloneqq \sum_{i \in V \setminus t} \max \{ \nfiu - \biu, 0 \} \\
 	\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
 	\end{align*}
   
@@ -291,7 +293,7 @@
     to an ordinary maximum flow problem with demand constraint.
     
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing
-    the set of \emph{tight edges}---that is, the edges $e$ such that $\geu = 1$. Since regular maximum
+    the set of tight edges. Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
     algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
     is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
@@ -439,6 +441,7 @@
 	identify the highest gain augmenting paths on which to push flow. We define
 	$\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is
 	a feasible solution to (D) and all edges with positive flow are tight
+	\todo{no longer need to define tight}
 	(i.e. $\geu = 1$ if $f_{ij} > 0$ for $(i, j) \in E$). We define $R_i$ as
 	the total flow incoming to node i on non-tight arcs ($\geu < 1$). \todo{add intuition}
 	
@@ -668,6 +671,8 @@ summarized in Table~\ref{tab:improvements}.
 		constraints~(\ref{eq:dual}) or produces a plentiful node.
 		\end{enumerate}
 		\end{subroutine}
+
+		\todo{RE-WRITE AS DJIKSTRAS}
 		
 		Although it is not necessary in practice, for clarify of explanation, one can think of choosing the scaling factor $\alpha$ as solving
 		the following LP:
@@ -818,8 +823,11 @@ summarized in Table~\ref{tab:improvements}.
 		$$b^{\mu'}(X) = \frac{1}{\alpha}b^{\mu}(X \cap S) + b^{\mu}(X \setminus S)$$
 		If, as we assumed, $b^{\mu'}(X) > 0$, then either $b^{\mu}(X \cap S)$ or 
 		$b^{\mu}(X \setminus S)$ must be positive.
-		\todo{Fill in details. Isn't $S$ different for $\mu$ and $\mu'$?}
+		\todo{Fill in details. $\mu'$ is defined in terms of $S$.}
 		Now consider the set of edges coming into each of these subsets...
+		Any edge that's tight under $\mu'$ was tight under $\mu$, because $\geu$, if
+		it has no tight edges under $\mu'$ then it also had no tight edges under
+		$\mu$.
 		
 		Therefore, since neither of the two parts of $X$
 		have any tight incoming edges under $\mu$ and at least one of them
