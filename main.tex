@@ -58,7 +58,7 @@
 \DeclareMathOperator{\Def}{Def}
 
 \newcommand{\rewrite}[1]{\textcolor{red}{#1}}
-\newcommand{\todo}[1]{\hl{TODO: #1}}
+\newcommand{\todo}[1]{}%\hl{TODO: #1}
 
 \newcommand{\lpeq}[1] {
 \begin{equation*}
@@ -123,7 +123,7 @@
 	define the problem as a linear program and give an overview of the notation
 	used in the rest of the paper. In Section 3, we develop the key techniques
 	shared by both algorithms used to achieve a strongly polynomial bound for this
-	problem. In Section 4, we describe Végh's original $O(n^3m^2)$ strongly
+	problem. In Section 4, we describe Végh's original $O(n^3m^2 \log n)$ strongly
 	polynomial algorithm developed in 2014 and present a more intuitive and
 	detailed analysis than the original paper. In Section 5, we describe Olver and
 	Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key
@@ -411,18 +411,17 @@ This algorithm also extends the scaling technique in the FAT-PATH algorithm
    % The key ideas that lead to improvements in this algorithm, as compared to previous algorithms,
    % are summarized in Table~\ref{tab:improvementsInitial}.
     
-   This algorithm is the first strongly polynomial algorithm for generalized maximum flow and has a running time of $O(n^3 m^2)$. In this paper, we describe a simplified version of the algorithm with a runtime of $O(n^3 m^2 \log n)$, however, the $\log n$ term can be reduced by performing extra bookkeeping on flow values from previous iterations. This is explained in detail along with proofs of polynomially-bounded number sizes in Végh's full version of the paper~\cite{article}.
+   This algorithm is the first strongly polynomial algorithm for generalized maximum flow and has a running time of $O(n^3 m^2 \log n)$. In this section, we give an overview of the algorithm. In Section \ref{sec:tf}, \ref{sec:es}, and \ref{sec:filtration} we further explain the three main functions called in the algorithm. %This algorithm can be extended to  however, the $\log n$ term can be reduced by performing extra bookkeeping on flow values from previous iterations. This is explained in detail along with proofs of polynomially-bounded number sizes in Végh's full version of the paper~\cite{article}.
 	     
-	The algorithm starts with an initial feasible solution to (P).
-    The algorithm first runs a cycle-canceling algorithm on the initial feasible solution,
+	Given an initial feasible solution to (P), the algorithm first runs a cycle-canceling algorithm,
 		which gives a conservative labeling $\mu$ in strongly polynomial
 		time\todo{?}. The bulk of the
     work in the algorithm is spent identifying and contracting abundant edges. This continues
     until the graph is contracted to one node. Once an optimal solution, $\mu$, to (D)
     is found for the contracted graph, it can easily be transformed into an optimal solution to
     (D) for the original graph. This is done by reversing the contraction step (full details
-    are given in \cite{article}). \tf\ is then run one last time to convert the
-    optimal dual solution into an optimal solution to (P).
+    are given in \cite{article}). The optimal dual solution can then be converted into an optimal solution to (P) by running one max flow computation (\tf\ subroutine). %\tf\ is then run one last time to convert the
+    %optimal dual solution into an optimal solution to (P).
 	
 	While finding and contracting edges, the algorithm maintains several sets as defined below:
 	\begin{align*}
@@ -442,8 +441,7 @@ This algorithm also extends the scaling technique in the FAT-PATH algorithm
     can be pushed to, which allows augmentation. It is important to note that this last option
     can only be computed at most $n - 1$ times because once a node is in set $D$, it cannot leave.
     This is because the ratio $\abs{b_i^\mu} / \Delta$ is non-decreasing. Below is a high-level
-    overview of the set of decisions made at each iteration of the ``finding contractible edges''
-    part of the algorithm.
+    overview of the procedure used to find contractible edges:
     \todo{Use algorithm package if time}
 	\begin{align*}
 	&\text{IF $N \cap T \neq \varnothing$} \\
@@ -472,10 +470,10 @@ This algorithm also extends the scaling technique in the FAT-PATH algorithm
     negative upper bounds), then an error is returned. We present the main theorem
     given in \cite{Vegh2013} below and also transform their explanation of the
     subroutine into pseudocode for a more clear representation.
-	\begin{theorem}
-	If $\mu$ is an optimal solution to (D), then $\tf(V, \mu)$ returns an optimal solution to (P).
-    \todo{this theorem is verbatim from paper---another way to phrase it?}
-	\end{theorem}
+	%\begin{theorem}
+	%If $\mu$ is an optimal solution to (D), then $\tf(V, \mu)$ returns an optimal solution to (P).
+    %\todo{this theorem is verbatim from paper---another way to phrase it?}
+	%\end{theorem}
 	\todo{proof?}
 
 	\begin{align*}
@@ -531,11 +529,9 @@ This algorithm also extends the scaling technique in the FAT-PATH algorithm
 
 \section{A Faster Strongly Polynomial Algorithm}\label{sec:2017}
 
-The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} takes the same overall approach as the original algorithm~\cite{Vegh2013}, but introduces several key relaxations, outlined below, that improve the running time by a factor of almost $O(n^2)$. 
-In this section, 
-In this section, we will give an overview and analysis of their algorithm. We will also
-provide a more clear distinction between the previous techniques used and the new insights
-provided by this algorithm (and why they matter). %A highlight of the difficulties in
+The most recent strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} takes the same overall approach as the original algorithm~\cite{Vegh2013}, but introduces several key ideas that improve the running time by a factor of almost $O(n^2)$. 
+In this section, we describe the algorithm, tying core ideas back to previous work, and highlighting and providing intuition for the novel ideas the contribute to the improved running time. 
+ %A highlight of the difficulties in
 %previous algorithms and the subsequent solutions from this algorithm are
 %summarized in Table~\ref{tab:improvements}.
 
@@ -579,7 +575,7 @@ provided by this algorithm (and why they matter). %A highlight of the difficulti
 	
 	%%% TEMP %%%
     
-    \subsection{Introduction}\label{sec:2017-intro}
+    %\label{sec:2017-intro}
     As in the initial strongly polynomial generalized flow algorithm, this algorithm makes progress by
     identifying contractible edges and then contracting them until a dual optimal
     solution is found. Each contraction collapses one vertex, so only $n$ contractions
@@ -722,7 +718,8 @@ provided by this algorithm (and why they matter). %A highlight of the difficulti
 
     Prior work used scaling to directly produce flows with ``abundant edges.''
     A key novelty in this algorithm is to relax the problem further by maintaining
-    a flow which serves only as an upper bound, and to use v
+    a flow which serves only as an upper bound, and to use vertex demand as a certificate
+    for edge contractibility:
     \begin{definition}
     A node $i$ is \textbf{plentiful} with respect
     to the current primal-dual solution pair $(f,u)$ if its scaled absolute
@@ -734,7 +731,7 @@ provided by this algorithm (and why they matter). %A highlight of the difficulti
     that will keep our algorithm strongly polynomial because we will be iteratively
     re-scaling the node demands until one of them satisfies this property.
 
-    \begin{theorem} Assume $\mu$ from the fitting pair $(f,\mu)$ is safe.
+    \begin{theorem} Assume $(f, \mu)$ is a fitting pair with $\mu$ safe.
     Then the existence of a plentiful node $i$ ensures
     that there exists a contractible edge $e$ incident to $i$.
     \end{theorem}
@@ -755,29 +752,28 @@ provided by this algorithm (and why they matter). %A highlight of the difficulti
     }
     \end{figure}
 
-    \subsection{Subroutine: Producing Plentiful Nodes}
+    \subsection{Scaling and Augmentation}
     \label{sec:sub-ppn}
-
-    \begin{subroutine}
-    For an input fitting pair $(f,u)$ without a plentiful node,
-    continue executing the following two steps until at least one node becomes
-    plentiful.
-    \begin{enumerate}
-    \item First, improve the primal solution by augmenting as much flow as possible,
-    one unit at a time, along tight edges in the residual graph 
-    from nodes with excess to either nodes with deficit, or the sink.
-    It only augments along tight edges \rewrite{because}. Formally, let
+	The algorithm starts with a feasible fitting pair and consists of a sequence
+    of epochs, each dedicated to identifying a contractible edge via a plentiful node.
+    Each epoch alternates between the following augmentation and scaling phases:
+    \begin{itemize}
+    \item \textbf{Augmentation:} Reduce the total excess and deficit of the fitting flow $f$
+    by augmenting one unit of flow at a time along tight paths. Formally, let
     $D$ (``destinations'') be the union of the sink $t$ and all nodes with 
-    deficit ($\nabla f_i^{\mu} < b_i^{\mu}$), and let $S$ (``sources'') be
-    the set of all nodes that both have excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$)
-    and have a tight path in the residual graph to a node in $D$, then
-    continue augmenting until $S$ is empty.
-    \item Once it is not possible to augment any more flow, the second step scales down
+    deficit ($\nabla f_i^{\mu} < b_i^{\mu}$). Let $S$ (``sources'') be
+    the set of all nodes $i$ for which
+    \begin{enumerate}[(i)]
+    \item the excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$);
+    \item $D$ is reachable from $i$ along a tight path in the residual graph; and
+    \item $b_i < 0$ (this condition is important in the potential analysis).
+    \end{enumerate}
+    Augment until $S$ is empty.
+    \item \textbf{Scaling:} Once it is not possible to augment any more flow, the second step scales down
     the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$,
     which is chosen to be the largest value that \rewrite{does not violate} any of the dual
     constraints~(\ref{eq:dual}) or produces a plentiful node.
-    \end{enumerate}
-    \end{subroutine}
+    \end{itemize}
 
     \todo{RE-WRITE AS DJIKSTRAS}
 
