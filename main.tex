@@ -241,8 +241,8 @@
     \end{alignat*}
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
-	optimal labelings. Complementary
-	slackness requires that for an optimal flow $f^*$ and labeling $\mu^*$,
+	optimal labelings. As long as the sink is reachable from every vertex, $\mu$ will be finite.
+	Complementary slackness requires that for an optimal flow $f^*$ and labeling $\mu^*$,
 	any edge $(i, j)$ with flow on it ($f^*_{ij} > 0$) has $\gamma_{ij}\mu^*_i = \mu^*_j$.
 	This suggests a particular interpretation of the dual variables. Imagine that
 	the vertices represent currencies and the gains represent exchange rates between those currencies.
