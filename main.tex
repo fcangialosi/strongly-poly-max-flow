@@ -542,14 +542,14 @@
     overview of the set of decisions made at each iteration of the ``finding contractible edges''
     part of the algorithm.
 	\begin{align*}
-	&\text{IF N $\cap$ T $\neq$ $\emptyset$} \\
+	&\text{IF N $\cap$ T $\neq$ $\varnothing$} \\
 	&\quad \text{Push $\Delta$ units of relabeled flow along tight path from i $\in$ N to j $\in$ T} \\ 
 	&\quad \text{Update sets accordingly} \\
-	&\text{ELSE N $\cap$ T = $\emptyset$} \\
+	&\text{ELSE N $\cap$ T = $\varnothing$} \\
 	&\quad \text{IF $\exists$ tight path from i $\in$ T to j $\in$ V $\setminus$ T} \\
 	&\quad \quad \text{Add node j to T} \\
 	&\quad \text{ELSE} \\
-	&\quad \quad \text{IF (V $\setminus$ T) $\cap$ D = $\emptyset$} \\
+	&\quad \quad \text{IF (V $\setminus$ T) $\cap$ D = $\varnothing$} \\
 	&\quad \quad \quad \text{FILTRATION(V $\setminus$ T)} \\
 	&\quad \quad \text{ELEMENTARY-STEP(T)} 
 	\end{align*}
