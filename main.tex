@@ -191,38 +191,26 @@
 %		\rewrite{$\mu = \mu$}, we arrive at the formulation on the right,
 %		as given in~\cite{Olver2017}:
 %
-%		\hspace{0.5cm}
-%	\begin{minipage}{0.37\textwidth}
-%		\begin{align*}
-%		\text{max} \quad
-%		\mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
-%		\text{s.t.} \quad
-%		\mu_j &\geq \gamma_{ij}\mu_i \quad \forall ij \in E \\
-%		\mu_t &\in \R_{++} \\
-%		\mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
-%		\end{align*}  
-%	\end{minipage}
-%	$\xrightarrow{\hspace*{0.25cm}\mu=\mu\hspace*{0.25cm}}$\hfill
-%		\hspace{-1.35cm}
-%	\begin{minipage}{0.4\textwidth}
-%		\begin{align*}
-%		\text{max} \quad
-%		\mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
-%		\text{s.t.} \quad \tag{D}
-%		\mu_j &\geq \gamma_{ij}\mu_i \quad \forall ij \in E \\
-%		\mu_t &\in \R_{++} \\
-%		\mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
-%		\end{align*}  
-%	\end{minipage}
-    \begin{align*}\tag{D'}
+
+    \begin{align*}\tag{P}
     \text{max} \quad
     \nabla f_t& \\
     \text{s.t.} \quad
     \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
     f &\geq 0
     \end{align*}
-	The dual linear program has a variable $\eta_i$ for every vertex $i$,
-	\begin{alignat*}{3}\tag{P}
+
+	The dual linear program, given on the right below, has a variable $\eta_i$ for
+	every vertex $i$. 
+	Making the change of variables $\eta_i = - \mu_t / \mu_i$ yields the
+	dual optimization problem on the right.
+
+	\begin{tabular}{rcll}
+		\hspace*{-1.05cm}
+	\resizebox{0.37\textwidth}{!}{
+		\fbox{
+	\begin{minipage}{0.35\textwidth}
+	\begin{alignat*}{3}
     \text{min} &\quad &\sum_{i \in V \setminus t} b_i \eta_i \\
     \text{s.t.}
     &   &\gij \eta_j - \eta_i &\geq 0 \quad &&\forall\; (i, j) \in E[V \setminus t] \\
@@ -230,15 +218,26 @@
     &   &\eta_i &= -\gamma_{it} \quad       &&\forall\; (t, i) \in E \\
     &   &\eta_i &\leq 0 \quad               &&\forall\; i \in V \setminus t
     \end{alignat*}
-	Making the change of variables $\eta_i = - \mu_t / \mu_i$ yields the following
-	dual optimization problem
-    \begin{alignat*}{3}\tag{D}
+	\end{minipage}
+}
+} & 
+	$\xrightarrow{\hspace*{0.25cm}\eta_i = - \mu_t / \mu_i\hspace*{0.25cm}}$
+	&
+	\resizebox{0.37\textwidth}{!}{
+		\fbox{
+	\begin{minipage}{0.4\textwidth}
+    \begin{alignat*}{3}
     \text{max} &\quad &\mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
     \text{s.t.}
     &   &\gij \mu_i &\leq \mu_j \quad &&\forall\; (i, j) \in E \\
     &   &\mu_i &\in \R_{>0} \cup \infty \quad &&\forall\; i \in V \setminus t \\
     &   &\mu_t &\in \R_{>0}
     \end{alignat*}
+	\end{minipage}
+}
+} & \hspace*{0.4cm}(D)
+\end{tabular}
+
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
 	optimal labelings. As long as the sink is reachable from every vertex, $\mu$ will be finite.
