@@ -291,7 +291,7 @@
       %      * Is maintaining solution that is "close enough to feasible primal" with complementary slackness unique to this algorithm?
       %      * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
             
-	The algorithm \todo{explain which algorithm(s)} solves the primal generalized flow problem by first solving the dual problem.
+	The algorithm \todo{how about "both"?} solves the primal generalized flow problem by first solving the dual problem.
     A solution to the dual problem specifies, by complementary slackness, the edges on which an optimal
     primal solution may send flow. Moreover, applying the dual labels regularizes the problem, reducing
     it to an ordinary circulation problem. Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
@@ -341,8 +341,9 @@
 	Suppose we had any flow $g$, and we could bound the difference between $g$ and an optimal
 	flow $f^*$. Then if $g$ had a sufficiently large value on some edge $e$, we would know that
 	$f^*_e \neq 0$.
-	
-	In fact, the algorithm \todo{specify which algorithm (same as before)?} goes one step further. Instead of maintaining a feasible flow
+
+	\todo{We have not described what fitting is}
+	In fact, the algorithm goes one step further. Instead of maintaining a feasible flow
 	fitting the dual solution $\mu$, it maintains a ``pseudoflow'' along with a guarantee
 	that there is a feasible flow also fitting $\mu$. In order for this to work, $\mu$
 	must be such that a feasible flow fitting it exists, even if that flow is never
@@ -373,7 +374,7 @@
 			T^+ &= \{i \in V \mid \nfiu > \biu \} \\
 			T^- &= \{i \in V \mid \nfiu < \biu \}.
 		\end{align*}
-		Consider the residual graph of $f$ in the tight graph. If there were a path
+		Consider the residual graph of $f$ in the \rewrite{tight graph}. If there were a path
 		connecting $T^+$ to $T^-$, then we could augment along the path
 		to reduce the total deficit. Therefore, there is no such path. Consider the
 		set $T$ of nodes from which $T^-$ is reachable along tight edges (including reverse edges).
@@ -397,10 +398,10 @@
     \[ \|(g^*)^\mu - g^\mu\|_\infty < \Ex(g, \mu) + \Def(g, \mu). \]
     \end{lemma}
     \begin{proof}
-    As $g$ fits $\mu$, $g$ is supported on the tight edges $E^\mu$. As
-    $\mu$ is safe, there is some feasible flow supported in $E^\mu$. We first
+			As $g$ fits $\mu$, $g$ is \rewrite{supported} on the tight edges $\tau(\mu)$. As
+			$\mu$ is safe, there is some feasible flow supported in $\tau(\mu)$. We first
     look for a feasible flow $\tilde{g}$ close to $g$. To that end, consider the
-    difference $f^\mu = \tilde{g}^\mu - g^\mu$, which is also supported in $E^\mu$.
+    difference $f^\mu = \tilde{g}^\mu - g^\mu$, which is also supported in $\tau(\mu)$.
     (If $f_{ij}$ are negative, we think of this as positive flow on the reverse edge $(j, i)$.)
     Now minimize $\|f^\mu\|_1$, the total volume of difference,
     among all feasible fitting flows $\tilde{g}$. Adding cycles only increases $\|f^\mu\|_1$.
@@ -1013,26 +1014,12 @@ summarized in Table~\ref{tab:improvements}.
 		\end{proof}
 
 
-	\subsection{Contraction}
-
-	Once we have produced a plentiful node, finding a contractible edge is straightforward. 
-
-	The purpose of contraction is that it reduces the size of the graph by one node,
-	which puts a strongly polynomial bound of $n$ on the number of contraction
-	operations.
-	\subsection{Expand to Original}
-	\subsection{Compute Primal}
-	\subsection{Amortized Analysis}
-
-
 \section{Discussion and Future Work}
 
 	\subsection{Non-triviality of a strongly polynomial algorithm}
 
 	\todo{Explain} why applying ideas from strongly polynomial algorithms for
 	min-cost flow was not straightforward. 
-
-
 
 \setlength{\bibitemsep}{0pt}
 \nocite{*}
