@@ -242,7 +242,7 @@
 
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
-	optimal labelings. As long as the sink is reachable from every vertex, $\mu$ will be finite.
+	optimal labelings. \rewrite{We make the assumption} that the sink is reachable from every vertex, ensuring $\mu$ will be finite.
 	Complementary slackness requires that for an optimal flow $f^*$ and labeling $\mu^*$,
 	any edge $(i, j)$ with flow on it ($f^*_{ij} > 0$) has $\gamma_{ij}\mu^*_i = \mu^*_j$.
 	This suggests a particular interpretation of the dual variables. Imagine that
@@ -335,7 +335,7 @@
 	flow $f^*$. Then if $g$ had a sufficiently large value on some edge $e$, we would know that
 	$f^*_e \neq 0$.
 	
-	In fact, the algorithm goes one step further. Instead of maintaining a feasible flow
+	In fact, the algorithm \todo{specify which algorithm (same as before)?} goes one step further. Instead of maintaining a feasible flow
 	fitting the dual solution $\mu$, it maintains a ``pseudoflow'' along with a guarantee
 	that there is a feasible flow also fitting $\mu$. In order for this to work, $\mu$
 	must be such that a feasible flow fitting it exists, even if that flow is never
@@ -344,8 +344,8 @@
 	the exposition, we define 
 	\begin{definition}
 		Given dual labels $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ such that
-		$\din(S) \cap E^\mu = \varnothing$. An \textbf{outward-loose cut}
-		is such that $\dout(S) \cap E^\mu = \varnothing$. A \textbf{bi-loose cut}
+		$\din(S) \cap \tau(\mu) = \varnothing$. An \textbf{outward-loose cut}
+		is such that $\dout(S) \cap \tau(\mu) = \varnothing$. A \textbf{bi-loose cut}
 		is both inward- and outward-loose.
 	\end{definition}
 	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts.
@@ -437,7 +437,7 @@
 
 \section{The Initial Strongly Polynomial Algorithm}
 	\subsection{Introduced Notations and Concepts}
-	The initial strongly polynomial algorithm introduced by Végh \cite{Vegh2013}
+	Végh's initial strongly polynomial algorithm \cite{Vegh2013}
 	introduces the notion of a \textit{conservative labeling}, which helps to
 	identify the highest gain augmenting paths on which to push flow.
 	\begin{definition}
@@ -447,18 +447,25 @@
 	We define $R_i$ as the total flow incoming to node $i$ on non-tight edges
 	($\geu < 1$). \todo{add intuition}
 	
-	This algorithm uses a scaling-type technique with scale factor $\Delta$.
-	For $\Delta \geq 0$, a $\Delta$-fat graph is defined as a graph containing all
-	forward edges ij and the reverse edges ji such that $f_{ij}^\mu > \Delta$. $\mu$
-	is a $\Delta$-conservative labeling for f, or alternatively $(f, \mu)$ are a
-	$\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight edges ij,
-	(ii) $\mu_t$ = 1, and (iii) $\mu_i > 0, e_i \geq R_i \quad \forall i \in V -t$.
-	The scaling algorithm aims to identify $\textit{contractible}$ edges \cite{Orlin1988},
-	edges that are tight in every optimal dual solution, in a strongly polynomial number of steps.
-	We denote contractible edges as \emph{abundant} and define these edges as having
-	$f_{ij}^\mu \geq 17m\Delta$. Once the algorithm identifies an abundant edge,
+	This algorithm employs scaling parametrized by a factor $\Delta$.
+	For $\Delta \geq 0$, the $\Delta$-fat graph is defined as a graph containing all
+	forward edges $(i, j)$ and the reverse edges $(j, i)$ such that $f_{ij}^\mu > \Delta$. $\mu$
+	is a $\Delta$-conservative labeling for $f$, or alternatively $(f, \mu)$ are a
+	$\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight edges $(i, j)$;
+	(ii) $\mu_t = 1$; and (iii) $\mu_i > 0, e_i \geq R_i$ for all $i \in V \setminus t$.
+    
+	The scaling algorithm aims to identify \emph{contractible} edges,
+	edges that are tight in every optimal dual solution,
+    in a strongly polynomial number of steps. This technique was
+    originally developed to study the minimum cost flow problem (\emph{cf.}~\cite{Orlin1988}).
+	Lemma \ref{lem.contractibility} suggests that a large flow value along an edge can
+    serve as a certificate of contractibility. To that end, we define
+    \begin{definition}
+    An edge $(i, j)$ is \textbf{abundant} at scale $\Delta$ if $f_{ij}^\mu \geq 17m\Delta$.
+    \end{definition}
+	Once the algorithm identifies an abundant edge,
 	it can contract the edge and reduce the size of the graph. The algorithm
-	terminates once the graph reduces to one node; this allows us to give a
+	terminates once the graph reduces to one node; this leads to a
 	strongly polynomial bound on the number of iterations of this algorithm.
 
 	\subsection{Algorithm Overview} 
@@ -476,21 +483,64 @@
 	\caption{Key Improvements On Previous Algorithms}
 	\label{tab:improvementsInitial}
 	\end{table}
-	This algorithm extends the scaling technique in the FAT-PATH algorithm \cite{Goldberg:1991:CAG:105014.105022} by introducing \textit{continuous scaling}. The key ideas that lead to improvements in this algorithm, as compared to previous algorithms, are summarized in Table~\ref{tab:improvementsInitial}. At a high-level, the continuous scaling method either (i) pushes $\Delta$ units of flow along a tight path from high relabeled excess nodes to low relabeled excess nodes (including the sink) or (ii) increases certain labels and decreases $\Delta$ by the same factor $\alpha$. Unlike previous scaling methods used for the generalized flow problem, this algorithm does not have distinct $\Delta$-phases; instead, $\Delta$ is updated continuously. This method is more adaptive and prevents "over-shooting" when relabeling (i.e. increasing the labels too much in comparison to the $\Delta$ value such that relabeled flow values never allow edges to be abundant). The algorithm also introduces $\Delta$-feasible pairs, which are defined in the previous section. As $\Delta$ changes, the algorithm maintains a $\Delta$-feasible pair, which ensures that there is a "reachable" feasible solution to (P). By definition, if (f,$\mu$) is a $\Delta$-feasible pair and the flow on non-tight edges is set to zero, then the resulting flow is a feasible solution to (P) with no flow generating cycles. Given this, the algorithm only needs to run a cycle-canceling algorithm once on the initial solution and then feasibility is maintained throughout the rest of the algorithm. \todo{explain why we can't have flow generating cycles in feasible solution (or is this self-explanatory?)}. The overall runtime of this algorithm as explained in this paper is O(n$^3$m$^2$logn); however, this runtime can be decreased by a factor of log(n) by performing extra bookkeeping on flow values from previous iterations. This is explained in detail along with proofs of polynomially-bounded number sizes in Végh's full version of the paper \cite{article}. Section 4.3 explains the overall continuous scaling concepts in more detail and Sections 4.4-4.6 analyze the three main subroutines used in this algorithm. A further improved strongly polynomial algorithm is explained in Section 5.
+	This algorithm extends the scaling technique in the FAT-PATH algorithm
+    \cite{Goldberg:1991:CAG:105014.105022} by introducing \textit{continuous scaling}.
+    The key ideas that lead to improvements in this algorithm, as compared to previous algorithms,
+    are summarized in Table~\ref{tab:improvementsInitial}.
+    
+    At a high-level, the continuous scaling
+    method alternately (i) augments $\Delta$ units of flow along a tight path from high
+    excess nodes to low excess nodes (including the sink) or (ii) proportionately increases $\mu$ and
+    decreases $\Delta$. Unlike previous scaling methods used for the generalized flow problem,
+    this algorithm does not have distinct $\Delta$-phases; instead, $\Delta$ is updated continuously.
+    
+    As $\Delta$ and $\mu$ are always scaled coherently, their relative magnitude will stay bounded.
+    This addresses an ``over-shooting'' problem common in previous scaling algorithms in which $\Delta$
+    increases too quickly relative to $f^\mu$ to guarantee abundant edges.
+    
+    As $\Delta$ changes, the algorithm maintains a $\Delta$-feasible pair, which ensures that there is
+    a ``reachable'' feasible solution to (P). If $(f,\mu)$ is a $\Delta$-feasible pair,
+    setting the flow on non-tight edges to zero yields a feasible pair.
+    Given this, the algorithm only needs to run a cycle-canceling
+    algorithm once on the initial solution and then feasibility is maintained throughout the rest of
+    the algorithm. The overall runtime of this algorithm as explained in this
+    paper is $O(n^3 m^2 \log n)$; however, this runtime can be decreased by a factor of $\log n$
+    by performing extra bookkeeping on flow values from previous iterations.
+    This is explained in detail along with proofs of polynomially-bounded number sizes
+    in Végh's full version of the paper~\cite{article}. Section 4.3 explains
+    the overall continuous scaling concepts in more detail and Sections
+    4.4-4.6 analyze the three main subroutines used in this algorithm.
 	 
 	\subsection{Continuous Scaling Details}
-	The continuous scaling algorithm makes the following assumptions: (i) every node i $\in$ V-t has an edge it and (ii) the algorithm starts with an initial feasible solution to (P). \todo{ok to say that the proofs of why the assumptions are ok are in the paper?}. The algorithm first runs a cycle-canceling algorithm on the initial feasible solution, which gives a conservative labeling $\mu$ in strongly polynomial time. The bulk of the work in the algorithm is spent identifying and contracting abundant edges. This continues until the graph is contracted to one node. Once an optimal solution, $\mu$, to (D) is found for the contracted graph, it can easily be transformed into an optimal solution to (D) for the original graph. This is done by reversing the contraction step (full details are given in \cite{article}). Tight-flow is then run one last time to convert the optimal dual solution into an optimal solution to (P).
+	The algorithm starts with an initial feasible solution to (P).
+    The algorithm first runs a cycle-canceling algorithm on the initial feasible solution,
+    which gives a conservative labeling $\mu$ in strongly polynomial time. The bulk of the
+    work in the algorithm is spent identifying and contracting abundant edges. This continues
+    until the graph is contracted to one node. Once an optimal solution, $\mu$, to (D)
+    is found for the contracted graph, it can easily be transformed into an optimal solution to
+    (D) for the original graph. This is done by reversing the contraction step (full details
+    are given in \cite{article}). \textsc{Tight-Flow} is then run one last time to convert the
+    optimal dual solution into an optimal solution to (P).
 	
 	While finding and contracting edges, the algorithm maintains several sets as defined below:
-	
 	\begin{align*}
-	&\text{N: set containing sink and ``low relabeled excess'' nodes with e$_i^\mu <$ (d$_i$+1)$\Delta$} \\
-	&\text{T$_0$: set of ``high relabeled excess'' nodes with e$_i^\mu \geq$ (d$_i$+2)$\Delta$} \\
-	&\text{T: set of nodes reachable on a tight path from T$_0$ in $\Delta$-fat graph} \\ 
-	&\text{D: set of nodes i $\in$ V -t with $\abs{b_i^\mu} \geq \frac{\Delta}{n}$}
+	N&\text{: set containing sink and ``low relabeled excess'' nodes with } e_i^\mu < (d_i +1)\Delta \\
+	T_0&\text{: set of ``high relabeled excess'' nodes with } e_i^\mu \geq (d_i + 2)\Delta \\
+	T&\text{: set of nodes reachable on a tight path from $T_0$ in $\Delta$-fat graph} \\ 
+	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
 	
-	On each iteration, the algorithm augments along a tight path if possible. Otherwise, if there are no tight paths between nodes of high excess and nodes of low excess, the algorithm checks if there are tight paths connecting high excess nodes to nodes not included in sets T or S; if so, a node along this tight path is added to set T. If the algorithm cannot push flow or expand the "frontier", then filtration is called to reduce the excess of relatively isolated nodes. This is useful because it expands the set of "low excess" nodes that flow can be pushed to, which allows augmentation. It is important to note that this last option can only be computed at most n-1 times because once a node is in set D, it cannot leave. This is because the ratio $\frac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing. Below is a high-level overview of the set of decisions made at each iteration of the "finding contractible edges" part of the algorithm.
+	On each iteration, the algorithm augments along a tight path if possible. Otherwise, if there
+    are no tight paths between nodes of high excess and nodes of low excess, the algorithm checks
+    if there are tight paths connecting high excess nodes to nodes not included in sets $T$ or $N$;
+    if so, a node along this tight path is added to set $T$. If the algorithm cannot push flow
+    or expand the ``frontier'', then filtration is called to reduce the excess of relatively
+    isolated nodes. This is useful because it expands the set of ``low excess'' nodes that flow
+    can be pushed to, which allows augmentation. It is important to note that this last option
+    can only be computed at most $n - 1$ times because once a node is in set $D$, it cannot leave.
+    This is because the ratio $\abs{b_i^\mu} / \Delta$ is non-decreasing. Below is a high-level
+    overview of the set of decisions made at each iteration of the ``finding contractible edges''
+    part of the algorithm.
 	\begin{align*}
 	&\text{IF N $\cap$ T $\neq$ $\emptyset$} \\
 	&\quad \text{Push $\Delta$ units of relabeled flow along tight path from i $\in$ N to j $\in$ T} \\ 
