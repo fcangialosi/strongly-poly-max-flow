@@ -793,13 +793,15 @@ summarized in Table~\ref{tab:improvements}.
 		\end{lemma}
 		\begin{proof}
 			In order to be a fitting pair, we must have the following relationship between
-			$f$ and $\mu$: when $f_{ij} > 0$, $u_i \le \gij u_j$, and when $f_{ij} = 0$, 
-			$u_i = \gij u_j$. 
+			$f$ and $\mu$: for all $(i, j) \in E$, $\giij \leq 1$, and when $f_{ij} > 0$, 
+			$\giij = 1$. \todo{This is a definition, not a proof.}
 		\end{proof}
+		
 		\begin{lemma}
 			The rescaling of $\mu$ during produce-plentiful-node does not break 
-			the safety of $\mu$, i.e. that there is a corresponding feasible primal
-			solution even though we haven't kept track of it (~\ref{lem:usafe}).
+			the safety of $\mu$, i.e. there is a corresponding feasible primal
+			solution even though we haven't kept track of it.
+			\todo{Why is this here:} (~\ref{lem:usafe})
 		\end{lemma}
 		\begin{proof}
 		The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
@@ -849,11 +851,16 @@ summarized in Table~\ref{tab:improvements}.
 		algorithm with costs $-\log \gamma^u_e$. The loose cut $S$ corresponds to the expanding
 		frontier of Dijkstra's algorithm.
 		
+		It remains to bound the total number of augmentations the algorithm may perform. We'd
+		like to show that after a strongly polynomial number of augmentations, the algorithm
+		is guaranteed to find a plentiful node.
 		
-		
-		We now leverage potential analysis to derive an upper bound on the amount of work required for the subroutine introduced in Section~\ref{sec:sub-ppn} to terminate, showing that it is strongly polynomial, and confirming the analysis found in the paper. 
-		
-		\todo{Proof}
+		\begin{lemma}
+			After $O(mn)$ augmentations, the algorithm is guaranteed to find a plentiful node.
+		\end{lemma}
+		\begin{proof} \todo{Proof}	
+		\end{proof}
+
 
 	\subsection{Contraction}
 
