@@ -130,7 +130,6 @@
 \section{Preliminaries}
 
 	\subsection{Network Notation}
-
 	%An instance of the generalized flow problem is specified as	
 	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$,
 	$t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
@@ -177,7 +176,8 @@
 	\subsection{Linear Program Formulation}
 	\label{sec:lp}
 
-	We formulate the generalized flow maximization problem with demands as in the 2017 paper~\cite{Olver2017}:
+	We formulate the generalized flow maximization problem with demands as in the 2017
+	paper~\cite{Olver2017}:
 	\vspace{-0.35cm}
 %		\begin{align*}
 %		\text{max} \quad
@@ -214,13 +214,13 @@
 %		\mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
 %		\end{align*}  
 %	\end{minipage}
-        \begin{align*}\tag{P}
-        \text{max} \quad
-        \nabla f_t& \\
-        \text{s.t.} \quad
-        \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
-        f &\geq 0
-        \end{align*}f
+    \begin{align*}\tag{P}
+    \text{max} \quad
+    \nabla f_t& \\
+    \text{s.t.} \quad
+    \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
+    f &\geq 0
+    \end{align*}f
 	The dual linear program has a variable $\eta_i$ for every vertex $i$,
 	\begin{alignat*}{3}\tag{P}
     \text{min} &\quad &\sum_{i \in V \setminus t} b_i \eta_i \\
@@ -241,38 +241,38 @@
     \end{alignat*}
     where $\R_{++}$ denotes the positive real numbers.
         
-A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
-optimal labelings. Complementary
-slackness requires that for an optimal flow $f^*$ and labeling $\mu^*$,
-any edge $(i, j)$ with flow on it ($f^*_{ij} > 0$) has $\gamma_{ij}\mu^*_i = \mu^*_j$.
-This suggests a particular interpretation of the dual variables. Imagine that
-the vertices represent currencies and the gains represent exchange rates between those currencies.
-A maximum generalized flow is the currency trading strategy that maximizes the value in currency
-$t$ at the end. We can interpret a label $\mu_i$ as the value of one dollar in currency $i$.
-The dual constraint $\gamma_{ij} \mu_i \leq \mu_j$ means that under the labeling $\mu$,
-it is not possible to create value by converting currencies.
-The complementary slackness condition means that the currency trading strategy
-only makes use of the best exchange rates, those that exactly preserve value.
-
-Given a dual solution, we can transform the gains and demands to obtain a new
-problem instance. Given a feasible flow, we can also transform the flow values
-so that they will be feasible for the transformed instance:
-\[ f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
-\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \quad
-\gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
-b_i^\mu \coloneqq \frac{b_i}{\mu_i} \]
-The transformed problem is equivalent to the original problem.
-
-An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
-For an optimal pair $(f, \mu)$, complementary slackness is exactly the condition that
-flow only flows along tight edges.
-
-Given flow values and labels, the total excess and deficit of the flow with respect
-to the labels is defined as follows:
-\begin{align*}
-\Ex(f,\mu)  &\coloneqq \sum_{i \in V \setminus t} \max \{ \nfiu - \biu, 2 \} \\
-\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
-\end{align*}
+	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
+	optimal labelings. Complementary
+	slackness requires that for an optimal flow $f^*$ and labeling $\mu^*$,
+	any edge $(i, j)$ with flow on it ($f^*_{ij} > 0$) has $\gamma_{ij}\mu^*_i = \mu^*_j$.
+	This suggests a particular interpretation of the dual variables. Imagine that
+	the vertices represent currencies and the gains represent exchange rates between those currencies.
+	A maximum generalized flow is the currency trading strategy that maximizes the value in currency
+	$t$ at the end. We can interpret a label $\mu_i$ as the value of one dollar in currency $i$.
+	The dual constraint $\gamma_{ij} \mu_i \leq \mu_j$ means that under the labeling $\mu$,
+	it is not possible to create value by converting currencies.
+	The complementary slackness condition means that the currency trading strategy
+	only makes use of the best exchange rates, those that exactly preserve value.
+	
+	Given a dual solution, we can transform the gains and demands to obtain a new
+	problem instance. Given a feasible flow, we can also transform the flow values
+	so that they will be feasible for the transformed instance:
+	\[ f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
+	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \quad
+	\gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
+	b_i^\mu \coloneqq \frac{b_i}{\mu_i} \]
+	The transformed problem is equivalent to the original problem.
+	
+	An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
+	For an optimal pair $(f, \mu)$, complementary slackness is exactly the condition that
+	flow only flows along tight edges.
+	
+	Given flow values and labels, the total excess and deficit of the flow with respect
+	to the labels is defined as follows:
+	\begin{align*}
+	\Ex(f,\mu)  &\coloneqq \sum_{i \in V \setminus t} \max \{ \nfiu - \biu, 2 \} \\
+	\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
+	\end{align*}
   
 \section{Motivating Ideas and Techniques}
 	\subsection{Solving Dual}
@@ -434,86 +434,112 @@ to the labels is defined as follows:
 	
 
 \section{The Initial Strongly Polynomial Algorithm}
-\subsection{Introduced Notations and Concepts}
-The initial strongly polynomial algorithm introduced by Végh \cite{Vegh2013} introduces the notion of a \textit{conservative labeling}, which helps to identify the highest gain augmenting paths on which to push flow. We define $\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is a feasible solution to (D) and all edges with positive flow are tight (i.e. $\geu = 1$ if $f_{ij} > 0$ for $(i, j) \in E$). We define $R_i$ as the total flow incoming to node i on non-tight arcs ($\geu < 1$). \todo{add intuition}
+	\subsection{Introduced Notations and Concepts}
+	The initial strongly polynomial algorithm introduced by Végh \cite{Vegh2013}
+	introduces the notion of a \textit{conservative labeling}, which helps to
+	identify the highest gain augmenting paths on which to push flow. We define
+	$\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is
+	a feasible solution to (D) and all edges with positive flow are tight
+	(i.e. $\geu = 1$ if $f_{ij} > 0$ for $(i, j) \in E$). We define $R_i$ as
+	the total flow incoming to node i on non-tight arcs ($\geu < 1$). \todo{add intuition}
+	
+	This algorithm uses a scaling-type technique with scale factor $\Delta$.
+	For $\Delta \geq 0$, a $\Delta$-fat graph is defined as a graph containing all
+	forward edges ij and the reverse edges ji such that $f_{ij}^\mu > \Delta$. $\mu$
+	is a $\Delta$-conservative labeling for f, or alternatively $(f, \mu)$ are a
+	$\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight arcs ij,
+	(ii) $\mu_t$ = 1, and (iii) $\mu_i > 0, e_i \geq R_i \quad \forall i \in V -t$.
+	The scaling algorithm aims to identify $\textit{contractible}$ edges \cite{Orlin1988},
+	edges that are tight in every optimal dual solution, in a strongly polynomial number of steps.
+	We denote contractible edges as \emph{abundant} and define these edges as having
+	$f_{ij}^\mu \geq 17m\Delta$. Once the algorithm identifies an abundant arc,
+	it can contract the arc and reduce the size of the graph. The algorithm
+	terminates once the graph reduces to one node; this allows us to give a
+	strongly polynomial bound on the number of iterations of this algorithm.
 
-This algorithm uses a scaling-type technique with scale factor $\Delta$. For $\Delta \geq 0$, a $\Delta$-fat graph is defined as a graph containing all forward edges ij and the reverse edges ji such that $f_{ij}^\mu > \Delta$. $\mu$ is a $\Delta$-conservative labeling for f, or alternatively $(f, \mu)$ are a $\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight arcs ij, (ii) $\mu_t$ = 1, and (iii) $\mu_i > 0, e_i \geq R_i \quad \forall i \in V -t$. The scaling algorithm aims to identify $\textit{contractible}$ edges \cite{Orlin1988}, edges that are tight in every optimal dual solution, in a strongly polynomial number of steps. We denote contractible edges as \emph{abundant} and define these edges as having $f_{ij}^\mu \geq 17m\Delta$. Once the algorithm identifies an abundant arc, it can contract the arc and reduce the size of the graph. The algorithm terminates once the graph reduces to one node; this allows us to give a strongly polynomial bound on the number of iterations of this algorithm.
+	\subsection{Algorithm Overview} 
+	\begin{table}[H]
+	\begin{center}
+	    \begin{tabular}{ | p{7cm} | p{7cm} |}
+	    \hline
+	    Challenges in Previous Algorithms  & Solutions from Algorithm \\ \hline
+	    ``Abundant edge'' might not appear in strongly polynomial number of steps \cite{Radzik2004} & Continuous Scaling Method  \\ \hline
+	    Augmentation along highest gain paths introduce flow generating cycles; must run cycle-canceling algorithms in every scaling phase \cite{Goldberg:1991:CAG:105014.105022} & Maintain a $\Delta$-conservative pair, which guarantees feasible solution to (P); only need to run cycle-canceling once in initialization  \\ \hline
+	    ``Inflation'' in scaling algorithms; labels increase too much causing relabeled flow to be $\ll \Delta$. A new abundant arc may never appear. & Continuous scaling and Filtration subroutine \\
+	    \hline
+	    \end{tabular}
+	\end{center}
+	\caption{Key Improvements On Previous Algorithms}
+	\label{tab:improvementsInitial}
+	\end{table}
+	This algorithm extends the scaling technique in the FAT-PATH algorithm \cite{Goldberg:1991:CAG:105014.105022} by introducing \textit{continuous scaling}. The key ideas that lead to improvements in this algorithm, as compared to previous algorithms, are summarized in Table~\ref{tab:improvementsInitial}. At a high-level, the continuous scaling method either (i) pushes $\Delta$ units of flow along a tight path from high relabeled excess nodes to low relabeled excess nodes (including the sink) or (ii) increases certain labels and decreases $\Delta$ by the same factor $\alpha$. Unlike previous scaling methods used for the generalized flow problem, this algorithm does not have distinct $\Delta$-phases; instead, $\Delta$ is updated continuously. This method is more adaptive and prevents "over-shooting" when relabeling (i.e. increasing the labels too much in comparison to the $\Delta$ value such that relabeled flow values never allow arcs to be abundant). The algorithm also introduces $\Delta$-feasible pairs, which are defined in the previous section. As $\Delta$ changes, the algorithm maintains a $\Delta$-feasible pair, which ensures that there is a "reachable" feasible solution to (P). By definition, if (f,$\mu$) is a $\Delta$-feasible pair and the flow on non-tight arcs is set to zero, then the resulting flow is a feasible solution to (P) with no flow generating cycles. Given this, the algorithm only needs to run a cycle-canceling algorithm once on the initial solution and then feasibility is maintained throughout the rest of the algorithm. \todo{explain why we can't have flow generating cycles in feasible solution (or is this self-explanatory?)}. The overall runtime of this algorithm as explained in this paper is O(n$^3$m$^2$logn); however, this runtime can be decreased by a factor of log(n) by performing extra bookkeeping on flow values from previous iterations. This is explained in detail along with proofs of polynomially-bounded number sizes in Végh's full version of the paper \cite{article}. Section 4.3 explains the overall continuous scaling concepts in more detail and Sections 4.4-4.6 analyze the three main subroutines used in this algorithm. A further improved strongly polynomial algorithm is explained in Section 5.
+	 
+	\subsection{Continuous Scaling Details}
+	The continuous scaling algorithm makes the following assumptions: (i) every node i $\in$ V-t has an edge it and (ii) the algorithm starts with an initial feasible solution to (P). \todo{ok to say that the proofs of why the assumptions are ok are in the paper?}. The algorithm first runs a cycle-canceling algorithm on the initial feasible solution, which gives a conservative labeling $\mu$ in strongly polynomial time. The bulk of the work in the algorithm is spent identifying and contracting abundant arcs. This continues until the graph is contracted to one node. Once an optimal solution, $\mu$, to (D) is found for the contracted graph, it can easily be transformed into an optimal solution to (D) for the original graph. This is done by reversing the contraction step (full details are given in \cite{article}). Tight-flow is then run one last time to convert the optimal dual solution into an optimal solution to (P).
+	
+	While finding and contracting edges, the algorithm maintains several sets as defined below:
+	
+	\begin{align*}
+	&\text{N: set containing sink and ``low relabeled excess'' nodes with e$_i^\mu <$ (d$_i$+1)$\Delta$} \\
+	&\text{T$_0$: set of ``high relabeled excess'' nodes with e$_i^\mu \geq$ (d$_i$+2)$\Delta$} \\
+	&\text{T: set of nodes reachable on a tight path from T$_0$ in $\Delta$-fat graph} \\ 
+	&\text{D: set of nodes i $\in$ V -t with $\abs{b_i^\mu} \geq \frac{\Delta}{n}$}
+	\end{align*}
+	
+	On each iteration, the algorithm augments along a tight path if possible. Otherwise, if there are no tight paths between nodes of high excess and nodes of low excess, the algorithm checks if there are tight paths connecting high excess nodes to nodes not included in sets T or S; if so, a node along this tight path is added to set T. If the algorithm cannot push flow or expand the "frontier", then filtration is called to reduce the excess of relatively isolated nodes. This is useful because it expands the set of "low excess" nodes that flow can be pushed to, which allows augmentation. It is important to note that this last option can only be computed at most n-1 times because once a node is in set D, it cannot leave. This is because the ratio $\frac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing. Below is a high-level overview of the set of decisions made at each iteration of the "finding contractible arcs" part of the algorithm.
+	\begin{align*}
+	&\text{IF N $\cap$ T $\neq$ $\emptyset$} \\
+	&\quad \text{Push $\Delta$ units of relabeled flow along tight path from i $\in$ N to j $\in$ T} \\ 
+	&\quad \text{Update sets accordingly} \\
+	&\text{ELSE N $\cap$ T = $\emptyset$} \\
+	&\quad \text{IF $\exists$ tight path from i $\in$ T to j $\in$ V $\setminus$ T} \\
+	&\quad \quad \text{Add node j to T} \\
+	&\quad \text{ELSE} \\
+	&\quad \quad \text{IF (V $\setminus$ T) $\cap$ D = $\emptyset$} \\
+	&\quad \quad \quad \text{FILTRATION(V $\setminus$ T)} \\
+	&\quad \quad \text{ELEMENTARY-STEP(T)} 
+	\end{align*}
+	
+	At the end of each iteration, the algorithm checks if an abundant arc has identified (and if so, it is contracted) or if the termination condition has been met. Once this loop terminates, the graph is expanded and a final max flow computation is run to find the optimal solution to (P).
+	\subsection{Tight-Flow Subroutine}
+	The tight-flow subroutine is used at initialization to find initial feasible flow f and at termination to find an optimal solution to (P). It is also used in the Filtration subroutine (Section 4.6). This algorithm is essentially a standard maximum flow computation on the input set and an added source node. If the max flow computation is infeasible (due to the negative upper bounds), then an error is returned. We present the main theorem given in \cite{Vegh2013} below and also transform their explanation of the subroutine into pseudocode for a more clear representation.
+	\begin{theorem}
+	If $\mu$ is an optimal solution to (D), then Tight-Flow(V,$\mu$) returns an optimal solution to (P). \todo{this theorem is verbatim from paper-- another way to phrase it?}
+	\end{theorem}
+	
+	\begin{align*}
+	&\text{\textbf{Input:} Node set S $\subseteq$ V and labeling $\mu$ that is feasible solution to (D) wrt S} \\
+	&\text{\textbf{Output:} Flow f' such that $\mu$ restricted to S is a conservative labeling for f'} \\
+	&\text{Add source node s and edges si $\forall i \in$ S -t} \\
+	&\text{Set upper and lower bound capacities, u and l, as follows: } \\
+	&\quad \text{For all tight arcs ij: u$_{ij}$=$\infty$ and l$_{ij}$=0} \\
+	&\quad \text{For all arcs si: u$_{si}$=-b$_i^\mu$ and $l_{si}$=-$\infty$} \\
+	&\text{Run max flow x on node set S $\cup$ $\{$s$\}$ and the set of tight edges} \\
+	&\text{Return f' such that f'$_{ij}$ = x$_{ij}\mu_i$ if edge ij is tight and f'$_{ij}$ otherwise}
+	\end{align*}
+	
+	\subsection{Elementary Step Subroutine}
+	The elementary step subroutine is the relabeling step in which some value $\alpha > 1$ is used to decrease $\Delta$ and increase labels $\mu_i$ for $i \in T$. The lengthy explanation for how $\alpha$ is chosen can be found in \cite{article}; however, intuitively, the $\alpha$ chosen is maximized such that the modified pair (f',$\mu$') is $\Delta'$-feasible and the excess for each node remains within an upper bound (no inflation). In addition to $\Delta$ and the labels in set T, the flow on edges from V$\setminus$T to T and the flow on non-tight edges contained in V$\setminus$T are reduced by a factor of $\alpha$. Once all values have been rescaled by $\alpha$, the sets T and T$_0$ are modified accordingly.  
+	
+	\subsection{Filtration}
+	The filtration subroutine is used to ``clean up'' the set of nodes V $\setminus$ T if all of the nodes have a high amount of excess in comparison to the demand. The filtration algorithm reduces the relabeled excess of these nodes, which increases the number of ``low excess'' nodes to push flow to. The filtration algorithm runs tight-flow on V$\setminus$T, which returns a new flow f'. The flow values are modified as follows: 
+	\begin{align*}
+	&\text{Edges entering T: f$_{ij}$ = 0} \\ 
+	&\text{Edges leaving T: no change} \\
+	&\text{Edges contained in T: no change} \\
+	&\text{Edges contained in V$\setminus$T: f$_{ij}$ = f'$_{ij}$}
+	\end{align*}
+	
+	If these modifications reduce the excess of a node i enough to either remove i from set T$_0$ (i is no longer a high excess node) or add i to set N $\cap$ T (i is now a reachable low excess node), then the algorithm terminates and the next iteration of the ``finding a contractible arc'' is performed. Otherwise, the algorithm terminates and the elementary step routine is called to relabel.
 
-\subsection{Algorithm Overview} 
-\begin{table}[H]
-\begin{center}
-    \begin{tabular}{ | p{7cm} | p{7cm} |}
-    \hline
-    Challenges in Previous Algorithms  & Solutions from Algorithm \\ \hline
-    ``Abundant edge'' might not appear in strongly polynomial number of steps \cite{Radzik2004} & Continuous Scaling Method  \\ \hline
-    Augmentation along highest gain paths introduce flow generating cycles; must run cycle-canceling algorithms in every scaling phase \cite{Goldberg:1991:CAG:105014.105022} & Maintain a $\Delta$-conservative pair, which guarantees feasible solution to (P); only need to run cycle-canceling once in initialization  \\ \hline
-    ``Inflation'' in scaling algorithms; labels increase too much causing relabeled flow to be $\ll \Delta$. A new abundant arc may never appear. & Continuous scaling and Filtration subroutine \\
-    \hline
-    \end{tabular}
-\end{center}
-\caption{Key Improvements On Previous Algorithms}
-\label{tab:improvementsInitial}
-\end{table}
-This algorithm extends the scaling technique in the FAT-PATH algorithm \cite{Goldberg:1991:CAG:105014.105022} by introducing \textit{continuous scaling}. The key ideas that lead to improvements in this algorithm, as compared to previous algorithms, are summarized in Table~\ref{tab:improvementsInitial}. At a high-level, the continuous scaling method either (i) pushes $\Delta$ units of flow along a tight path from high relabeled excess nodes to low relabeled excess nodes (including the sink) or (ii) increases certain labels and decreases $\Delta$ by the same factor $\alpha$. Unlike previous scaling methods used for the generalized flow problem, this algorithm does not have distinct $\Delta$-phases; instead, $\Delta$ is updated continuously. This method is more adaptive and prevents "over-shooting" when relabeling (i.e. increasing the labels too much in comparison to the $\Delta$ value such that relabeled flow values never allow arcs to be abundant). The algorithm also introduces $\Delta$-feasible pairs, which are defined in the previous section. As $\Delta$ changes, the algorithm maintains a $\Delta$-feasible pair, which ensures that there is a "reachable" feasible solution to (P). By definition, if (f,$\mu$) is a $\Delta$-feasible pair and the flow on non-tight arcs is set to zero, then the resulting flow is a feasible solution to (P) with no flow generating cycles. Given this, the algorithm only needs to run a cycle-canceling algorithm once on the initial solution and then feasibility is maintained throughout the rest of the algorithm. \todo{explain why we can't have flow generating cycles in feasible solution (or is this self-explanatory?)}. The overall runtime of this algorithm as explained in this paper is O(n$^3$m$^2$logn); however, this runtime can be decreased by a factor of log(n) by performing extra bookkeeping on flow values from previous iterations. This is explained in detail along with proofs of polynomially-bounded number sizes in Végh's full version of the paper \cite{article}. Section 4.3 explains the overall continuous scaling concepts in more detail and Sections 4.4-4.6 analyze the three main subroutines used in this algorithm. A further improved strongly polynomial algorithm is explained in Section 5. 
-\subsection{Continuous Scaling Details}
-The continuous scaling algorithm makes the following assumptions: (i) every node i $\in$ V-t has an edge it and (ii) the algorithm starts with an initial feasible solution to (P). \todo{ok to say that the proofs of why the assumptions are ok are in the paper?}. The algorithm first runs a cycle-canceling algorithm on the initial feasible solution, which gives a conservative labeling $\mu$ in strongly polynomial time. The bulk of the work in the algorithm is spent identifying and contracting abundant arcs. This continues until the graph is contracted to one node. Once an optimal solution, $\mu$, to (D) is found for the contracted graph, it can easily be transformed into an optimal solution to (D) for the original graph. This is done by reversing the contraction step (full details are given in \cite{article}). Tight-flow is then run one last time to convert the optimal dual solution into an optimal solution to (P).
-
-While finding and contracting edges, the algorithm maintains several sets as defined below:
-
-\begin{align*}
-&\text{N: set containing sink and ``low relabeled excess'' nodes with e$_i^\mu <$ (d$_i$+1)$\Delta$} \\
-&\text{T$_0$: set of ``high relabeled excess'' nodes with e$_i^\mu \geq$ (d$_i$+2)$\Delta$} \\
-&\text{T: set of nodes reachable on a tight path from T$_0$ in $\Delta$-fat graph} \\ 
-&\text{D: set of nodes i $\in$ V -t with $\abs{b_i^\mu} \geq \frac{\Delta}{n}$}
-\end{align*}
-
-On each iteration, the algorithm augments along a tight path if possible. Otherwise, if there are no tight paths between nodes of high excess and nodes of low excess, the algorithm checks if there are tight paths connecting high excess nodes to nodes not included in sets T or S; if so, a node along this tight path is added to set T. If the algorithm cannot push flow or expand the "frontier", then filtration is called to reduce the excess of relatively isolated nodes. This is useful because it expands the set of "low excess" nodes that flow can be pushed to, which allows augmentation. It is important to note that this last option can only be computed at most n-1 times because once a node is in set D, it cannot leave. This is because the ratio $\frac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing. Below is a high-level overview of the set of decisions made at each iteration of the "finding contractible arcs" part of the algorithm.
-\begin{align*}
-&\text{IF N $\cap$ T $\neq$ $\emptyset$} \\
-&\quad \text{Push $\Delta$ units of relabeled flow along tight path from i $\in$ N to j $\in$ T} \\ 
-&\quad \text{Update sets accordingly} \\
-&\text{ELSE N $\cap$ T = $\emptyset$} \\
-&\quad \text{IF $\exists$ tight path from i $\in$ T to j $\in$ V $\setminus$ T} \\
-&\quad \quad \text{Add node j to T} \\
-&\quad \text{ELSE} \\
-&\quad \quad \text{IF (V $\setminus$ T) $\cap$ D = $\emptyset$} \\
-&\quad \quad \quad \text{FILTRATION(V $\setminus$ T)} \\
-&\quad \quad \text{ELEMENTARY-STEP(T)} 
-\end{align*}
-
-At the end of each iteration, the algorithm checks if an abundant arc has identified (and if so, it is contracted) or if the termination condition has been met. Once this loop terminates, the graph is expanded and a final max flow computation is run to find the optimal solution to (P).
-\subsection{Tight-Flow Subroutine}
-The tight-flow subroutine is used at initialization to find initial feasible flow f and at termination to find an optimal solution to (P). It is also used in the Filtration subroutine (Section 4.6). This algorithm is essentially a standard maximum flow computation on the input set and an added source node. If the max flow computation is infeasible (due to the negative upper bounds), then an error is returned. We present the main theorem given in \cite{Vegh2013} below and also transform their explanation of the subroutine into pseudocode for a more clear representation.
-\begin{theorem}
-If $\mu$ is an optimal solution to (D), then Tight-Flow(V,$\mu$) returns an optimal solution to (P). \todo{this theorem is verbatim from paper-- another way to phrase it?}
-\end{theorem}
-
-\begin{align*}
-&\text{\textbf{Input:} Node set S $\subseteq$ V and labeling $\mu$ that is feasible solution to (D) wrt S} \\
-&\text{\textbf{Output:} Flow f' such that $\mu$ restricted to S is a conservative labeling for f'} \\
-&\text{Add source node s and edges si $\forall i \in$ S -t} \\
-&\text{Set upper and lower bound capacities, u and l, as follows: } \\
-&\quad \text{For all tight arcs ij: u$_{ij}$=$\infty$ and l$_{ij}$=0} \\
-&\quad \text{For all arcs si: u$_{si}$=-b$_i^\mu$ and $l_{si}$=-$\infty$} \\
-&\text{Run max flow x on node set S $\cup$ $\{$s$\}$ and the set of tight edges} \\
-&\text{Return f' such that f'$_{ij}$ = x$_{ij}\mu_i$ if edge ij is tight and f'$_{ij}$ otherwise}
-\end{align*}
-
-\subsection{Elementary Step Subroutine}
-The elementary step subroutine is the relabeling step in which some value $\alpha > 1$ is used to decrease $\Delta$ and increase labels $\mu_i$ for $i \in T$. The lengthy explanation for how $\alpha$ is chosen can be found in \cite{article}; however, intuitively, the $\alpha$ chosen is maximized such that the modified pair (f',$\mu$') is $\Delta'$-feasible and the excess for each node remains within an upper bound (no inflation). In addition to $\Delta$ and the labels in set T, the flow on edges from V$\setminus$T to T and the flow on non-tight edges contained in V$\setminus$T are reduced by a factor of $\alpha$. Once all values have been rescaled by $\alpha$, the sets T and T$_0$ are modified accordingly.  
-
-\subsection{Filtration}
-The filtration subroutine is used to ``clean up'' the set of nodes V $\setminus$ T if all of the nodes have a high amount of excess in comparison to the demand. The filtration algorithm reduces the relabeled excess of these nodes, which increases the number of ``low excess'' nodes to push flow to. The filtration algorithm runs tight-flow on V$\setminus$T, which returns a new flow f'. The flow values are modified as follows: 
-\begin{align*}
-&\text{Edges entering T: f$_{ij}$ = 0} \\ 
-&\text{Edges leaving T: no change} \\
-&\text{Edges contained in T: no change} \\
-&\text{Edges contained in V$\setminus$T: f$_{ij}$ = f'$_{ij}$}
-\end{align*}
-
-If these modifications reduce the excess of a node i enough to either remove i from set T$_0$ (i is no longer a high excess node) or add i to set N $\cap$ T (i is now a reachable low excess node), then the algorithm terminates and the next iteration of the ``finding a contractible arc'' is performed. Otherwise, the algorithm terminates and the elementary step routine is called to relabel.
-
-\section{A Faster Strongly Polynomial Algorithm} The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} introduces several new conceptual ideas that combine the techniques and insight from Section 3. In this section, we will give an overview and analysis of their algorithm. We will also provide a more clear distinction between the previous techniques used and the new insights provided by this algorithm (and why they matter). A highlight of the difficulties in previous algorithms and the subsequent solutions from this algorithm are summarized in Table~\ref{tab:improvements}.
+\section{A Faster Strongly Polynomial Algorithm}
+The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017}
+introduces several new conceptual ideas that combine the techniques and insight from Section 3.
+In this section, we will give an overview and analysis of their algorithm. We will also
+provide a more clear distinction between the previous techniques used and the new insights
+provided by this algorithm (and why they matter). A highlight of the difficulties in
+previous algorithms and the subsequent solutions from this algorithm are
+summarized in Table~\ref{tab:improvements}.
 
 \begin{table}[H]
 \begin{center}
@@ -531,298 +557,300 @@ If these modifications reduce the excess of a node i enough to either remove i f
 \caption{Key Improvements of New Algorithm}
 \label{tab:improvements}
 \end{table}
+
     \subsection{Additional Notation and Concepts}
-At each iteration of the algorithm we ensure that we have a \textbf{fitting pair}
-of primal and dual solutions $(f,u)$---that is, that $\mu$ is a feasible dual solution,
-and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. Note: $f$ is
-\emph{not} required to be a feasible primal solution. This definition is thus a relaxation of the
-conservative labeling from Section 4.1.
-
-The fitting condition mimics complementary
-slackness for optimal pairs and allows $f^\mu$ to be viewed as a regular flow
-on the tight subgraph. The algorithm can then avail itself of the previously developed
-strongly polynomial tools for manipulating regular flows.
-\todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.}
-Rather than going through extra work of maintaining a feasible $f$ at each step,
-the algorithm ensures that a feasible $f$ fitting $\mu$ \textit{exists} by preserving the
-``safety property'' (\emph{cf.} Lemma \ref{lem.safety}). 
-
-%%% TEMP %%% 
-They want the set of tight edges, only at any given time actually have a dual solution. Only operations that happen to the edges are contractions or adding more tight edges, so tight edges never get removed. Inductive. The way to ensure tight edges never have to be removed is the safety property: ensure that their set of tight edges is always satisfiable, some flow that will only be supported on that set. Safety property can be maintained with the label update. 
-
-Safety property is existence of a flow. Un-safety is equivalent to existence of Hoffman's property / cut. Scaling constructed so that it never breaks any of these sets. If there's a set that's violated in $\mu'$, then if you take the set excluding the parts that were modified then it must have already been violated. Modification only increased the values of $\biu$ inside $S$.
-
-If there's a violated set, divided into two pieces, part in $S$, part not in $S$. One of them had to already be violated. Assume $\mu$ is safe and for the sake of contradiction that $\mu'$ is not safe. Then prove that if that were the case $\mu$ must have not been safe. 
-$S$ is maximal subset that contains $Q$ and has no tight edges coming into it or out of it. Any modification done to $S$ is not going to change tight cuts because they must be either entirely inside or outside, not across the boundary, so scaled equally. 
-
-Start with a feasible fitting flow. Find something closs in l1-norm (sum), decompose into paths to bound the difference between them. The difference between them is a flow and can't have any cycles because.
-Important that $\mu$ be safe, because it assumes that there is a fitting pair and feasible $\mu$
-If value of pseudoflow on edge is really high then optimal flow must have some flow on that edge becasue optimal flow has to be close enough to the pseudoflow
-
-%%% TEMP %%%
+	At each iteration of the algorithm we ensure that we have a \textbf{fitting pair}
+	of primal and dual solutions $(f,u)$---that is, that $\mu$ is a feasible dual solution,
+	and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. Note: $f$ is
+	\emph{not} required to be a feasible primal solution. This definition is thus a relaxation of the
+	conservative labeling from Section 4.1.
+	
+	The fitting condition mimics complementary
+	slackness for optimal pairs and allows $f^\mu$ to be viewed as a regular flow
+	on the tight subgraph. The algorithm can then avail itself of the previously developed
+	strongly polynomial tools for manipulating regular flows.
+	\todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.}
+	Rather than going through extra work of maintaining a feasible $f$ at each step,
+	the algorithm ensures that a feasible $f$ fitting $\mu$ \textit{exists} by preserving the
+	``safety property'' (\emph{cf.} Lemma \ref{lem.safety}). 
+	
+	%%% TEMP %%% 
+	They want the set of tight edges, only at any given time actually have a dual solution. Only operations that happen to the edges are contractions or adding more tight edges, so tight edges never get removed. Inductive. The way to ensure tight edges never have to be removed is the safety property: ensure that their set of tight edges is always satisfiable, some flow that will only be supported on that set. Safety property can be maintained with the label update. 
+	
+	Safety property is existence of a flow. Un-safety is equivalent to existence of Hoffman's property / cut. Scaling constructed so that it never breaks any of these sets. If there's a set that's violated in $\mu'$, then if you take the set excluding the parts that were modified then it must have already been violated. Modification only increased the values of $\biu$ inside $S$.
+	
+	If there's a violated set, divided into two pieces, part in $S$, part not in $S$. One of them had to already be violated. Assume $\mu$ is safe and for the sake of contradiction that $\mu'$ is not safe. Then prove that if that were the case $\mu$ must have not been safe. 
+	$S$ is maximal subset that contains $Q$ and has no tight edges coming into it or out of it. Any modification done to $S$ is not going to change tight cuts because they must be either entirely inside or outside, not across the boundary, so scaled equally. 
+	
+	Start with a feasible fitting flow. Find something closs in l1-norm (sum), decompose into paths to bound the difference between them. The difference between them is a flow and can't have any cycles because.
+	Important that $\mu$ be safe, because it assumes that there is a fitting pair and feasible $\mu$
+	If value of pseudoflow on edge is really high then optimal flow must have some flow on that edge becasue optimal flow has to be close enough to the pseudoflow
+	
+	%%% TEMP %%%
 
     \subsection{Finding a feasible flow}
-Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
+	\todo{Don't they just run the whole algorithm on a modified graph to initialize?}
+	Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
     
     \subsection{Scaling and Rounding} 
     Since the second phase of the algorithm relies on the relabeled flow, $f^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair $(f, \mu)$ and corresponding feasible relabeled flow $f^\mu$ and setting a lower bound of $\lfloor \nabla f_i^\mu \rfloor$ and an upper bound of $\lceil \nabla f_i^\mu \rceil$. The corresponding integral relabeled max flow on each edge $e_{ij}$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of $f_{ij}^\mu$ remains unchanged because if $f_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, $f_{ij}^\mu$ remains integral after the initial rounding.
     
     In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to $\max_{i \in V \setminus t} \nfiu - \biu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which reduces $f^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nfiu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $\biu - 1 \leq \nfiu \leq \biu + 2 \quad \forall i \in V \setminus t $; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nfiu \geq \biu$ because it must be feasible. After rounding, $\nfiu \geq \biu - 1$ because $\nfiu$ decreases by at most $1$ during rounding. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of $\Ex(f, \mu)$ in Section~\ref{sec:lp}. Since we scale $\nfiu$ down by the maximum excess in the initial solution, the maximum in $\Ex(f,\mu)$ will never be more than $2$. This gives the upper bound $\nfiu \leq \biu + 2$. 
 
-$S$ is formulated so that it doesn't cut any tight edges. 
-\subsection{Plentiful Nodes}
+	$S$ is formulated so that it doesn't cut any tight edges. 
 
-\subsubsection{Motivation}
+	\subsection{Plentiful Nodes}
 
-Recall that the primary method of progress in this algorithm involves
-identifying contractible edges and then contracting them until a dual optimal
-solution is found. Prior work called such edges ``abundant'' and used scaling to
-find them directly. A key novelty in this algorithm is the concept of finding
-them indirectly via a ``plentiful'' node. 
-\begin{definition}
-A node $i$ is \textbf{plentiful} with respect
-to the current primal-dual solution pair $(f,u)$ if its scaled absolute
-demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
-\end{definition}
+		\subsubsection{Motivation}
+		
+		Recall that the primary method of progress in this algorithm involves
+		identifying contractible edges and then contracting them until a dual optimal
+		solution is found. Prior work called such edges ``abundant'' and used scaling to
+		find them directly. A key novelty in this algorithm is the concept of finding
+		them indirectly via a ``plentiful'' node. 
+		\begin{definition}
+		A node $i$ is \textbf{plentiful} with respect
+		to the current primal-dual solution pair $(f,u)$ if its scaled absolute
+		demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
+		\end{definition}
+		
+		It is important to notice that, just as with the definition of an abundant  edge,
+		this definition depends only on the size of the graph, which is a key property
+		that will keep our algorithm strongly polynomial because we will be iteratively
+		re-scaling the node demands until one of them satisfies this property.
+		
+		\begin{theorem} Assume $\mu$ from the fitting pair $(f,\mu)$ is safe.
+		Then the existence of a plentiful node $i$ ensures
+		that there exists a contractible edge $e$ incident to $i$.
+		\end{theorem}
+		\begin{proof}
+		\todo{Prove theorem 3.1 more succinctly and clearly}.
+		\end{proof}
+		
+		\rewrite{The safety of $\mu$ is important because, without it, the distance between
+		the primal solution we keep track of, $g$, and the optimal solution, $g^*$, could
+		be unbounded.} \todo{Describe.}
+		
+		\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
+		\caption{
+		\label{fig:unsafe}
+		\rewrite{Simple example showing how unsafe $\mu$ causes problems.}\todo{Keep?}
+		}
+		\end{figure}
 
-It is important to notice that, just as with the definition of an abundant  edge,
-this definition depends only on the size of the graph, which is a key property
-that will keep our algorithm strongly polynomial because we will be iteratively
-re-scaling the node demands until one of them satisfies this property.
+		\subsubsection{Subroutine: Producing Plentiful Nodes}
+		\label{sec:sub-ppn}
+		
+		\begin{subroutine}
+		For an input fitting pair $(f,u)$ without a plentiful node,
+		continue executing the following two steps until at least one node becomes
+		plentiful.
+		\begin{enumerate}
+		\item First, improve the primal solution by augmenting as much flow as possible,
+		one unit at a time, along tight edges in the residual graph 
+		from nodes with excess to either nodes with deficit, or the sink.
+		It only augments along tight edges \rewrite{because}. Formally, let
+		$D$ (``destinations'') be the union of the sink $t$ and all nodes with 
+		deficit ($\nabla f_i^{\mu} < b_i^{\mu}$), and let $S$ (``sources'') be
+		the set of all nodes that both have excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$)
+		and have a tight path in the residual graph to a node in $D$, then
+		continue augmenting until $S$ is empty.
+		\item Once it is not possible to augment any more flow, the second step scales down
+		the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$,
+		which is chosen to be the largest value that \rewrite{does not violate} any of the dual
+		constraints~(\ref{eq:dual}) or produces a plentiful node.
+		\end{enumerate}
+		\end{subroutine}
+		
+		Although it is not necessary in practice, for clarify of explanation, one can think of choosing the scaling factor $\alpha$ as solving
+		the following LP:
+		\lpeq{\lpthree{max}
+		{\alpha}
+		{\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
+		{\nfiu - \biu \le 1}
+		{\nexists\ \text{plentiful}\ i \in \vsink}
+		}
+		\begin{figure}[b!]
+		\centering
+		\includegraphics[width=0.35\textwidth]{figs/water.pdf}
+		\caption{
+		\label{fig:alpha}
+		Informal analogy for the maximization of scaling parameter $\alpha$.
+		Each pipe represents a constraint. $\alpha$ can only be increased until
+		one of them becomes tight as increasing it further would leak into
+		the lowest pipe and violate that constraint.
+		At each step, the order of which constraint becomes tight first may be different.
+		}
+		\end{figure}
+		Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to filling
+		a basin with water as much as possible without any of the water leaking into one
+		of three pipes, where each pipe represents a constraint and its height in the basin
+		represents the value of $\alpha$ at which point it becomes tight.
+		
+		Thus, $\alpha$ is chosen such that one of the following constraints becomes
+		tight, or, in other words, one of the following becomes true corresponding to
+		each constraint, respectively:
+		\begin{enumerate}[itemsep=-1mm]
+			\item An edge entering $S$ becomes tight, and thus a new node is added to $S$
+			\item A node in $S$ has excess $>1$, which allows us to augment flow from it
+			\item A node becomes plentiful
+		\end{enumerate}
+		
+		If (3) is true, we're done. If (1) or (2) are true, it ensures that we will now
+		be able to make progress in the next iteration of the first step. Below, we show
+		in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
+		that the algorithm can make progress in the second step. 
+		
+		Although it is conceptually easier to imagine increasing $\alpha$ continuously
+		until one of these constraints becomes tight, in practice, it is possible to
+		calculate $\alpha$ arithmetically in $O(n)$ by picking a value for each node
+		that would satisfy one of the tightness conditions and then choosing the minimum
+		such value so that only one of the constraints become tight and none are
+		violated.
+		The details of calculating the value are not particularly insightful so we omit them here, but the
+		fact that it can be done is important for the running time analysis.
+		
+		We now make some important claims about the variables as the algorithm
+		progresses that allow us to prove its correctness: i.e. that it terminates,
+		producing a plentiful node.
+		In the following section,
+		we further prove that it terminates in strongly polynomial time and derive
+		an upper bound on the running time.
+		
+		\begin{lemma}
+		$f^{\mu}$ remains unchanged throughout the subroutine.
+		\label{lem:fsame}
+		\end{lemma} 
+		\begin{proof}
+			We must show that, for all edges $(i,j)$, $f_{ij}^{\mu}$ does not change.
+			Recall that $f_{ij}^{\mu} = \frac{f_{ij}}{\mu_i}$. There
+			are four possible cases for $(i, j)$:
+			\begin{enumerate}
+				\item Both outside of $S$. The subroutine only scales $i \in S$, so $\mu_i$ 
+					does not change, and thus nor does $\fiju$.
+				\item Both inside of $S$. The subroutine scales both $f_{ij}$ and $\mu$ by
+					$\alpha$, which cancel each other out in the definition of $\fiju$.
+				\item Only $i$ in $S$, which implies $i,j \in \dout(S)$. Then $f_{ij}=0$,
+					because otherwise there would be a tight residual edge $j,i \in \din(S)$,
+					and by definition $S$ has no incoming tight edges.
+				\item Only $j$ in $S$, which implies $i,j \in \din(S)$. Again, incoming edges
+					are not tight by definition of $S$ and we only augment along tight edges,
+					so $f_{ij}$ is not augmented. Also, if $i \notin S$, then $\mu_i$ doesn't
+					change. \qedhere
+			\end{enumerate}
+		\end{proof}
+		\begin{corollary}
+		$f^{\mu}$ is always integral.
+		\end{corollary}
+		\begin{proof}
+		The augmentation step clearly maintains integrality of $f^{\mu}$ because we
+		always augment by 1 unit at a time. The only other part of the algorithm that
+		modifies the primal solution is the relabeling of $f_e$, and by
+		Lemma~\ref{lem:fsame}, this never changes the value of $f^{\mu}$.
+		\end{proof}
+		\begin{lemma}
+			\label{lem:scaling}
+			For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
+			strictly increases $|\biu|$. For all other nodes, $|\biu|$ remains unchanged.
+			\todo{Show S cannot be empty?}
+		\end{lemma}
+		\begin{proof}
+			First, trivially, scaling a node with zero demand cannot change its value
+			($0\cdot\mu=0$), and the algorithm only updates $\mu_i$ for $i \in S$. Recall
+			that $\biu$ is defined as $b_i / \mu_i$, and thus, if $\mu_i\leftarrow \mu_i / \alpha$,
+			then
+			\[ \biu \leftarrow \frac{b_i}{\mu_i / \alpha} = \alpha\frac{b_i}{\mu_i} = \alpha \biu. \] 
+			Now it suffices to prove that $\alpha > 1$ always holds when any of the three
+			constraints become tight.
+			
+			By construction, before rescaling, $S$ has no tight
+			incoming edges. Recall $\giij = \gamma_i\frac{u_i}{u_j}$. In order for an
+			incoming edge $i \notin S, j\in S$ to become tight (1), we must have $\giij=1$:
+			since we only scale values in $S$, $\alpha$ must be ${1}/{\giij}$, which is
+			always greater than $1$ because $\giij < 1$ (by the feasibility of the dual).
+		
+			From the terminating condition of the augmentation step (the lack of any nodes
+			in $S$ having excess), we know $\Ex(f) = \nfiu - \biu < 1$. Since, by
+			Lemma~\ref{lem:fsame}, $\nfiu$ is unchanged and only nodes in $\vsrc$ (i.e. $b_i<0$)
+			can have excess, the only way for to make $\Ex(f) \ge 1$ is if $\biu$ becomes
+			more negative, which only happens if $\alpha > 1$. 
+			
+			Finally, we start out with the assumption that there are no plentiful nodes.
+			In order for a node to become plentiful (3), its demand $\biu$ must increase,
+			which is only possible if $\alpha > 1$.
+		\end{proof}
+		\begin{lemma}
+			\label{lem:still-fit}
+			$\fp$ remains a fitting pair throughout the subroutine.
+		\end{lemma}
+		\begin{proof}
+			In order to be a fitting pair, we must have the following relationship between
+			$f$ and $\mu$: when $f_{ij} > 0$, $u_i \le \gij u_j$, and when $f_{ij} = 0$, 
+			$u_i = \gij u_j$. 
+		\end{proof}
+		\begin{lemma}
+			The rescaling of $\mu$ during produce-plentiful-node does not break 
+			the safety of $\mu$, i.e. that there is a corresponding feasible primal
+			solution even though we haven't kept track of it (~\ref{lem:usafe}).
+		\end{lemma}
+		\begin{proof}
+		The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
+		where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
+		is safe before running the subroutine. For sake of contradiction, assume that
+		after running the subroutine, the updated labeling $\mu'$,
+		is no longer safe. That is, there exists some subset of vertices $X \subseteq \vnott$  
+		without any incoming tight edges ($\{\gamma_e^{\mu'} = 1\ \forall\ e \in \din(X)\} = \varnothing$)
+		and where all nodes have positive demand $b^{\mu'}(X) > 0$.
+		
+		Suppose we divide $X$ into two parts: the subset of vertices in $S$, $X \cap S$, and those
+		not in $S$, $X \setminus S$. Recall that $\mu_i' = \frac{\mu}{\alpha}$ for $i\in S$
+		and $\mu' = \mu$ for $i \notin S$. Then we can rewrite the node demands under $\mu'$
+		in terms of the demands under $\mu$ as follows:
+		$$b^{\mu'}(X) = \frac{1}{\alpha}b^{\mu}(X \cap S) + b^{\mu}(X \setminus S)$$
+		If, as we assumed, $b^{\mu'}(X) > 0$, then either $b^{\mu}(X \cap S)$ or 
+		$b^{\mu}(X \setminus S)$ must be positive.
+		\todo{Fill in details. Isn't $S$ different for $\mu$ and $\mu'$?}
+		Now consider the set of edges coming into each of these subsets...
+		
+		Therefore, since neither of the two parts of $X$
+		have any tight incoming edges under $\mu$ and at least one of them
+		must have strictly positive node demands, at least one of them
+		violates the safety conditions of $\mu$ and thus $\mu$ was not safe.
+		This is a contradiction, and thus if $\mu$ was safe, $\mu'$ must also be safe.
+		
+		\end{proof}
+		
+		In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
+		the definition of a plentiful node. Thus, the subroutine will eventually produce one. We have also shown that the updates it makes to $f$ and $\mu$ do not violate any of the previous conditions stated for being able to ultimately derive a primal optimal solution once our fitting pair finds the dual optimal. 
+		
+		\subsubsection{Running Time Analysis}
+		
+		We now leverage potential analysis to derive an upper bound on the amount of work required for the subroutine introduced in Section~\ref{sec:sub-ppn} to terminate, showing that it is strongly polynomial, and confirming the analysis found in the paper. 
+		
+		\todo{Proof}
 
-\begin{theorem} Assume $\mu$ from the fitting pair $(f,\mu)$ is safe.
-Then the existence of a plentiful node $i$ ensures
-that there exists a contractible edge $e$ incident to $i$.
-\end{theorem}
-\begin{proof}
-\todo{Prove theorem 3.1 more succinctly and clearly}.
-\end{proof}
+	\subsection{Contraction}
 
-\rewrite{The safety of $\mu$ is important because, without it, the distance between
-the primal solution we keep track of, $g$, and the optimal solution, $g^*$, could
-be unbounded.} \todo{Describe.}
+	Once we have produced a plentiful node, finding a contractible edge is straightforward. 
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
-\caption{
-\label{fig:unsafe}
-\rewrite{Simple example showing how unsafe $\mu$ causes problems.}\todo{Keep?}
-}
-\end{figure}
-
-\subsubsection{Subroutine: Producing Plentiful Nodes}
-\label{sec:sub-ppn}
-
-\begin{subroutine}
-For an input fitting pair $(f,u)$ without a plentiful node,
-continue executing the following two steps until at least one node becomes
-plentiful.
-\begin{enumerate}
-\item First, improve the primal solution by augmenting as much flow as possible,
-one unit at a time, along tight edges in the residual graph 
-from nodes with excess to either nodes with deficit, or the sink.
-It only augments along tight edges \rewrite{because}. Formally, let
-$D$ (``destinations'') be the union of the sink $t$ and all nodes with 
-deficit ($\nabla f_i^{\mu} < b_i^{\mu}$), and let $S$ (``sources'') be
-the set of all nodes that both have excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$)
-and have a tight path in the residual graph to a node in $D$, then
-continue augmenting until $S$ is empty.
-\item Once it is not possible to augment any more flow, the second step scales down
-the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$,
-which is chosen to be the largest value that \rewrite{does not violate} any of the dual
-constraints~(\ref{eq:dual}) or produces a plentiful node.
-\end{enumerate}
-\end{subroutine}
-
-Although it is not necessary in practice, for clarify of explanation, one can think of choosing the scaling factor $\alpha$ as solving
-the following LP:
-\lpeq{\lpthree{max}
-{\alpha}
-{\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
-{\nfiu - \biu \le 1}
-{\nexists\ \text{plentiful}\ i \in \vsink}
-}
-\begin{figure}[b!]
-\centering
-\includegraphics[width=0.35\textwidth]{figs/water.pdf}
-\caption{
-\label{fig:alpha}
-Informal analogy for the maximization of scaling parameter $\alpha$.
-Each pipe represents a constraint. $\alpha$ can only be increased until
-one of them becomes tight as increasing it further would leak into
-the lowest pipe and violate that constraint.
-At each step, the order of which constraint becomes tight first may be different.
-}
-\end{figure}
-Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to filling
-a basin with water as much as possible without any of the water leaking into one
-of three pipes, where each pipe represents a constraint and its height in the basin
-represents the value of $\alpha$ at which point it becomes tight.
-
-Thus, $\alpha$ is chosen such that one of the following constraints becomes
-tight, or, in other words, one of the following becomes true corresponding to
-each constraint, respectively:
-\begin{enumerate}[itemsep=-1mm]
-	\item An edge entering $S$ becomes tight, and thus a new node is added to $S$
-	\item A node in $S$ has excess $>1$, which allows us to augment flow from it
-	\item A node becomes plentiful
-\end{enumerate}
-
-If (3) is true, we're done. If (1) or (2) are true, it ensures that we will now
-be able to make progress in the next iteration of the first step. Below, we show
-in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
-that the algorithm can make progress in the second step. 
-
-Although it is conceptually easier to imagine increasing $\alpha$ continuously
-until one of these constraints becomes tight, in practice, it is possible to
-calculate $\alpha$ arithmetically in $O(n)$ by picking a value for each node
-that would satisfy one of the tightness conditions and then choosing the minimum
-such value so that only one of the constraints become tight and none are
-violated.
-The details of calculating the value are not particularly insightful so we omit them here, but the
-fact that it can be done is important for the running time analysis.
-
-We now make some important claims about the variables as the algorithm
-progresses that allow us to prove its correctness: i.e. that it terminates,
-producing a plentiful node.
-In the following section,
-we further prove that it terminates in strongly polynomial time and derive
-an upper bound on the running time.
-
-\begin{lemma}
-$f^{\mu}$ remains unchanged throughout the subroutine.
-\label{lem:fsame}
-\end{lemma} 
-\begin{proof}
-	We must show that, for all edges $(i,j)$, $f_{ij}^{\mu}$ does not change.
-	Recall that $f_{ij}^{\mu} = \frac{f_{ij}}{\mu_i}$. There
-	are four possible cases for $(i, j)$:
-	\begin{enumerate}
-		\item Both outside of $S$. The subroutine only scales $i \in S$, so $\mu_i$ 
-			does not change, and thus nor does $\fiju$.
-		\item Both inside of $S$. The subroutine scales both $f_{ij}$ and $\mu$ by
-			$\alpha$, which cancel each other out in the definition of $\fiju$.
-		\item Only $i$ in $S$, which implies $i,j \in \dout(S)$. Then $f_{ij}=0$,
-			because otherwise there would be a tight residual edge $j,i \in \din(S)$,
-			and by definition $S$ has no incoming tight edges.
-		\item Only $j$ in $S$, which implies $i,j \in \din(S)$. Again, incoming edges
-			are not tight by definition of $S$ and we only augment along tight edges,
-			so $f_{ij}$ is not augmented. Also, if $i \notin S$, then $\mu_i$ doesn't
-			change. \qedhere
-	\end{enumerate}
-\end{proof}
-\begin{corollary}
-$f^{\mu}$ is always integral.
-\end{corollary}
-\begin{proof}
-The augmentation step clearly maintains integrality of $f^{\mu}$ because we
-always augment by 1 unit at a time. The only other part of the algorithm that
-modifies the primal solution is the relabeling of $f_e$, and by
-Lemma~\ref{lem:fsame}, this never changes the value of $f^{\mu}$.
-\end{proof}
-\begin{lemma}
-	\label{lem:scaling}
-	For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
-	strictly increases $|\biu|$. For all other nodes, $|\biu|$ remains unchanged.
-	\todo{Show S cannot be empty?}
-\end{lemma}
-\begin{proof}
-	First, trivially, scaling a node with zero demand cannot change its value
-	($0\cdot\mu=0$), and the algorithm only updates $\mu_i$ for $i \in S$. Recall
-	that $\biu$ is defined as $b_i / \mu_i$, and thus, if $\mu_i\leftarrow \mu_i / \alpha$,
-	then
-	\[ \biu \leftarrow \frac{b_i}{\mu_i / \alpha} = \alpha\frac{b_i}{\mu_i} = \alpha \biu. \] 
-	Now it suffices to prove that $\alpha > 1$ always holds when any of the three
-	constraints become tight.
-	
-	By construction, before rescaling, $S$ has no tight
-	incoming edges. Recall $\giij = \gamma_i\frac{u_i}{u_j}$. In order for an
-	incoming edge $i \notin S, j\in S$ to become tight (1), we must have $\giij=1$:
-	since we only scale values in $S$, $\alpha$ must be ${1}/{\giij}$, which is
-	always greater than $1$ because $\giij < 1$ (by the feasibility of the dual).
-
-	From the terminating condition of the augmentation step (the lack of any nodes
-	in $S$ having excess), we know $\Ex(f) = \nfiu - \biu < 1$. Since, by
-	Lemma~\ref{lem:fsame}, $\nfiu$ is unchanged and only nodes in $\vsrc$ (i.e. $b_i<0$)
-	can have excess, the only way for to make $\Ex(f) \ge 1$ is if $\biu$ becomes
-	more negative, which only happens if $\alpha > 1$. 
-	
-	Finally, we start out with the assumption that there are no plentiful nodes.
-	In order for a node to become plentiful (3), its demand $\biu$ must increase,
-	which is only possible if $\alpha > 1$.
-\end{proof}
-\begin{lemma}
-	\label{lem:still-fit}
-	$\fp$ remains a fitting pair throughout the subroutine.
-\end{lemma}
-\begin{proof}
-	In order to be a fitting pair, we must have the following relationship between
-	$f$ and $\mu$: when $f_{ij} > 0$, $u_i \le \gij u_j$, and when $f_{ij} = 0$, 
-	$u_i = \gij u_j$. 
-\end{proof}
-\begin{lemma}
-	The rescaling of $\mu$ during produce-plentiful-node does not break 
-	the safety of $\mu$, i.e. that there is a corresponding feasible primal
-	solution even though we haven't kept track of it (~\ref{lem:usafe}).
-\end{lemma}
-\begin{proof}
-The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
-where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
-is safe before running the subroutine. For sake of contradiction, assume that
-after running the subroutine, the updated labeling $\mu'$,
-is no longer safe. That is, there exists some subset of vertices $X \subseteq \vnott$  
-without any incoming tight edges ($\{\gamma_e^{\mu'} = 1\ \forall\ e \in \din(X)\} = \varnothing$)
-and where all nodes have positive demand $b^{\mu'}(X) > 0$.
-
-Suppose we divide $X$ into two parts: the subset of vertices in $S$, $X \cap S$, and those
-not in $S$, $X \setminus S$. Recall that $\mu_i' = \frac{\mu}{\alpha}$ for $i\in S$
-and $\mu' = \mu$ for $i \notin S$. Then we can rewrite the node demands under $\mu'$
-in terms of the demands under $\mu$ as follows:
-$$b^{\mu'}(X) = \frac{1}{\alpha}b^{\mu}(X \cap S) + b^{\mu}(X \setminus S)$$
-If, as we assumed, $b^{\mu'}(X) > 0$, then either $b^{\mu}(X \cap S)$ or 
-$b^{\mu}(X \setminus S)$ must be positive.
-\todo{Fill in details. Isn't $S$ different for $\mu$ and $\mu'$?}
-Now consider the set of edges coming into each of these subsets...
-
-Therefore, since neither of the two parts of $X$
-have any tight incoming edges under $\mu$ and at least one of them
-must have strictly positive node demands, at least one of them
-violates the safety conditions of $\mu$ and thus $\mu$ was not safe.
-This is a contradiction, and thus if $\mu$ was safe, $\mu'$ must also be safe.
-
-\end{proof}
-
-In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
-the definition of a plentiful node. Thus, the subroutine will eventually produce one. We have also shown that the updates it makes to $f$ and $\mu$ do not violate any of the previous conditions stated for being able to ultimately derive a primal optimal solution once our fitting pair finds the dual optimal. 
-
-\subsubsection{Running Time Analysis}
-
-We now leverage potential analysis to derive an upper bound on the amount of work required for the subroutine introduced in Section~\ref{sec:sub-ppn} to terminate, showing that it is strongly polynomial, and confirming the analysis found in the paper. 
-
-\todo{Proof}
-
-\subsection{Contraction}
-
-Once we have produced a plentiful node, finding a contractible edge is straightforward. 
-
-The purpose of contraction is that it reduces the size of the graph by one node,
-which puts a strongly polynomial bound of $n$ on the number of contraction
-operations. 
-\subsection{Expand to Original}
-\subsection{Compute Primal}
-\subsection{Amortized Analysis}
-
-
-
+	The purpose of contraction is that it reduces the size of the graph by one node,
+	which puts a strongly polynomial bound of $n$ on the number of contraction
+	operations.
+	\subsection{Expand to Original}
+	\subsection{Compute Primal}
+	\subsection{Amortized Analysis}
 
 
 \section{Discussion and Future Work}
 
-\subsection{Non-triviality of a strongly polynomial algorithm}
+	\subsection{Non-triviality of a strongly polynomial algorithm}
 
-\todo{Explain} why applying ideas from strongly polynomial algorithms for
-min-cost flow was not straightforward. 
+	\todo{Explain} why applying ideas from strongly polynomial algorithms for
+	min-cost flow was not straightforward. 
+
+
 
 \setlength{\bibitemsep}{0pt}
 \nocite{*}
