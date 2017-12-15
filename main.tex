@@ -462,6 +462,7 @@
 	is a $\Delta$-conservative labeling for $f$, or alternatively $(f, \mu)$ are a
 	$\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight edges $(i, j)$;
 	(ii) $\mu_t = 1$; and (iii) $\mu_i > 0, e_i \geq R_i$ for all $i \in V \setminus t$.
+	\todo{What's e?}
     
 	The scaling algorithm aims to identify \emph{contractible} edges,
 	edges that are tight in every optimal dual solution,
@@ -472,6 +473,7 @@
     \begin{definition}
     An edge $(i, j)$ is \textbf{abundant} at scale $\Delta$ if $f_{ij}^\mu \geq 17m\Delta$.
     \end{definition}
+		\todo{At least give intuition for how they derived this number}
 	Once the algorithm identifies an abundant edge,
 	it can contract the edge and reduce the size of the graph. The algorithm
 	terminates once the graph reduces to one node; this leads to a
@@ -525,7 +527,8 @@
     
 	The algorithm starts with an initial feasible solution to (P).
     The algorithm first runs a cycle-canceling algorithm on the initial feasible solution,
-    which gives a conservative labeling $\mu$ in strongly polynomial time. The bulk of the
+		which gives a conservative labeling $\mu$ in strongly polynomial
+		time\todo{?}. The bulk of the
     work in the algorithm is spent identifying and contracting abundant edges. This continues
     until the graph is contracted to one node. Once an optimal solution, $\mu$, to (D)
     is found for the contracted graph, it can easily be transformed into an optimal solution to
@@ -584,7 +587,8 @@
 	If $\mu$ is an optimal solution to (D), then $\tf(V, \mu)$ returns an optimal solution to (P).
     \todo{this theorem is verbatim from paper---another way to phrase it?}
 	\end{theorem}
-	
+	\todo{proof?}
+
 	\begin{align*}
 	&\text{\textbf{Input:} Set $S \subseteq V$ with $t \in S$ and labeling $\mu$ that is
            dual-feasible everywhere in $S$---i.e., $\giij \leq 1$ for all $i, j \in S$} \\
@@ -633,6 +637,9 @@
     ``finding a contractible edge'' is performed. Otherwise, the algorithm terminates
     and the elementary step routine is called to relabel.
 
+		\todo{Need to tie everything together somehow}
+		\todo{Runtime analysis?}
+
 \section{A Faster Strongly Polynomial Algorithm}
 The improved strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017}
 introduces several new conceptual ideas that combine the techniques and insight from Section~\ref{sec:motivate}.
@@ -644,14 +651,22 @@ summarized in Table~\ref{tab:improvements}.
 
 \begin{table}[H]
 \begin{center}
-    \begin{tabular}{ | p{7cm} | p{7cm} |}
+\begin{tabular}{ | p{7cm} | p{7cm} | p{2cm} | }
     \hline
-    Challenges in Previous Algorithms  & Solutions from New Algorithm \\ \hline
-    Non-integral flow values & Only store relabeled flow $f^{\mu}$ which stays integral throughout the algorithm until the last step of computing optimum \\ \hline
-    Initial cycle-canceling algorithm to eliminate flow generating cycles & Two phase method (similar to simplex) where feasible solution found in first phase is used to start the second phase; this solution is faster than the cycle-canceling subroutine \\ \hline
-    Complex methods for maintaining feasible flow & Relax flow feasibility (node demands do not have to be met) and use complementary slackness properties to keep feasible primal solution "within reach" \\ \hline
-    No guarantee of abundant edge appearing in strongly polynomial number of steps \cite{Radzik2004} &  Continuous scaling\\ \hline
-    Complicated multiplicative potential analysis \cite{Vegh2013} & Additive potential analysis \\
+		Challenges in Previous Algorithms  & Solutions from New Algorithm & Why \\ \hline
+    Non-integral flow values & Only store relabeled flow $f^{\mu}$ which stays
+		integral throughout the algorithm until the last step of computing optimum & \\ \hline
+    Initial cycle-canceling algorithm to eliminate flow generating cycles & Two
+		phase method (similar to simplex) where feasible solution found in first
+		phase is used to start the second phase; this solution is faster than the
+		cycle-canceling subroutine & \\ \hline
+    Complex methods for maintaining feasible flow & Relax flow feasibility (node
+		demands do not have to be met) and use complementary slackness properties to
+		keep feasible primal solution "within reach" & \\ \hline
+    No guarantee of abundant edge appearing in strongly polynomial number of
+		steps \cite{Radzik2004} &  Continuous scaling & \\ \hline
+    Complicated multiplicative potential analysis \cite{Vegh2013} & Additive
+		potential analysis & \\
     \hline
     \end{tabular}
 \end{center}
