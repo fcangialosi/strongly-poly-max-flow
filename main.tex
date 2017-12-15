@@ -57,7 +57,7 @@
 \DeclareMathOperator{\Ex}{Ex}
 \DeclareMathOperator{\Def}{Def}
 
-\newcommand{\rewrite}[1]{\textcolor{red}{#1}}
+\newcommand{\rewrite}[1]{#1}%\textcolor{red}{#1}
 \newcommand{\todo}[1]{}%\hl{TODO: #1}
 
 \newcommand{\lpeq}[1] {
@@ -735,13 +735,13 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     Then the existence of a plentiful node $i$ ensures
     that there exists a contractible edge $e$ incident to $i$.
     \end{theorem}
-    \begin{proof}
+    \begin{proof} (TODO)
     \todo{Prove theorem 3.1 more succinctly and clearly}.
     \end{proof}
 
     \rewrite{The safety of $\mu$ is important because, without it, the distance between
     the primal solution we keep track of, $g$, and the optimal solution, $g^*$, could
-    be unbounded.} \todo{Describe.}
+    be unbounded, as shown in the example below.} \todo{Describe.}
 
     \begin{figure}[h]
     \centering
@@ -943,9 +943,11 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
     the definition of a plentiful node. Thus, the subroutine will eventually produce one. We have also shown that the updates it makes to $f$ and $\mu$ do not violate any of the previous conditions stated for being able to ultimately derive a primal optimal solution once our fitting pair finds the dual optimal. 
 
+\iffalse
 	 \subsection{Finding a feasible flow}
 	\todo{Don't they just run the whole algorithm on a modified graph to initialize?}
 	Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
+    \fi
     
     \subsection{Scaling and Rounding} 
     Since the second phase of the algorithm relies on the relabeled flow, $f^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair $(f, \mu)$ and corresponding feasible relabeled flow $f^\mu$ and setting a lower bound of $\lfloor \nabla f_i^\mu \rfloor$ and an upper bound of $\lceil \nabla f_i^\mu \rceil$. The corresponding integral relabeled max flow on each edge $(i, j)$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of $f_{ij}^\mu$ remains unchanged because if $f_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, $f_{ij}^\mu$ remains integral after the initial rounding.
@@ -1011,12 +1013,12 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \end{proof}
 
 
-\section{Discussion and Future Work}
+%\section{Discussion and Future Work}
 
-	\subsection{Non-triviality of a strongly polynomial algorithm}
+%	\subsection{Non-triviality of a strongly polynomial algorithm}
 
-	\todo{Explain} why applying ideas from strongly polynomial algorithms for
-	min-cost flow was not straightforward. 
+%	\todo{Explain} why applying ideas from strongly polynomial algorithms for
+%	min-cost flow was not straightforward. 
 
 \setlength{\bibitemsep}{0pt}
 \nocite{*}
