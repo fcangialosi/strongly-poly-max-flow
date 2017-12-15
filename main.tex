@@ -265,13 +265,13 @@
     \todo{Be sure to mention we assume no flow-generating cycles and why we can make this assumption (cancel them).}
 	
     % $\mu$ is a value assignment. We're rewriting the problem in a different currency. The relabeled dual problem is equiavelnt to the original dual problem, the constraints for tight edges become replace $\mu$ with $\mu'$ in all the constraints. There's a dual problem which solves for $\mu'$ on each vertex, and you can then get a solution to the original problem which is $\mu*\mu'$
-	Given a feasible dual solution $\mu$, we can apply the following \textbf{relabeling} transformation to
-    obtain a new problem instance:
-	\[ f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
-	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \quad
-	\gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
-	b_i^\mu \coloneqq \frac{b_i}{\mu_i} \]
-    The relabeled dual problem is
+	Given a feasible dual solution $\mu$, we can apply the following \textbf{relabeling}
+    transformation to obtain a new problem instance and a primal solution to the new instance:
+	\[ \gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
+	b_i^\mu \coloneqq \frac{b_i}{\mu_i} \quad
+    f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
+	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \]
+    The relabeled dual problem in variables $\mu'$ is
     \begin{alignat*}{3}
     \text{max} &\quad &\mu'_t &\sum_{j \in V \setminus t} \frac{b^\mu_j}{\mu'_j}  \\
     \text{s.t.}
@@ -1034,7 +1034,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
 \section{Discussion and Future Work}\label{sec:discussion}
 
-	\subsection{Non-triviality of a strongly polynomial algorithm
+	\subsection{Non-triviality of a strongly polynomial algorithm}
 
 	\todo{Explain} why applying ideas from strongly polynomial algorithms for
 	min-cost flow was not straightforward. 
