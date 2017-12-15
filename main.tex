@@ -439,9 +439,7 @@
 	introduces the notion of a \textit{conservative labeling}, which helps to
 	identify the highest gain augmenting paths on which to push flow. We define
 	$\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is
-	a feasible solution to (D) and all edges with positive flow are tight
-	\todo{no longer need to define tight}
-	(i.e. $\geu = 1$ if $f_{ij} > 0$ for $(i, j) \in E$). We define $R_i$ as
+	a feasible solution to (D) and all edges with positive flow are tight. We define $R_i$ as
 	the total flow incoming to node i on non-tight arcs ($\geu < 1$). \todo{add intuition}
 	
 	This algorithm uses a scaling-type technique with scale factor $\Delta$.
