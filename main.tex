@@ -220,8 +220,7 @@
         \text{s.t.} \quad
         \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
         f &\geq 0
-        \end{align*}
-
+        \end{align*}f
 	The dual linear program has a variable $\eta_i$ for every vertex $i$,
 	\begin{alignat*}{3}\tag{P}
     \text{min} &\quad &\sum_{i \in V \setminus t} b_i \eta_i \\
@@ -240,7 +239,7 @@
     &   &\mu_i &\in \R_{++} \cup \infty \quad &&\forall\; i \in V \setminus t \\
     &   &\mu_t &\in \R_{++}
     \end{alignat*}
-    where $\R_{++}$ denotes the positive numbers.
+    where $\R_{++}$ denotes the positive real numbers.
         
 A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
 optimal labelings. Complementary
@@ -351,7 +350,7 @@ to the labels is defined as follows:
 	If $f$ is feasible, then it follows that the total demand inside an inward-loose
 	cut is negative. It turns out that this is a sufficient condition for the existence
 	of a feasible fitting flow.
-	\begin{lemma}[Certificate for Safety]
+	\begin{lemma}[Certificate for Safety] \label{lem.safety}
 	$\mu$ is safe if and only if for any inward-loose cut $S$,
 	\[ \sum_{i \in S} \biu \leq 0. \]
 	\end{lemma}
@@ -428,7 +427,7 @@ to the labels is defined as follows:
     This observation inspires the structure of the algorithm. In each phase, its
     goal is to increase the flow values while keeping the total excess and deficit
     bounded. The only way to do this is to increase the demand values. Thus, the algorithm
-    consists of alternating scaling and augmentation phases. In the scaling phases, the
+    consists of alternating \emph{scaling} and \emph{augmentation} phases. In the scaling phases, the
     dual variables $\mu$ are adjusted so that the values $|\biu|$ will increase. In the
     complementary augmentation phases, excesses and deficits of the fitting flow are
     cancelled to preserve boundedness.
@@ -533,7 +532,20 @@ If these modifications reduce the excess of a node i enough to either remove i f
 \label{tab:improvements}
 \end{table}
     \subsection{Additional Notation and Concepts}
-At each iteration of the algorithm we ensure that we have a \textbf{fitting pair} of primal-dual solutions $(f,u)$ such that $\mu$ is a feasible dual solution, and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$ (note: this is similar to the conservative labeling from Section 4.1 except that the fitting pair definition doesn't require f to be a feasible solution to (P)). \todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.} Notice that this relaxed definition does not require that $f$ is feasible (i.e. we allow the net flow $\nabla f $ to be less than its demand $b$). Rather than going through extra work of maintaining a feasible $f$ at each step, a key contribution is simply ensuring that a feasible $f$ \textit{exists} for the $\mu$ in our fitting pair. We denote such a $\mu$ as \textbf{safe}. Further, since all edges in $f$ are tight, this definition ensures that the scaled flow $f^{\mu}$ is a ``regular'' flow and thus one can use any traditional algorithm to manipulate it. As a result, given a fitting pair where the dual solution is optimal, one can find an optimal primal solution by solving a feasible circulation problem \todo{why the circulation problem?}. 
+At each iteration of the algorithm we ensure that we have a \textbf{fitting pair}
+of primal and dual solutions $(f,u)$---that is, that $\mu$ is a feasible dual solution,
+and $\gamma_e^{\mu}$ is 1 (tight) for all edges with flow on them $(f_e > 0)$. Note: $f$ is
+\emph{not} required to be a feasible primal solution. This definition is thus a relaxation of the
+conservative labeling from Section 4.1.
+
+The fitting condition mimics complementary
+slackness for optimal pairs and allows $f^\mu$ to be viewed as a regular flow
+on the tight subgraph. The algorithm can then avail itself of the previously developed
+strongly polynomial tools for manipulating regular flows.
+\todo{Provide small diagram with numbers and show calculation of $\mu$ given $f$ or vice-versa.}
+Rather than going through extra work of maintaining a feasible $f$ at each step,
+the algorithm ensures that a feasible $f$ fitting $\mu$ \textit{exists} by preserving the
+``safety property'' (\emph{cf.} Lemma \ref{lem.safety}). 
 
 %%% TEMP %%% 
 They want the set of tight edges, only at any given time actually have a dual solution. Only operations that happen to the edges are contractions or adding more tight edges, so tight edges never get removed. Inductive. The way to ensure tight edges never have to be removed is the safety property: ensure that their set of tight edges is always satisfiable, some flow that will only be supported on that set. Safety property can be maintained with the label update. 
@@ -685,7 +697,7 @@ $f^{\mu}$ remains unchanged throughout the subroutine.
 \begin{proof}
 	We must show that, for all edges $(i,j)$, $f_{ij}^{\mu}$ does not change.
 	Recall that $f_{ij}^{\mu} = \frac{f_{ij}}{\mu_i}$. There
-	are four possible cases for $i,j$:
+	are four possible cases for $(i, j)$:
 	\begin{enumerate}
 		\item Both outside of $S$. The subroutine only scales $i \in S$, so $\mu_i$ 
 			does not change, and thus nor does $\fiju$.
@@ -697,7 +709,7 @@ $f^{\mu}$ remains unchanged throughout the subroutine.
 		\item Only $j$ in $S$, which implies $i,j \in \din(S)$. Again, incoming edges
 			are not tight by definition of $S$ and we only augment along tight edges,
 			so $f_{ij}$ is not augmented. Also, if $i \notin S$, then $\mu_i$ doesn't
-			change.
+			change. \qedhere
 	\end{enumerate}
 \end{proof}
 \begin{corollary}
