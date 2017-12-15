@@ -462,7 +462,7 @@
 	forward edges $(i, j)$ and the reverse edges $(j, i)$ such that $f_{ij}^\mu > \Delta$. $\mu$
 	is a $\Delta$-conservative labeling for $f$, or alternatively $(f, \mu)$ are a
 	$\Delta$-feasible pair, if (i) $f_{ij}^\mu \leq \Delta$ for all non-tight edges $(i, j)$;
-	(ii) $\mu_t = 1$; and (iii) $\mu_i > 0, e_i \geq R_i$ for all $i \in V \setminus t$.
+	(ii) $\mu_t = 1$; and (iii) $\mu_i > 0, e_i \geq R_i$ for all $i \in V \setminus t$ where is $e_i \coloneq \sum_{j:ji \in E}\gamma_{ji}f_{ji} -  $ is defined as the excess of node i for a flow vector $f$.
 	\todo{What's e?}
     
 	The scaling algorithm aims to identify \emph{contractible} edges,
