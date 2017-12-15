@@ -272,23 +272,19 @@
 	b_i^\mu \coloneqq \frac{b_i}{\mu_i} \quad
     f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
 	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \]
-    The relabeled dual problem in variables $\mu'$ is
-    $\max_{\mu'} \{\mu'_t \sum_{j \in V \setminus t} b^\mu_j/\mu'_j \mid \giij \mu'_i &\leq \mu'_j\}$
-    \begin{alignat*}{3}
-    \text{max} &\quad &\mu'_t &\sum_{j \in V \setminus t} \frac{b^\mu_j}{\mu'_j}  \\
-    \text{s.t.}
-    &   &\giij \mu'_i &\leq \mu'_j \quad &&\forall\; (i, j) \in E \\
-    &   &\mu'_i &\in \R_{>0} \cup \infty \quad &&\forall\; i \in V \setminus t \\
-    &   &\mu'_t &\in \R_{>0}
-    \end{alignat*}
-	which is equivalent to the original dual problem with variables $\mu \mu'$. In particular,
+    The relabeled dual problem is equivalent to the original dual problem. In particular,
+    \begin{claim}
+    $f^\mu$ is a feasible (resp. optimal) solution to the relabeled primal problem with gains
+    $\gamma^\mu$ and demands $b^\mu$ if and only if $f$ is a feasible (resp. optimal) solution
+    to the original problem.
+    \end{claim}
     \begin{claim}
     If $\mu$ is a feasible solution to the original dual problem and
-    $\mu'$ is an optimal solution to the relabeled dual problem with gains
+    $\bar{\mu}^*$ is an optimal solution to the relabeled dual problem with gains
     $\gamma^\mu$ and demands $b^\mu$,
-    then the vertex-wise product $\mu\mu'$ is an optimal solution to the original dual problem.
+    then the vertex-wise product $\mu\bar{\mu}^*$ is an optimal solution to the original dual problem.
     \end{claim}
-    We will often use relabeling to simplify the problem while preserving its structure.
+    We will often use relabeling to simplify the problem while preserving its structure.\todo{maybe revisit this and condense / simplify more}
     
 	An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
 	For an optimal pair $(f, \mu)$, complementary slackness is exactly the condition that
@@ -315,8 +311,11 @@
             
 	Both algorithms solve the primal generalized flow problem by first solving the dual problem.
     A solution to the dual problem specifies, by complementary slackness, the edges on which an optimal
-    primal solution may send flow. Moreover, applying the dual labels regularizes the problem, reducing
-    it to an ordinary circulation problem. Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
+    primal solution may send flow (the tight graph).
+    Moreover, these edges have relabeled gains $\gie = 1$. Given an optimal dual solution,
+    finding an optimal fhus reduces to solving an ordinary
+    maximum flow problem on the tight graph
+    Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
     \[ \sum_{j \in \din(i)} \giij \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}
      = \nabla f^{\mu} \geq b^{\mu}, \]
     but $\giij = 1$ whenever $f_{ij} \neq 0$. Therefore the dual solution reduces the primal problem
