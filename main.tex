@@ -214,13 +214,13 @@
 %		\mu_i &\in \R_{++} \cup \infty \quad \forall i \in V \setminus t
 %		\end{align*}  
 %	\end{minipage}
-    \begin{align*}\tag{P}
+    \begin{align*}\tag{D'}
     \text{max} \quad
     \nabla f_t& \\
     \text{s.t.} \quad
     \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
     f &\geq 0
-    \end{align*}f
+    \end{align*}
 	The dual linear program has a variable $\eta_i$ for every vertex $i$,
 	\begin{alignat*}{3}\tag{P}
     \text{min} &\quad &\sum_{i \in V \setminus t} b_i \eta_i \\
@@ -236,10 +236,9 @@
     \text{max} &\quad &\mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
     \text{s.t.}
     &   &\gij \mu_i &\leq \mu_j \quad &&\forall\; (i, j) \in E \\
-    &   &\mu_i &\in \R_{++} \cup \infty \quad &&\forall\; i \in V \setminus t \\
-    &   &\mu_t &\in \R_{++}
+    &   &\mu_i &\in \R_{>0} \cup \infty \quad &&\forall\; i \in V \setminus t \\
+    &   &\mu_t &\in \R_{>0}
     \end{alignat*}
-    where $\R_{++}$ denotes the positive real numbers.
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
 	optimal labelings. Complementary
