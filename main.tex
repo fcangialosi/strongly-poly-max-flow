@@ -855,10 +855,33 @@ summarized in Table~\ref{tab:improvements}.
 		like to show that after a strongly polynomial number of augmentations, the algorithm
 		is guaranteed to find a plentiful node.
 		
-		\begin{lemma}
+		\begin{lemma} \label{lem.num-aug}
 			After $O(mn)$ augmentations, the algorithm is guaranteed to find a plentiful node.
 		\end{lemma}
-		\begin{proof} \todo{Proof}	
+		First, a preliminary lemma. We denote the period between successive contraction
+		steps as an epoch.
+		\begin{lemma}
+		At any node $i \in V^-$, the deficit is at most one. Moreover, at most one augmentation
+		ends at such a node during any epoch.
+		\end{lemma}
+		\begin{proof}
+			At the beginning of the algorithm, the flow is feasible, so $\nfiu - \biu \geq 0$.
+			Rounding decreases $\nfiu$ by less than one. Similarly, during each contraction,
+			the adjusted flow is computed with $nabla g_i^\mu \geq \lfloor \biu \rfloor$ everywhere.
+			
+			Between contractions, the deficit can be modified by scaling and augmentation steps.
+			Since $i \in V^-$, $\biu < 0$, and so $\biu$ can only decrease during scaling.
+			Meanwhile, augmentations only decrease deficits.
+			Once $\nfiu \geq \biu$, no augmentation ending at $i$ will be contemplated unless $i$
+			experiences a deficit again. The only way for this to happen would be for
+			augmentations beginning at $i$ to reduce $\nfiu$ below $\biu$. However,
+			an augmentation will only begin at $i$ if
+			$\nfiu - \biu \geq 1$, and will reduce $\nfiu$ by exactly one. Hence, $i$ will
+			never again experience a deficit during the epoch, and so there will be no further
+			augmentations ending at $i$.
+		\end{proof}
+		
+		\begin{proof}[Proof of Lemma \ref{lem.num-aug}] \todo{Proof}	
 		\end{proof}
 
 
