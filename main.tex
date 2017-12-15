@@ -382,7 +382,7 @@
     So long as $\mu$ remains safe, we can obtain a feasible fitting flow $f$ at any time
     by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
     
-    \begin{lemma} \label{lem.dist}
+    \begin{lemma} \label{lem.bound-dist}
     Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some optimal flow $g^*$
     uniformly ``close'' to $g$:
     \[ \|(g^*)^\mu - g^\mu\|_\infty < \Ex(g, \mu) + \Def(g, \mu). \]
@@ -417,8 +417,8 @@
     
     \end{proof}
     
-    Lemma \ref{lem.dist} leads naturally to a concrete characterization of contractible edges:
-    \begin{lemma}
+    Lemma \ref{lem.bound-dist} leads naturally to a concrete characterization of contractible edges:
+    \begin{lemma} \label{lem.contractibility}
     Suppose $(g, \mu)$ is a fitting pair (with $g$ not necessarily feasible),
     $\mu$ is safe, and $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$.
     Then $e$ is contractible.
@@ -603,11 +603,17 @@ summarized in Table~\ref{tab:improvements}.
 
 		\subsubsection{Motivation}
 		
-		Recall that the primary method of progress in this algorithm involves
+		Recall that the algorithm makes progress by
 		identifying contractible edges and then contracting them until a dual optimal
-		solution is found. Prior work called such edges ``abundant'' and used scaling to
-		find them directly. A key novelty in this algorithm is the concept of finding
-		them indirectly via a ``plentiful'' node. 
+		solution is found. Each contraction collapses one vertex, so only $n$ contractions
+		can occur. Lemma \ref{lem.contractibility} shows that a fitting pair with a very
+		large flow value on one edge serves as a certificate that that edge is contractible.
+		To develop a strongly polynomial algorithm, it remains to show that we can compute
+		such a fitting pair.
+		
+		Prior work used scaling to directly produce flows with ``abundant edges.''
+		A key novelty in this algorithm is to relax the problem further by maintaining
+		a flow which serves only as an upper bound.
 		\begin{definition}
 		A node $i$ is \textbf{plentiful} with respect
 		to the current primal-dual solution pair $(f,u)$ if its scaled absolute
@@ -826,6 +832,24 @@ summarized in Table~\ref{tab:improvements}.
 		the definition of a plentiful node. Thus, the subroutine will eventually produce one. We have also shown that the updates it makes to $f$ and $\mu$ do not violate any of the previous conditions stated for being able to ultimately derive a primal optimal solution once our fitting pair finds the dual optimal. 
 		
 		\subsubsection{Running Time Analysis}
+		The algorithm consists of three basic types of operations: scaling, augmentation, and contraction.
+		The number of contractions is bounded by $n$. Contraction itself
+		requires computing a regular flow and performing a bounded number of graph operations, but
+		strongly polynomial algorithms already exist for these. So the goal is to bound the running time
+		(number of arithmetic operations) between any two contractions.
+		
+		Augmentation itself consists of a graph search on the tight subgraph, an $O(m)$ operation.
+		Between rounds of augmentation, there is a scaling round. Each atomic scaling step stops
+		when either (i) a node has become plentiful, leading to a contraction; (ii) a node has an
+		excess greater than $1$, leading to a new augmentation round; or (iii) the loose cut
+		$S$ has been extended by at least one node. (iii) can only happen at most $n$ times; thus,
+		there are at most $n$ scaling steps between any two augmentations. Each scaling step
+		is an $O(n)$ operation, leading to a na\"ive time bound of $O(n^2)$ between any two augmentations.
+		This can be improved to $O(m + n \log n)$ by applying the framework of Dijkstra's
+		algorithm with costs $-\log \gamma^u_e$. The loose cut $S$ corresponds to the expanding
+		frontier of Dijkstra's algorithm.
+		
+		
 		
 		We now leverage potential analysis to derive an upper bound on the amount of work required for the subroutine introduced in Section~\ref{sec:sub-ppn} to terminate, showing that it is strongly polynomial, and confirming the analysis found in the paper. 
 		
