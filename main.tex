@@ -337,7 +337,7 @@
 	fitting the dual solution $\mu$, it maintains a ``pseudoflow'' along with a guarantee
 	that there is a feasible flow also fitting $\mu$. In order for this to work, $\mu$
 	must be such that a feasible flow fitting it exists, even if that flow is never
-	computed. If this condition holds, $\mu$ is called \emph{safe}. An equivalent
+	computed. If this condition holds, $\mu$ is called \textbf{safe}. An equivalent
 	formulation of safety, which is easier to reason about, is as follows. To simplify
 	the exposition, we define 
 	\begin{definition}
@@ -437,10 +437,13 @@
 	\subsection{Introduced Notations and Concepts}
 	The initial strongly polynomial algorithm introduced by Végh \cite{Vegh2013}
 	introduces the notion of a \textit{conservative labeling}, which helps to
-	identify the highest gain augmenting paths on which to push flow. We define
-	$\mu$ as a conservative labeling for f, a feasible solution to (P), if $\mu$ is
-	a feasible solution to (D) and all edges with positive flow are tight. We define $R_i$ as
-	the total flow incoming to node i on non-tight arcs ($\geu < 1$). \todo{add intuition}
+	identify the highest gain augmenting paths on which to push flow.
+	\begin{definition}
+	$\mu$ is a \textbf{conservative labeling} for $f$, a feasible solution to (P), if $\mu$ is
+	a feasible solution to (D) and all edges with positive flow are tight.
+	\end{definition}
+	We define $R_i$ as the total flow incoming to node i on non-tight arcs
+	($\geu < 1$). \todo{add intuition}
 	
 	This algorithm uses a scaling-type technique with scale factor $\Delta$.
 	For $\Delta \geq 0$, a $\Delta$-fat graph is defined as a graph containing all
