@@ -366,13 +366,17 @@
 	%Following from the previous two sections, in order to optimize the dual,
 	%both algorithms make progress by alternating between finding contractible
 	%edges and contracting them.
-	Combining the previous two sections, the heart of both algorithms is a process
+	Combining the previous two sections, the heart (and running-time bottleneck)
+	of both algorithms is a process
 	of alternating between finding contractible edges and contracting them, in
 	order to find a set of tight edges, which optimizes the dual. One of the main
-	differences between the two algorithms is in how they find contractible edges, which
-	we will describe in Sections~\ref{sec:2013} and~\ref{sec:2017}.
+	differences between the two algorithms is in 
+	\textit{how} they find contractible edges, which
+	we will describe in Sections~\ref{sec:2013} and~\ref{sec:2017}. This impacts
+	their potential analysis and leads to the better bound in the 2017
+	paper~\cite{Olver2017}.
 
-	This process repeats until either (1) the graph
+	The alternating process repeats until either (1) the graph
 	has just one node remaining, or (2) all remaining nodes have zero relabled
 	demand $\biu$. 
 	In either case, at the end we are left with a set of tight
