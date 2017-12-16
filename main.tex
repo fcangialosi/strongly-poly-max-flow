@@ -252,8 +252,10 @@
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
 	optimal labelings. We make the simplifying assumption that the sink is reachable from every vertex, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
-	Complementary slackness requires that for an optimal flow $f^*$ and labeling $\mu^*$,
-	any edge $(i, j)$ with flow on it ($f^*_{ij} > 0$) has $\gamma_{ij}\mu^*_i = \mu^*_j$.
+	Complementary slackness requires that for an optimal flow $f^*$ and optimal labeling $\mu^*$,
+    \begin{equation}\label{eqn.cs} \tag{CS}
+    f^*_{ij} > 0 \implies \gamma_{ij}\mu^*_i = \mu^*_j.
+    \end{equation}
 	This suggests a particular interpretation of the dual variables. Imagine that
 	the vertices represent currencies and the gains represent exchange rates between those currencies.
 	A maximum generalized flow is the currency trading strategy that maximizes the value in currency
@@ -262,7 +264,8 @@
 	it is not possible to create value by converting currencies.
 	The complementary slackness condition means that the currency trading strategy
 	only makes trades that exactly preserve value.
-    \todo{Be sure to mention we assume no flow-generating cycles and why we can make this assumption (cancel them).}
+    \todo{Be sure to mention we assume no flow-generating cycles and
+    why we can make this assumption (cancel them).}
 	
     % $\mu$ is a value assignment. We're rewriting the problem in a different currency. The relabeled dual problem is equiavelnt to the original dual problem, the constraints for tight edges become replace $\mu$ with $\mu'$ in all the constraints. There's a dual problem which solves for $\mu'$ on each vertex, and you can then get a solution to the original problem which is $\mu*\mu'$
 	Given a feasible dual solution $\mu$, we can apply the following \textbf{relabeling}
@@ -286,13 +289,15 @@
     \end{claim}
     We will often use relabeling to simplify the problem while preserving its structure.\todo{maybe revisit this and condense / simplify more}
     
+    \begin{definition} \label{def.tight}
 	An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
 	For an optimal pair $(f, \mu)$, complementary slackness is exactly the condition that
 	flow only flows along tight edges. We denote the set of tight edges under
 	$\mu$ by
     \[ \tau(\mu) = \{e \mid \geu = 1\}. \]
     The \textbf{tight graph} consists of these edges and their endpoints.
-	
+	\end{definition}
+    
 	Given flow values and labels, the total excess and deficit of the flow with respect
 	to the labels is defined as follows:
 	\begin{align*}
@@ -310,19 +315,18 @@
       %      * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
             
 	Both algorithms solve the primal generalized flow problem by first solving the dual problem.
-    A solution to the dual problem specifies, by complementary slackness, the edges on which an optimal
-    primal solution may send flow (the tight graph).
-    Moreover, these edges have relabeled gains $\gamma^\mu_e = 1$. Given an optimal dual solution,
-    finding a maximum generalized flow thus reduces to solving an ordinary
+    Given optimal dual labels $\mu$, consider the equivalent relabeled primal problem.
+    As $\giij = 1$ whenever $f_{ij} > 0$ (follows from (\ref{eqn.cs})), an optimal $f^{\mu}$ must satisfy
+    \[ b^{\mu} \leq \nabla f^{\mu}
+    = \sum_{j \in \din(i)} \giij \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}
+    = \sum_{j \in \din(i)} \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}, \]
+    Finding a maximum generalized flow thus reduces to solving an ordinary
     maximum flow problem on the tight graph.
-    Starting from dual labels $\mu$, $f^{\mu}$ must satisfy
-    \[ \sum_{j \in \din(i)} \giij \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}
-     = \nabla f^{\mu} \geq b^{\mu}, \]
-    but $\giij = 1$ whenever $f_{ij} \neq 0$. Therefore the dual solution reduces the primal problem
-    to an ordinary maximum flow problem with demand constraint.
+    %Therefore the dual solution reduces the primal problem
+    %to an ordinary maximum flow problem with demand constraints.
     
-    In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing
-    the set of tight edges. Since regular maximum
+    In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing the set of tight edges.
+    Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
     algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
     is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
@@ -476,7 +480,7 @@ This algorithm also extends the scaling technique in the FAT-PATH algorithm
 	&\quad \quad \text{\es($T$)} 
 	\end{align*}
 	
-	At the end of each iteration, the algorithm checks if an abundant edge has
+	At the end of each iteration, the algorithm checks if an abundant edge has been
     identified (and if so, it is contracted) or if the termination condition has been met.
     Once this loop terminates, the graph is expanded and a final max flow computation
     is run to find the optimal solution to (P).
@@ -605,8 +609,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
 	\subsection{Certificates}\label{sec:cert}
     
-	Complementary slackness tells us that if there is a primal optimal flow $f$ with
-	$f_e > 0$, then $e$ is tight with respect to \emph{every} dual optimal solution---that
+	Complementary slackness tells us that if there is a primal optimal flow $f$ with positive value
+	on some edge $e$, then $e$ is tight with respect to \emph{every} dual optimal solution---that
 	is, $e$ is contractible. So a primal optimal flow provides a certificate for contractibility.
 	It would seem this is of no use to us, as computing a primal optimal flow is the entire
 	problem we are trying to solve. However, an optimal flow is a vastly superfluous certificate.
@@ -639,7 +643,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	the algorithm ensures that a feasible $f$ fitting $\mu$ \textit{exists} by preserving a
 	``safety certificate''. To simplify the exposition, we define 
 	\begin{definition}
-		Given dual labels $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ such that
+		Recall that $\tau(\mu)$ denotes the set of tight edges under a dual labeling $\mu$.
+		Given $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ such that
 		$\din(S) \cap \tau(\mu) = \varnothing$. An \textbf{outward-loose cut}
 		is such that $\dout(S) \cap \tau(\mu) = \varnothing$. A \textbf{bi-loose cut}
 		is both inward- and outward-loose.
