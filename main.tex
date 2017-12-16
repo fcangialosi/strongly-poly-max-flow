@@ -640,7 +640,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	strongly polynomial tools for manipulating regular flows.
     
 	In lieu of maintaining a feasible $f$ at each step,
-	the algorithm ensures that a feasible $f$ fitting $\mu$ \textit{exists} by preserving a
+	the algorithm ensures that $\mu$ is \textbf{safe}---i.e.,
+    that a feasible $f$ fitting $\mu$ \emph{exists}---by preserving a
 	``safety certificate''. To simplify the exposition, we define 
 	\begin{definition}
 		Recall that $\tau(\mu)$ denotes the set of tight edges under a dual labeling $\mu$.
