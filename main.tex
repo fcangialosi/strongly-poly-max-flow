@@ -780,6 +780,10 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
     \subsection{Scaling and Augmentation}
     \label{sec:sub-ppn}
+		\todo{Maybe say something about why we don't scale everything. Ideas:
+		wouldn't do anything or alpha would have to be 1? Have to be able to send
+	the excesses somewhere to have to be conservative and only scale the things
+where you can definitely send it}
 	The algorithm starts with a feasible fitting pair and consists of a sequence
     of epochs, each dedicated to identifying a contractible edge via a plentiful node.
     Each epoch alternates between the following augmentation and scaling phases:
@@ -1045,6 +1049,11 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
 	\todo{Explain} why applying ideas from strongly polynomial algorithms for
 	min-cost flow was not straightforward. 
+
+	We know that the feasibility problems are the same for min-cost and
+	generalized max-flow. Min-cost objective is additive: when you change the
+	value of the flow on one edge, that doesn't affect the objective piece for any
+	other edge, whereas in the
 
 \setlength{\bibitemsep}{0pt}
 \nocite{*}
