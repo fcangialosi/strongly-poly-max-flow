@@ -156,10 +156,10 @@
 	sinks: nodes with negative demand $-b$ act as sources because they can create
 	up to $b$ units of flow, and nodes with positive demand $b$ act as sinks 
 	because they consume at least $b$ units of flow. Thus, (excluding $t$), we denote the subset of
-	vertices with negative demand as $\vsrc$, the subset of vertices with positive
+	nodes with negative demand as $\vsrc$, the subset of nodes with positive
 	demand as $\vsink$, and the remaining nodes with zero demand as $\vz$.
 
-	For a subset of the vertices $S \subseteq V$, we define $\din(S)$ and
+	For a subset of the nodes $S \subseteq V$, we define $\din(S)$ and
 	$\dout(S)$ to be the set of incoming and outgoing edges, respectively,
 	and let $d_i = |\din(\{i\}) \cup \dout(\{i\})|$ be the total degree of a
 	node $i \in V$.
@@ -209,7 +209,7 @@
     \end{align*}
 
 	The dual linear program, given on the left below, has a variable $\eta_i$ for
-	every vertex $i$. 
+	every node $i$. 
 	Making the change of variables $\eta_i = - \mu_t / \mu_i$ yields the
 	dual optimization problem on the right.
     \vspace{0.5cm}
@@ -251,13 +251,14 @@
 
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
-	optimal labelings. We make the simplifying assumption that the sink is reachable from every vertex, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
+	optimal labelings. We make the simplifying assumption that the sink is
+	reachable from every node, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
 	Complementary slackness requires that for an optimal flow $f^*$ and optimal labeling $\mu^*$,
     \begin{equation}\label{eqn.cs} \tag{CS}
     f^*_{ij} > 0 \implies \gamma_{ij}\mu^*_i = \mu^*_j.
     \end{equation}
 	This suggests a particular interpretation of the dual variables. Imagine that
-	the vertices represent currencies and the gains represent exchange rates between those currencies.
+	the nodes represent currencies and the gains represent exchange rates between those currencies.
 	A maximum generalized flow is the currency trading strategy that maximizes the value in currency
 	$t$ at the end. We can interpret a label $\mu_i$ as the value of one dollar in currency $i$.
 	The dual constraint $\gamma_{ij} \mu_i \leq \mu_j$ means that under the labeling $\mu$,
@@ -267,7 +268,12 @@
     \todo{Be sure to mention we assume no flow-generating cycles and
     why we can make this assumption (cancel them).}
 	
-    % $\mu$ is a value assignment. We're rewriting the problem in a different currency. The relabeled dual problem is equiavelnt to the original dual problem, the constraints for tight edges become replace $\mu$ with $\mu'$ in all the constraints. There's a dual problem which solves for $\mu'$ on each vertex, and you can then get a solution to the original problem which is $\mu*\mu'$
+    % $\mu$ is a value assignment. We're rewriting the problem in a different
+		% currency. The relabeled dual problem is equiavelnt to the original dual
+		% problem, the constraints for tight edges become replace $\mu$ with $\mu'$
+		% in all the constraints. There's a dual problem which solves for $\mu'$ on
+		% each node, and you can then get a solution to the original problem which is $\mu*\mu'$
+
 	Given a feasible dual solution $\mu$, we can apply the following \textbf{relabeling}
     transformation to obtain a new problem instance with gains $\gamma^\mu$ and demands $b^\mu$
     and a primal solution to the new instance:
@@ -326,6 +332,7 @@
     to an ordinary maximum flow problem with demand constraints.
     
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing the set of tight edges.
+		\todo{Is think we should clarify this. What is \textit{the} set of tight edges?}
     Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
     algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
@@ -340,7 +347,7 @@
     suppose we solve the equivalent problem instance $(\biu, \giij)$. Then the new constraint
     becomes $\mu_i' = \mu_j'$. In order to avoid working with extra constraints, we might
     as well remove one of the variables entirely by collapsing the edge $(i, j)$, leaving a single
-    vertex $j$ with a single dual variable $\mu_j$. It remains to set the demand $b_j$ so
+    node $j$ with a single dual variable $\mu_j$. It remains to set the demand $b_j$ so
     that the problem remains equivalent. Rewritten in terms of the variables in
     the modified problem, the relevant terms of the dual objective are
     \[ \mu_t' \left(\frac{b_i^\mu}{\mu_i'} + \frac{b_j^\mu}{\mu_j'}\right)
@@ -354,6 +361,22 @@
 	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
 	essential features of the problem.
 	
+	\subsection{Progress}
+
+	%Following from the previous two sections, in order to optimize the dual,
+	%both algorithms make progress by alternating between finding contractible
+	%edges and contracting them.
+	Combining the previous two sections, the heart of both algorithms is a process
+	of alternating between finding contractible edges and contracting them, in
+	order to find a set of tight edges, which optimizes the dual. One of the main
+	differences between the two algorithms is in how they find contractible edges, which
+	we will describe in Sections~\ref{sec:2013} and~\ref{sec:2017}.
+
+	This process repeats until either (1) the graph
+	has just one node remaining, or (2) all remaining nodes have zero relabled
+	demand $\biu$. 
+	In either case, at the end we are left with a set of tight
+	edges under $\mu$, $\tau(\mu)$. By \todo{?}, knowing $\mu$ 
 
 \section{The Initial Strongly Polynomial Algorithm}
 \label{sec:2013}
@@ -602,7 +625,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     %\label{sec:2017-intro}
     As in the initial strongly polynomial generalized flow algorithm, this algorithm makes progress by
     identifying contractible edges and then contracting them until a dual optimal
-    solution is found. Each contraction collapses one vertex, so only $n$ contractions
+    solution is found. Each contraction collapses one node, so only $n$ contractions
     can occur. To identify and reason about contractible edges, we need a certificate
     (sufficient condition) for contractibility. This is an elaboration of the \emph{abundant edge}
     idea from Section \ref{sec:2013-notation}.
@@ -663,7 +686,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	\begin{proof}
 		Suppose the cut condition holds. Let $f$ be a function on tight edges minimizing
 		the total deficit $\Def(f, \mu) = \sum_i \min\{0, \biu - \nfiu\}$. Let
-		$T^+$, $T^-$ be the sets of vertices with excess and deficit, respectively:
+		$T^+$, $T^-$ be the sets of nodes with excess and deficit, respectively:
 		\begin{align*}
 			T^+ &= \{i \in V \mid \nfiu > \biu \} \\
 			T^- &= \{i \in V \mid \nfiu < \biu \}.
@@ -708,10 +731,10 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
      = (\nabla \tilde{g}_i^\mu - b_i^\mu) - (\nabla g_i^\mu - b_i^\mu) \geq b_i^\mu - \nabla g_i^\mu, \]
     as $\nabla \tilde{g}_i^\mu \geq b_i^\mu$ everywhere. So the total value of $f$ is at least
     $\Def(g, \mu)$. On the other hand, suppose it is more than $\Def(g, \mu)$. Then there
-    is some vertex $i$ where $\nfiu > \max\{0, \biu - \nabla g_i^\mu\}$. So there is some path
+    is some node $i$ where $\nfiu > \max\{0, \biu - \nabla g_i^\mu\}$. So there is some path
     ending at $i$ whose value can be reduced to reduce $\|f\|_1$, while $\tilde{g}$
     remains feasible. Therefore, $\|f^\mu\|_\infty \leq \Def(g, \mu)$. Because $\tilde{g}$ is feasible,
-    the paths shipping flow to fill the deficits of $g$ must begin at vertices at which $g$ has
+    the paths shipping flow to fill the deficits of $g$ must begin at nodes at which $g$ has
     excesses. Therefore, $\Ex(\tilde{g}, \mu) \leq \Ex(g, \mu)$.
     
     The second half of the proof continues along similar lines to show that there is an optimal
@@ -744,7 +767,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
     Prior work used scaling to directly produce flows with ``abundant edges.''
     A key novelty in this algorithm is to relax the problem further by maintaining
-    a flow which serves only as an upper bound, and to use vertex demand as a certificate
+    a flow which serves only as an upper bound, and to use node demand as a certificate
     for edge contractibility:
     \begin{definition}
     A node $i$ is \textbf{plentiful} with respect
@@ -945,11 +968,11 @@ where you can definitely send it}
     where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
     is safe before running the subroutine. For sake of contradiction, assume that
     after running the subroutine, the updated labeling $\mu'$,
-    is no longer safe. That is, there exists some subset of vertices $X \subseteq \vnott$  
+    is no longer safe. That is, there exists some subset of nodes $X \subseteq \vnott$  
     without any incoming tight edges ($\{\gamma_e^{\mu'} = 1\ \forall\ e \in \din(X)\} = \varnothing$)
     and where all nodes have positive demand $b^{\mu'}(X) > 0$.
 
-    Suppose we divide $X$ into two parts: the subset of vertices in $S$, $X \cap S$, and those
+    Suppose we divide $X$ into two parts: the subset of nodes in $S$, $X \cap S$, and those
     not in $S$, $X \setminus S$. Recall that $\mu_i' = \frac{\mu}{\alpha}$ for $i\in S$
     and $\mu' = \mu$ for $i \notin S$. Then we can rewrite the node demands under $\mu'$
     in terms of the demands under $\mu$ as follows:
