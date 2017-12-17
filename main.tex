@@ -392,7 +392,7 @@
 	Végh \cite{Vegh2013}.
 
 	Contractions continue until one of the following cases occurs:
-	\begin{enumerate}[(i)]
+	\begin{enumerate}[(i),itemsep=0mm]
 	\item the contracted graph has just one node remaining, i.e., every node has been merged
 	into the sink $t$. In this case, the set of previously identified
 	contractible edges forms a spanning tree. Given a value for $\mu_t$, the tightness
@@ -418,15 +418,30 @@
 	by an ordinary maximum flow computation over the edges of the tight tree containing $t$.
 	\end{enumerate}
     
-    \begin{example}
-    Consider the simple flow network in
-    Figure~\ref{fig:ex-graph}. \ By inspection, we can see that the maximum flow $f^{*}$
-    should send 8 units of flow along the top edge and 8 units of flow along the bottom edge,
-    resulting in 6 units at the sink. In Figure~\ref{fix:ex-spanning},
-    we show the three possible tight spanning trees for this graph.
-    In (a), the dual is not feasible. (b) and (c) are both feasible,
-    but the value produced by (c) is greater, and is thus optimal.
-    \end{example}
+	\begin{example}
+	Consider the simple flow network in
+	Figure~\ref{fig:ex-spanning}. By inspection, we can see that the maximum flow $f^{*}$
+	should send 8 units of flow from $i$ to $t$ and 8 units of flow from $j$ to $t$,
+	resulting in 6 units at the sink. On the right, we show the three possible spanning
+	trees of tight edges for this graph. Starting with $\mu_t = 1$, we compute the remaining $\mu$
+	for $i$ and $j$. In (a), the dual is not feasible because $\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
+	In (b) and (c) all of the dual constraints are feasible, but (b) produces a greater value of $\mu$
+	than (c). Solving a max flow on just the tight edges of (b) yields the max value we expect, 8, while the tight edges of (c) yields a flow of 5. This intuitively makes sense because flow traversing the path $i,j,t$ suffers a gain of $\frac{1}{2}\cdot\frac{1}{4}=\frac{1}{8}$, while the path $i,t$ is only $\frac{1}{2}$ so its clearly advantageous to send all flow from $i$ directly to $t$.
+\end{example}
+
+	\begin{figure*}[b!]
+	\centering
+	\begin{minipage}{.65\textwidth}
+		\centering
+		\includegraphics[width=0.65\linewidth]{figs/tight}
+	\end{minipage}
+	\begin{minipage}{.34\textwidth}
+		\centering
+		\includegraphics[width=.47\linewidth]{figs/tight-span}
+	\end{minipage}
+\label{fig:ex-spanning}
+\caption{(left) Example flow network. (right) All three possible spanning trees and their respective dual solutions. Dark edges are tight ($\gamma^{\mu} = 1$), gray dashed edges are not.}
+	\end{figure*}
 
 
 \section{The Initial Strongly Polynomial Algorithm}
