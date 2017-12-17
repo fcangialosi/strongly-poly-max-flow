@@ -34,6 +34,9 @@
 \theoremstyle{definition}
 \newtheorem{subroutine}{Subroutine}
 
+\theoremstyle{definition}
+\newtheorem{example}{Example}[section]
+
 % Commonly used symbols
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\fu}{f^{\mu}}
@@ -230,8 +233,8 @@
     \text{s.t.}
     &   &\gij \eta_j - \eta_i &\geq 0 \quad &&\forall\; &&(i, j) \in E \\
     &   &                     &             &&          &&\ i, j \neq t \\
-    &   &\gamma_{ti} \eta_i &= -1 \quad     &&\forall\; &&(i, t) \in E \\
-    &   &\eta_i &= -\gamma_{it} \quad       &&\forall\; &&(t, i) \in E \\
+    &   &\gamma_{ti} \eta_i &\geq -1 \quad  &&\forall\; &&(i, t) \in E \\
+    &   &-\eta_i &\geq \gamma_{it} \quad    &&\forall\; &&(t, i) \in E \\
     &   &\eta_i &\leq 0 \quad               &&\forall\; &&i \in V \setminus t
     \end{alignat*}
 	\end{minipage}
@@ -320,6 +323,7 @@
 \section{Motivating Ideas and Techniques}
 \label{sec:motivate}
 	\subsection{Solving the Dual Problem Combinatorially}
+	\label{sec:motivate-dual}
     	%* Talk about idea of solving dual 
       %  	* Key insight about this algorithm is that they maintain $f^{\mu}$ (without any extra work apparently) to be integral
       %      * Allows normal flow algorithms 
@@ -379,28 +383,50 @@
 	%Following from the previous two sections, in order to optimize the dual,
 	%both algorithms make progress by alternating between finding contractible
 	%edges and contracting them.
-	Combining the previous two sections, the heart (and running-time bottleneck)
-	of both algorithms is a process
-	of alternating between finding contractible edges and contracting them, in
-	order to find a set of tight edges, which optimizes the dual. One of the main
-	differences between the two algorithms is in 
+	The heart of both strongly polynomial algorithms is a procedure for
+	identifying contractible edges and then contracting them. The key
+	differences between the two algorithms are in 
 	\textit{how} they find contractible edges, which
-	we will describe in Sections~\ref{sec:2013} and~\ref{sec:2017}. This impacts
-	their potential analysis and leads to the better bound in the 2017
-	paper~\cite{Olver2017}.
+	we will describe in Sections~\ref{sec:2013} and~\ref{sec:2017}. These differences
+	allow Olver and Végh \cite{Olver2017} to achieve a better running time bound than
+	Végh \cite{Vegh2013}.
 
-	The alternating process repeats until either (1) the graph
-	has just one node remaining\frank{what if it has non-zero demand?}, or (2) all remaining nodes have zero relabeled
-	demand $\biu$\frank{intuitively why is this a stopping condition?}. 
-	In either case, at the end we are left with a set of tight
-	edges under $\mu$, $\tau(\mu)$, which have been contracted. Since the dual constraint $\gij\mu_i \le \mu_j$ must be tight\frank{why?}, knowing $\mu$ on a single node dictates what the value of $\mu$ must be on all other edges. Thus, if we know $u_t=1$\frank{why?} in the optimal solution, and we know the set of tight edges, then we can easily use these constraints and the $\gamma$s to compute the optimal dual solution $\mu^*$. 
+	Contractions continue until one of the following cases occurs:
+	\begin{enumerate}[(i)]
+	\item the contracted graph has just one node remaining, i.e., every node has been merged
+	into the sink $t$. In this case, the set of previously identified
+	contractible edges forms a spanning tree. Given a value for $\mu_t$, the tightness
+	constraints then uniquely determine the values of the optimal $\mu$ at all other vertices.
+	
+	\item the contracted graph has multiple nodes, but the (merged)
+	demands $\biu$ are all zero. In this case, the dual objective on the contracted
+	graph is identically zero, and the primal solution $f \equiv 0$ is feasible,
+	with a primal objective value of zero. By strong duality, any feasible dual
+	solution on the contracted graph is optimal---in particular, the feasible
+	solution produced during the contractions is optimal.
+	In this case, the set of contractible edges
+	forms a spanning forest where each component is identified with one node
+	of the contracted graph. Given the values of the dual solution at these vertices,
+	the tight spanning forest provides a recipe for reconstructing
+	an optimal dual over the original graph.
+	
+	From the primal perspective, each component of the tight forest has net ($\mu$-relabeled)
+	demand zero. As such, the flows in separate components are independent, and the objective
+	value only depends on the flow on the tight tree component containing the sink $t$.
+	As observed in Section \ref{sec:motivate-dual}, this
+	can be computed (in strongly polynomial time)
+	by an ordinary maximum flow computation over the edges of the tight tree containing $t$.
+	\end{enumerate}
     
-	In the first case, when we are left with just a single node, one can intuitively think of the set of contracted edges as a spanning tree of the original graph, which uniquely defines $\mu$ at every node. 
-    In the second case, when there is more than one node left, but all nodes have zero demand, one can intuitively think of the set of contracted edges as a spanning forest. Each node represents a connected component of the graph whose negative demands perfectly balance out the positive, and thus flow just within that component is able to completely satisfy the demand constraints. In this case, knowing these components ensures the constraints are all satisfied, but in order to calculate the \textit{value} of the maximum flow, one only needs to consider the component containing the sink $t$.
-    
-    In order to better understand this, consider the simple flow network in Figure~\ref{fig:ex-graph}. \ By inspection, we can see that the maximum flow $f^{*}$ should send 8 units of flow along the top edge and 8 units of flow along the bottom edge, resulting in 6 units at the sink. In Figure~\ref{fix:ex-spanning}, we show the three possible spanning trees for this graph. In (a), the dual is not feasible. (b) and (c) are both feasible, but the value produced by (c) is greater, and is thus optimal. 
-    
-    Now, given $\mu^*$, since all edges are tight, this is exactly a traditional maximum flow problem, and we can easily run a traditional strongly polynomial algorithm, such as Edmonds-Karp, in order to compute $f^{\mu^{*}}$. Finally, given $f^{\mu^{*}}$, we simply undo the labeling to compute the true flow value: $f^{*} = f^{\mu*}\cdot\mu^{*}$.
+    \begin{example}
+    Consider the simple flow network in
+    Figure~\ref{fig:ex-graph}. \ By inspection, we can see that the maximum flow $f^{*}$
+    should send 8 units of flow along the top edge and 8 units of flow along the bottom edge,
+    resulting in 6 units at the sink. In Figure~\ref{fix:ex-spanning},
+    we show the three possible tight spanning trees for this graph.
+    In (a), the dual is not feasible. (b) and (c) are both feasible,
+    but the value produced by (c) is greater, and is thus optimal.
+    \end{example}
 
 \section{The Initial Strongly Polynomial Algorithm}
 \label{sec:2013}
