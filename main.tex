@@ -341,8 +341,8 @@
     $\giij = \gij\mu_i/\mu_j = 1$ whenever $f_{ij} > 0$. As such, the conservation
     constraint for the relabeled optimum flow $f^\mu$ takes the form
     \[ b^{\mu} \leq \nabla f^{\mu}
-    = \sum_{j \in \din(i)} \giij \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}
-    = \sum_{j \in \din(i)} \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}. \]
+    = \sum_{(i,j) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
+    = \sum_{(i,j) \in \din(i)} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}. \]
     This is the conservation constraint of an ordinary maximum flow problem with demands
     $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
     ordinary maximum flow on the tight graph---a strongly polynomial operation.
@@ -447,11 +447,26 @@
 %-cycle canceling only once in beginning -- explain why and assumptions?
 
 
-Végh's initial algorithm \cite{Vegh2013} was the first strongly polynomial algorithm for the generalized flow maximization problem. This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
+At a high-level, Végh's initial algorithm \cite{Vegh2013} consists of the following steps:
 
-Orlin's \textit{abundant arc} concept can be applied to generalized max flow to show that if an edge has a large amount of flow in comparison to the value of the scaling factor $\Delta$, then that edge must have non-zero flow in the primal solution and, by complementary slackness, the edge must be tight in every dual solution. Therefore that edge can be contracted as shown in Section~\ref{sec:contract}. At a high-level, Végh's generalized max flow algorithm maintains a feasible primal solution while trying to identify these contractible edges to find an optimal dual solution. Once found, the optimal dual solution can be used to easily transform the feasible primal solution to an optimal primal solution via one traditional max flow iteration as shown in Section~\ref{sec:motivate-dual}.
+\begin{enumerate}[(i)]
+\item Find an initial feasible flow $\bar{f}$
+\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$ \todo{make sure this is defined in previous section and reference}
+\item Find contractible edges and contract until stopping condition is met (\ref{sec:contract})
+\item Expand and find optimal primal solution via max flow (\ref{sec:motivate-dual})
+\end{enumerate}
 
-In order to find contractible edges in strongly polynomial time, this algorithm introduces the concept of \textit{continuous scaling}. Previous scaling algorithms for this problem use distinct $\Delta$-scaling phases, where $\Delta$ is only updated after a constant number of path augmentations. This can cause an ``over-shooting'' problem in which $\Delta$ increases too quickly relative to $f^\mu$ to guarantee abundant edges. As a solution, this algorithm continuously alternates between augmenting $\Delta$ units of flow from ``high-excess'' nodes to ``low-excess'' nodes (including the sink) and proportionately increasing $\mu$ and decreasing $\Delta$. Since $\Delta$ and $\mu$ are always scaled coherently, their relative magnitude stays bounded and non-decreasing, which addresses the over-shooting problem.
+Section 4.2 explains the details and intuition between (i) and (ii), Section 4.3 delineates how contractible edges are identified, and Section 4.4 ... \todo{reference and re-explain once sections are written}
+
+\subsection{Finding and Maintaining Conservative Pairs}
+The algorithm maintains conservative labelings throughout which requires feasible solutions to (P) and (D) as well as the complementary-slackness property $\guij$=1 whenever $f_{ij}>0 \forall ij \in E$
+
+makes the assumption that an initial feasible flow is provided; this can be found by setting f to zero in the capacitated version and then finding the equivalent f in the uncapacitated representation. 
+%This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
+
+%Orlin's \textit{abundant arc} concept can be applied to generalized max flow to show that if an edge has a large amount of flow in comparison to the value of the scaling factor $\Delta$, then that edge must have non-zero flow in the primal solution and, by complementary slackness, the edge must be tight in every dual solution. Therefore that edge can be contracted as shown in Section~\ref{sec:contract}. At a high-level, Végh's generalized max flow algorithm maintains a feasible primal solution while trying to identify these contractible edges to find an optimal dual solution. Once found, the optimal dual solution can be used to easily transform the feasible primal solution to an optimal primal solution via one traditional max flow iteration as shown in Section~\ref{sec:motivate-dual}.
+
+%In order to find contractible edges in strongly polynomial time, this algorithm introduces the concept of \textit{continuous scaling}. Previous scaling algorithms for this problem use distinct $\Delta$-scaling phases, where $\Delta$ is only updated after a constant number of path augmentations. This can cause an ``over-shooting'' problem in which $\Delta$ increases too quickly relative to $f^\mu$ to guarantee abundant edges. As a solution, this algorithm continuously alternates between augmenting $\Delta$ units of flow from ``high-excess'' nodes to ``low-excess'' nodes (including the sink) and proportionately increasing $\mu$ and decreasing $\Delta$. Since $\Delta$ and $\mu$ are always scaled coherently, their relative magnitude stays bounded and non-decreasing, which addresses the over-shooting problem.
 \label{sec:2013}
 	
 	This algorithm employs scaling parametrized by a factor $\Delta$.
