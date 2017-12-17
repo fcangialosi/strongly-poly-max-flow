@@ -291,7 +291,7 @@
     \begin{claim}
     $f^\mu$ is a feasible (resp. optimal) solution to the relabeled primal problem with gains
     $\gamma^\mu$ and demands $b^\mu$ if and only if $f$ is a feasible (resp. optimal) solution
-    to the original problem. \katie{which original problem?}
+    to the original problem with gains $\gamma$ and demands $b$. \katie{which original problem?}
     \end{claim}
     \begin{claim}
     If $\mu$ is a feasible solution to the original dual problem and
@@ -319,23 +319,30 @@
   
 \section{Motivating Ideas and Techniques}
 \label{sec:motivate}
-	\subsection{Solving Dual}
+	\subsection{Solving the Dual Problem Combinatorially}
     	%* Talk about idea of solving dual 
       %  	* Key insight about this algorithm is that they maintain $f^{\mu}$ (without any extra work apparently) to be integral
       %      * Allows normal flow algorithms 
       %      * Is maintaining solution that is "close enough to feasible primal" with complementary slackness unique to this algorithm?
       %      * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
-            
-	Both algorithms solve the primal generalized flow problem by first solving the dual problem.
-    Given optimal dual labels $\mu$, consider the equivalent relabeled primal problem.
-    As $\giij = 1$ whenever $f_{ij} > 0$ (follows from (\ref{eqn.cs})), an optimal $f^{\mu}$ must satisfy
+	
+	A weakly polynomial algorithm is easily achievable by applying ellipsoid or
+	interior point methods to the linear program (P). To achieve a strongly polynomial
+	bound, the linear program must be reduced to a more combinatorial problem.
+	
+	Both algorithms discussed below employ a simple (and strongly polynomial)
+	reduction to the dual problem (D).
+    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
+    Complementary slackness dictates that for any optimal flow $f$,
+    $\giij = \gij\mu_i/\mu_j = 1$ whenever $f_{ij} > 0$. As such, the conservation
+    constraint for the relabeled optimum flow $f^\mu$ takes the form
     \[ b^{\mu} \leq \nabla f^{\mu}
     = \sum_{j \in \din(i)} \giij \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}
-    = \sum_{j \in \din(i)} \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}, \]
-    Finding a maximum generalized flow thus reduces to solving an ordinary
-    maximum flow problem on the tight graph.
-    Therefore the dual solution reduces the primal problem
-    to an ordinary maximum flow problem with demand constraints.
+    = \sum_{j \in \din(i)} \fu_{ij} - \sum_{j \in \dout(i)} \fu_{ji}. \]
+    This is the conservation constraint of an ordinary maximum flow problem with demands
+    $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
+    ordinary maximum flow on the tight graph---a strongly polynomial operation.
+    Then it is easy to recover $f$ from $f^\mu$.
     
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing the set of tight edges.
 		\todo{Is think we should clarify this. What is \textit{the} set of tight edges?}
