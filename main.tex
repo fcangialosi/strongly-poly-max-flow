@@ -14,6 +14,7 @@
 \usepackage{xfrac}
 \usepackage{hyperref}
 \usepackage[colorinlistoftodos,textsize=tiny]{todonotes}
+\usepackage{comment}
 
 \let\comment\todo
 \newcommand{\frank}[1]{\comment[nolist,color=blue!40]{f: #1}}
@@ -62,7 +63,6 @@
 
 \newcommand{\xands}{X \cap S}
 \newcommand{\xnots}{X \setminus S}
-
 \DeclareMathOperator{\Ex}{Ex}
 \DeclareMathOperator{\Def}{Def}
 
@@ -336,7 +336,7 @@
 	
 	Both algorithms discussed below employ a simple (and strongly polynomial)
 	reduction to the dual problem (D).
-    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
+    Given optimal dual labels \katie{(solutions)? should we mention that labels are just another word for solution to dual} $\mu$, consider the primal problem relabeled by $\mu$.
     Complementary slackness dictates that for any optimal flow $f$,
     $\giij = \gij\mu_i/\mu_j = 1$ whenever $f_{ij} > 0$. As such, the conservation
     constraint for the relabeled optimum flow $f^\mu$ takes the form
@@ -428,17 +428,31 @@
     but the value produced by (c) is greater, and is thus optimal.
     \end{example}
 
+
 \section{The Initial Strongly Polynomial Algorithm}
-\label{sec:2013}
-	\subsection{Introduced Notations and Concepts}
+	\subsection{Introduced Concepts and Notation}
     \label{sec:2013-notation}
-	Végh's initial strongly polynomial algorithm \cite{Vegh2013}
-	introduces the notion of a \textit{conservative labeling}, which helps to
-	identify the highest gain augmenting paths on which to push flow.
-	\begin{definition}
-	$\mu$ is a \textbf{conservative labeling} for $f$, a feasible solution to (P), if $\mu$ is
-	a feasible solution to (D) and all edges with positive flow are tight.
-	\end{definition}
+
+%Notes for "Intuitive Section 4":
+
+%-continuous scaling -> find contractible edges -> optimal dual -> optimal primal
+%-continuous scaling -> breaks down usual $\Delta$ phases so won't over-shoot labeling
+%-maintain feasible primal solution by keeping $\Delta$-feasible pair -- ensures security reserve $e_i >= R_i$
+%-maintain bound on excess for individual nodes
+%-trying to minimize max excess -- why?
+%-push flow/excess around to create/identify abundant arc $(f_ij) >= 17m\Delta$
+%-nodes with relabeled b magnitude $>= 20mn\Delta$ must have abundant arc adjacent
+%-Pushes excess around by augmenting and relabeling; if algorithm gets "stuck", uses filtration to push flow around and even out excess in an "isolated" part of graph (not part of frontier)
+%-algorithm maintains that b/delta is non-decreasing
+%-cycle canceling only once in beginning -- explain why and assumptions?
+
+
+Végh's initial algorithm \cite{Vegh2013} is the first strongly polynomial algorithm for the generalized flow maximization problem. This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
+
+Orlin's \textit{abundant arc} concept can be applied to generalized max flow to show that if an edge has a large amount of flow in comparison to the value of the scaling factor $\Delta$, then that edge must have non-zero flow in the primal solution and, by complementary slackness, the edge must be tight in every dual solution. Therefore that edge can be contracted as shown in Section~\ref{sec:contract}. At a high-level, Végh's generalized max flow algorithm maintains a feasible primal solution while trying to identify these contractible edges to find an optimal dual solution. Once found, the optimal dual solution can be used to easily transform the feasible primal solution to an optimal primal solution via one traditional max flow iteration as shown in Section~\ref{sec:motivate-dual}.
+
+In order to find contractible edges in strongly polynomial time, this algorithm introduces the concept of \textit{continuous scaling}. Previous scaling algorithms for this problem use distinct $\Delta$-scaling phases, where $\Delta$ is only updated after a constant number of path augmentations. This can cause an ``over-shooting'' problem in which $\Delta$ increases too quickly relative to $f^\mu$ to guarantee abundant edges. As a solution, this algorithm continuously alternates between augmenting $\Delta$ units of flow from ``high-excess'' nodes to ``low-excess'' nodes (including the sink) and proportionately increasing $\mu$ and decreasing $\Delta$. Since $\Delta$ and $\mu$ are always scaled coherently, their relative magnitude stays bounded and non-decreasing, which addresses the over-shooting problem.
+\label{sec:2013}
 	
 	This algorithm employs scaling parametrized by a factor $\Delta$.
     \begin{definition}
@@ -446,6 +460,13 @@
 	forward edges $(i, j)$ and those reverse edges $(j, i)$ with $f_{ij}^\mu > \Delta$. This
     is the portion of the residual graph with at least $\Delta$ capacity.
     \end{definition}
+    Végh's initial strongly polynomial algorithm \cite{Vegh2013}
+	introduces the notion of a \textit{conservative labeling}, which helps to
+	identify the highest gain augmenting paths on which to push flow.
+	\begin{definition}
+	$\mu$ is a \textbf{conservative labeling} for $f$, a feasible solution to (P), if $\mu$ is
+	a feasible solution to (D) and all edges with positive flow are tight.
+	\end{definition}
     \begin{definition}
     $\mu$ is a $\Delta$-conservative labeling for $f$, or alternatively $(f, \mu)$ are a
 	$\Delta$-feasible pair, if
@@ -472,10 +493,10 @@
 	strongly polynomial bound on the number of iterations of this algorithm.
 
 This algorithm also extends the scaling technique in the FAT-PATH algorithm
-    \cite{Goldberg:1991:CAG:105014.105022} by introducing \textit{continuous scaling}.  At a high-level, the continuous scaling
+    \cite{Goldberg:1991:CAG:105014.105022} by introducing \textit{continuous scaling}. At a high-level, the continuous scaling
     method alternately (i) augments $\Delta$ units of flow along a tight path from high
     excess nodes to low excess nodes (including the sink) or (ii) proportionately increases $\mu$ and
-    decreases $\Delta$. Unlike previous scaling methods used for the generalized flow problem,
+    decreases $\Delta$. Unlike previous scaling methods used for the generalized flow problem, such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022},
     this algorithm does not have distinct $\Delta$-phases; instead, $\Delta$ is updated continuously.
     
     As $\Delta$ and $\mu$ are always scaled coherently, their relative magnitude will stay bounded.
@@ -487,7 +508,7 @@ This algorithm also extends the scaling technique in the FAT-PATH algorithm
     setting the flow on non-tight edges to zero yields a feasible pair.
     Given this, the algorithm only needs to run a cycle-canceling
     algorithm once on the initial solution and then feasibility is maintained throughout the rest of
-    the algorithm. 
+    the algorithm.
     
 	\subsection{Algorithm Overview} \label{sec:2013-overview}
 	%\begin{table}[H]
@@ -1127,6 +1148,24 @@ where you can definitely send it}
 	generalized max-flow. Min-cost objective is additive: when you change the
 	value of the flow on one edge, that doesn't affect the objective piece for any
 	other edge, whereas in the
+    
+    %feedback 
+    \vspace{10mm}
+\todo{Main feedback from emails:} 
+
+\todo{(1) more "english descriptions" for safe sets and loose cuts}
+
+\todo{(2) too many definitions}
+
+\todo{(3) paper needs more synthesis and should have explicit outline and more main ideas rather than full proofs}
+
+\todo{(4) make $\Delta$-scaling part more clear}
+
+\todo{(5) Section 4 too definition heavy; needs more intuition}
+
+\todo{(6) intuition for why taking dual helps}
+
+	%feedback
 
 \setlength{\bibitemsep}{0pt}
 \nocite{*}
