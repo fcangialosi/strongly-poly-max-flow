@@ -389,7 +389,7 @@
 	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
 	essential features of the problem.
 	
-	\subsection{Progress}
+	\subsection{Progress} \label{sec:progress}
 
 	%Following from the previous two sections, in order to optimize the dual,
 	%both algorithms make progress by alternating between finding contractible
@@ -489,10 +489,11 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 (1) through (4) below.
 
 \begin{enumerate}[(1),itemsep=0mm]
-\item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to max $e_i^\mu$ for $i \in V\setminus T$\frank{why this value?}
+\item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to
+	  $\max_{i \in V\setminus T} \nfiu - \biu$\frank{why this value?}
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$\frank{maybe a quick reminder about why we want a conservative labeling?} 
-\item Find contractible edges and contract until stopping condition is met
-	(\ref{sec:contract}) \frank{what's the stopping condition? is it not specific
+\item Find contractible edges and contract until a stopping condition is met
+	(\emph{cf.} Section \ref{sec:progress}) \frank{what's the stopping condition? is it not specific
 	to the 2013 paper?} in one of the following ways:\frank{how does it choose
 	which of these to do?}
 	\begin{enumerate}
