@@ -482,12 +482,12 @@
 %-cycle canceling only once in beginning -- explain why and assumptions?
 
 
-A high-level overview of the steps for Végh's initial algorithm \cite{Vegh2013} is shown below. This algorithm is characterized by a scaling factor $\Delta$, which controls the amount of flow that can be augmented and the threshold for determining which edges are contractible. 
+A high-level overview of the steps for Végh's initial algorithm \cite{Vegh2013} is shown below. This algorithm is characterized by a scaling factor $\Delta$, which controls the amount of flow that can be augmented and the threshold for determining which edges are contractible. Sections \ref{sec:findconserv2013} and \ref{sec:findcontr2013} expand on the details and provide intuition for steps (i) through (iii) below.
 
 \begin{enumerate}[(i),itemsep=0mm]
-\item Find an initial feasible flow $\bar{f}$
+\item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to max $e_i^\mu$ for $i \in V\setminus T$
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$ 
-\item Find contractible edges and contract until stopping condition is met (\ref{sec:contract}) by either augmenting $\Delta$ units of flow, increasing (decreasing) $\mu$ ($\Delta$) by a constant factor, or redistributing flow around isolated parts of the graph
+\item Find contractible edges and contract until stopping condition is met (\ref{sec:contract}) by either augmenting $\Delta$ units of flow, increasing (decreasing) $\mu$ ($\Delta$) by a constant factor, or sending flow from isolated parts of the graph directly to the sink
 \item Expand and find optimal primal solution via max flow (\ref{sec:motivate-dual})
 \end{enumerate}
 
@@ -497,14 +497,14 @@ A high-level overview of the steps for Végh's initial algorithm \cite{Vegh2013}
 %	forward edges $(i, j)$ and those reverse edges $(j, i)$ with $f_{ij}^\mu > \Delta$.
  %   \end{definition}
 
-Section 4.2 explains the details and intuition between (i) and (ii), Section 4.3 delineates how contractible edges are identified, and Section 4.4 ... \todo{reference and re-explain once sections are written}
-
 \subsection{Finding and Maintaining Conservative Pairs}
-The algorithm maintains conservative labelings throughout which requires feasible solutions to (P) and (D) as well as the complementary-slackness property $\giij=1$ whenever $f_{ij}>0 \quad \forall ij \in E$. An initial feasible flow can be found by first setting f to zero in the capacitated version and then finding the equivalent f in the uncapacitated representation. A conservative labeling, $\mu$, for f can then be found by running a cycle-canceling algorithm. 
+\label{sec:findconserv2013}
+The algorithm maintains conservative labelings throughout which require feasible solutions to (P) and (D) as well as the complementary-slackness property $\giij=1$ whenever $f_{ij}>0 \quad \forall ij \in E$. An initial feasible flow can be found by first setting f to zero in the capacitated version and then finding the equivalent f in the uncapacitated representation. A conservative labeling, $\mu$, for f can then be found by running a cycle-canceling algorithm. 
 
-Once a conservative pair $(f, \mu)$ is found, the algorithm maintains it by requiring that excess of node $i \geq$ incoming flow on non-tight edges. This ensures that a feasible solution without any flow-generating cycles is always "reachable" because setting the flow on non-tight edges to zero still leaves non-zero excess on every node. 
+Once a conservative pair $(f, \mu)$ is found, the algorithm maintains it by requiring that excess of node $i \geq$ incoming flow on non-tight edges. This ensures that a feasible solution without any flow-generating cycles is always "reachable" because setting the flow on non-tight edges to zero still leaves non-zero excess on every node. \todo{explain better}
 
 \subsection{Identifying Contractible Edges}
+\label{sec:findcontr2013}
 The measure of progress in this algorithm is finding a contractible edge in a strongly polynomial number of steps. An edge is contractible when the flow on that edge is very large compared to $\Delta$; however, rather than keeping track of this ratio, the algorithm maintains a non-decreasing ratio $\frac{\abs{b_i^\mu}}{\Delta}$. The original paper uses proof by contradiction to show that if a node i has $\abs{b_i^\mu} \geq 20mn\Delta$, then it must have a contractible edge adjacent to it. 
 
 While finding and contracting edges, the algorithm maintains several sets as defined below:
@@ -515,7 +515,9 @@ While finding and contracting edges, the algorithm maintains several sets as def
 	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
 
-On each iteration of the main while loop (the ``finding and contracting edge'' while loop), the algorithm first looks to augment $\Delta$ units of flow on tight paths from high excess nodes to low excess nodes (including the sink). The algorithm only augments on tight paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$. \todo{somewhere, mention that this is a lossy network i.e. gamma=1 is the best you can do} If the algorithm is not able to augment, then there must either be (i) no reachable low excess nodes to augment to or (ii) no high excess nodes to push flow from. The subroutine $\es$ resolves both potential problems by increasing $\mu$ and decreasing $\Delta$ by a factor of $\alpha > 1$. Increasing $\mu$ for the non-reachable nodes (i.e. nodes in set V $\setminus$ T) causes the ratio $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ to increase for edges from nodes in T to nodes in V $\setminus$ T. This can cause an edge between a reachable and a non-reachable node to become tight, which may add a low excess node to the set of reachable nodes. On the other hand, decreasing $\Delta$ decreases the lower bound for $T_0$, which might create more high excess nodes. 
+On each iteration of the main while loop (the ``finding and contracting edge'' while loop), the algorithm first looks to augment $\Delta$ units of flow on tight paths from high excess nodes in set $T_0$ to low excess nodes (including the sink) in set N. The algorithm only augments on tight paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$. If the algorithm is not able to augment, then there must either be (i) no reachable low excess nodes to augment to or (ii) no high excess nodes to push flow from. 
+
+The subroutine $\es$ resolves both potential problems by increasing $\mu$ and decreasing $\Delta$ by a factor of $\alpha > 1$. Increasing $\mu$ for the non-reachable nodes (i.e. nodes in set V $\setminus$ T) causes the ratio $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ to increase for edges from nodes in T to nodes in V $\setminus$ T. This can cause an edge between a reachable and a non-reachable node to become tight (i.e. $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} = 1$), which may add a low excess node to the set of reachable nodes. On the other hand, decreasing $\Delta$ decreases the lower threshold for $T_0$, which might create more high excess nodes. This $\es$ subroutine is the only part of the function that changes the $\frac{\abs{b_i^\mu}}{\Delta}$ ratio. The ratio $\frac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing: (i) the ratio for nodes in set T is scaled by $\frac{\alpha}{\alpha}$ since both the $\mu$ and $\Delta$ values are scaled and (ii) the ratio for nodes in set V$\setminus$T is increased by a factor of $\alpha$ because only the $\Delta$ is scaled. Since this ratio is non-decreasing, the algorithm is always making progress 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
 %Orlin's \textit{abundant arc} concept can be applied to generalized max flow to show that if an edge has a large amount of flow in comparison to the value of the scaling factor $\Delta$, then that edge must have non-zero flow in the primal solution and, by complementary slackness, the edge must be tight in every dual solution. Therefore that edge can be contracted as shown in Section~\ref{sec:contract}. At a high-level, Végh's generalized max flow algorithm maintains a feasible primal solution while trying to identify these contractible edges to find an optimal dual solution. Once found, the optimal dual solution can be used to easily transform the feasible primal solution to an optimal primal solution via one traditional max flow iteration as shown in Section~\ref{sec:motivate-dual}.
