@@ -208,8 +208,7 @@
 %
 
     \begin{align*}\tag{P}
-    \text{max} \quad
-    \nabla f_t& \\
+    \max \quad \nabla f_t& \\
     \text{s.t.} \quad
     \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
     f &\geq 0
@@ -227,7 +226,7 @@
 		\fbox{
 	\begin{minipage}{0.35\textwidth}
 	\begin{alignat*}{4}
-    \text{min} &\quad &\sum_{i \in V \setminus t} b_i \eta_i \\
+    \min &\quad &\sum_{i \in V \setminus t} b_i \eta_i \\
     \text{s.t.}
     &   &\gij \eta_j - \eta_i &\geq 0 \quad &&\forall\; &&(i, j) \in E \\
     &   &                     &             &&          &&\ i, j \neq t \\
@@ -244,7 +243,7 @@
 		\fbox{
 	\begin{minipage}{0.4\textwidth}
     \begin{alignat*}{3}
-    \text{max} &\quad &\mu_t &\sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
+    \max &\quad &\mu_t \sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
     \text{s.t.}
     &   &\gij \mu_i &\leq \mu_j \quad &&\forall\; (i, j) \in E \\
     &   &\mu_i &\in \R_{>0} \cup \infty \quad &&\forall\; i \in V \setminus t \\
@@ -327,7 +326,8 @@
   Although the algorithms focus on solving the dual first, they maintain some solution to the primal throughout, and thus it often makes sense to talk about a pair of primal-dual solutions $(f, \mu)$.
   \begin{definition}
 	$\mu$ is a \textbf{conservative labeling} for $f$, a feasible solution to (P), if $\mu$ is
-	a feasible solution to (D) and all edges with positive flow are tight.
+	a feasible solution to (D) and all edges with positive flow are tight. In this case,
+	$(f, \mu)$ is called a \textbf{conservative pair}.
 	\end{definition}
   
   
@@ -461,6 +461,69 @@
 	\end{figure*}
 	\end{example}
 
+	\subsection{Contraction Certificates}
+	Complementary slackness tells us that if there is a primal optimal flow
+	$f$ with positive value
+	on some edge $e$, then $e$ is tight with respect to \emph{every} dual
+	optimal solution---that
+	is, $e$ is contractible. So a primal optimal flow provides a certificate
+	for contractibility.
+	It would seem this is of no use to us, as computing a primal optimal flow is the entire
+	problem we are trying to solve. However,
+	an optimal flow is a vastly superfluous certificate.
+	
+	Suppose instead that we have any flow $g$ and a bound on the difference
+	between $g$ and an optimal
+	flow $g^*$. Then if $g$ had a sufficiently large value on some edge $e$, we would know that
+	$g^*_e > 0$. This idea is formalized in the following lemma, adapted from Lemma 3.3 of
+	\cite{Olver2017}.
+
+	\begin{lemma} \label{lem.bound-dist}
+	Suppose $(g, \mu)$ is a conservative pair. Then there is some optimal flow $g^*$
+    uniformly ``close'' to $g$:
+    \[ \|(g^*)^\mu - g^\mu\|_\infty < \Ex(g, \mu). \]
+    \end{lemma}
+    \begin{proof}
+    The intuition is that the optimal flow improves on the feasible flow by
+    sending more of its excess to the sink. Thus, the difference $g^* - g$
+    is a flow of value at most $\Ex(g, \mu)$ at $t$. The maximum edge value of
+    the flow is bounded, in turn, by its total flow value.
+    
+	Since we are working with generalized flows, it will take a little work to formalize
+	this idea. First, among all the optimal solutions to (P), let $g^*$ be the one
+	which minimizes the total ($L^1$) difference $\|g^* - g\|_1$. Let $\mu^*$ be an
+	optimal solution to (D). Then $(g^*, \mu^*)$ are a conservative pair---this is precisely
+	the complementary slackness condition they satisfy.
+	
+	Let $h = g^* - g$. That is,
+	\[ h_{ij} \coloneqq \begin{cases}
+							g^*_{ij} - g_{ij} & \text{if } (i, j) \in E, \,
+														   g^*_{ij} > g_{ij} \\
+							\gij(g_{ij} - g^*_{ij}) & \text{if } (j, i) \in E, \,
+																 g_{ji} > g^*_{ji}
+						\end{cases} \]
+    Observe that if $h_{ij} > 0$, then either $(i, j) \in E$ and $g^*_{ij} > 0$ or
+    $(j, i) \in E$ and $g_{ji} > 0$. In other words,
+    $(i, j) \in E_g$ and $(j, i) \in E_{g^*}$.
+    
+    \begin{claim} $h$ is acyclic. \end{claim}
+    \begin{proof}[Proof of Claim]
+    Suppose that $h$ contains a cycle $C$. Then consider the net gain around $C$:
+    \[ 1 \geq \gamma^\mu(C) = \gamma(C) = \gamma^{\mu^*}(C) \geq 1, \]
+    as $\gamma^\mu \leq 1$ on $E_g$ and $\gamma^{\mu^*} \leq 1$ on $E_{g^*}$.
+    As $\gamma(C) = 1$, we can slightly modify $g^*$ over the whole cycle to
+    decrease $\|h\|_1$, contradicting the assumption on $g^*$.
+    \end{proof}
+    
+    Now $h$ may be decomposed into a set of paths. Because $\gamma^\mu \leq 1$ on
+    $E_g$, flow is only lost along these paths. As such, the total flow deposited at
+    the ends of paths is at most the total flow leaving nodes. This is equal to
+    \[ \sum_i \max\,\{0, -\nabla h_i^\mu\}
+     = \sum_i \max\,\{0, \nabla g_i^\mu - \nabla (g^*)_i^\mu\}
+     \leq \sum_i \max\,\{0, \nabla g_i^\mu - \biu \}
+     = \Ex(g, \mu). \qedhere \]
+    
+    \end{proof}
 
 \section{The Initial Strongly Polynomial Algorithm}
 \label{sec:2013}
@@ -874,18 +937,6 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
 	\subsection{Certificates}\label{sec:cert}
     
-	Complementary slackness tells us that if there is a primal optimal flow $f$ with positive value
-	on some edge $e$, then $e$ is tight with respect to \emph{every} dual optimal solution---that
-	is, $e$ is contractible. So a primal optimal flow provides a certificate for contractibility.
-	It would seem this is of no use to us, as computing a primal optimal flow is the entire
-	problem we are trying to solve. However, an optimal flow is a vastly superfluous certificate.
-	Note that we only need to know that \emph{some}
-	primal optimal flow is supported on one particular edge $e$.
-	
-	Suppose we had any flow $g$, and we could bound the difference between $g$ and an optimal
-	flow $f^*$. Then if $g$ had a sufficiently large value on some edge $e$, we would know that
-	$f^*_e \neq 0$.
-    
 	In fact, the algorithm goes one step further. Instead of maintaining a feasible flow
 	fitting the dual solution $\mu$, it maintains a possibly infeasible flow. More precisely,
     at each iteration of the algorithm we ensure that we have a \textbf{fitting pair}
@@ -951,7 +1002,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     So long as $\mu$ remains safe, we can obtain a feasible fitting flow $f$ at any time
     by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
     
-    \begin{lemma} \label{lem.bound-dist}
+    \begin{lemma} \label{lem.bound-dist2}
     Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some optimal flow $g^*$
     uniformly ``close'' to $g$:
     \[ \|(g^*)^\mu - g^\mu\|_\infty < \Ex(g, \mu) + \Def(g, \mu). \]
@@ -986,7 +1037,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     
     \end{proof}
     
-    Lemma \ref{lem.bound-dist} leads naturally to a concrete characterization of contractible edges:
+    Lemma \ref{lem.bound-dist2} leads naturally to a concrete characterization of contractible edges:
     \begin{lemma} \label{lem.contractibility}
     Suppose $(g, \mu)$ is a fitting pair (with $g$ not necessarily feasible),
     $\mu$ is safe, and $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$.
