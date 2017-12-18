@@ -311,14 +311,21 @@
     The \textbf{tight graph} consists of these edges and their endpoints.
 	\end{definition}
     
-	Given flow values and labels, the total excess and deficit of the flow with respect
-	to the labels is defined as follows:
+    \begin{definition} The \textbf{excess} of a flow at a node $i$ is the net flow left
+    there after subtracting demand, $\nfi - b_i$. When this quantity is negative, it is
+    described as \textbf{deficit}. Given $f$ and $\mu$, we can define relabeled excess
+    at a node similarly as $\nfiu - \biu$.
+    
+    Given flow values and labels, the \textbf{total excess and deficit}
+    of the flow with respect to the labels is defined as follows:
 	\begin{align*}
 	\Ex(f,\mu)  &\coloneqq \sum_{i \in V \setminus t} \max \{ \nfiu - \biu, 0 \} &
 	\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
 	\end{align*}
+    \end{definition}
+	
   \frank{add something about individual node excess}
-  Although the algorithms focus on solving the dual first, they maintain some solution to the primal throughout, and thus it often makes sense to talk about a pair of primal-dual solutions $(f,u)$.
+  Although the algorithms focus on solving the dual first, they maintain some solution to the primal throughout, and thus it often makes sense to talk about a pair of primal-dual solutions $(f, \mu)$.
   \begin{definition}
 	$\mu$ is a \textbf{conservative labeling} for $f$, a feasible solution to (P), if $\mu$ is
 	a feasible solution to (D) and all edges with positive flow are tight.
