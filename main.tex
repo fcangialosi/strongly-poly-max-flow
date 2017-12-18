@@ -598,8 +598,6 @@ $\sfrac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus T$, the subroutine will
 only be called if that set contains nodes that are close to reaching $20mn$. If
 there are no such nodes, a different subroutine, $\filtration$, is called first.
 
-\todo{cite masters thesis (borrowed intuition)}
-
 $\filtration$ runs a modified max flow iteration on nodes in set $V \setminus T$;
 the goal is to push flow directly to the sink from unreachable high excess
 nodes. The flow values computed in the max flow replace the current flows on
