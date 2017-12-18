@@ -464,7 +464,7 @@
 
 \section{The Initial Strongly Polynomial Algorithm}
 \label{sec:2013}
-	\subsection{Introduced Concepts and Notation}
+	%\subsection{Introduced Concepts and Notation}
     \label{sec:2013-notation}
 
 %Notes for "Intuitive Section 4":
@@ -481,15 +481,27 @@
 %-cycle canceling only once in beginning -- explain why and assumptions?
 
 
-A high-level overview of the steps for Végh's initial algorithm \cite{Vegh2013} is shown below. This algorithm is characterized by a scaling factor $\Delta$, which controls the amount of flow that can be augmented and the threshold for determining which edges are contractible. Sections \ref{sec:findconserv2013} and \ref{sec:findcontr2013} expand on the details and provide intuition for steps (i) through (iii) below.
+A high-level overview of Végh's initial algorithm \cite{Vegh2013}
+is shown below. This algorithm is characterized by a scaling factor $\Delta$,
+which controls the amount of flow that can be augmented at each iteration and the threshold for
+determining which edges are contractible. Sections \ref{sec:findconserv2013} and
+\ref{sec:findcontr2013} expand on the details and provide intuition for steps
+(1) through (4) below.
 
-\begin{enumerate}[(i),itemsep=0mm]
-\item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to max $e_i^\mu$ for $i \in V\setminus T$
-\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$ 
-\item Find contractible edges and contract until stopping condition is met (\ref{sec:contract}) by either augmenting $\Delta$ units of flow, increasing (decreasing) $\mu$ ($\Delta$) by a constant factor, or sending flow from isolated parts of the graph directly to the sink
+\begin{enumerate}[(1),itemsep=0mm]
+\item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to max $e_i^\mu$ for $i \in V\setminus T$\frank{why this value?}
+\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$\frank{maybe a quick reminder about why we want a conservative labeling?} 
+\item Find contractible edges and contract until stopping condition is met
+	(\ref{sec:contract}) \frank{what's the stopping condition? is it not specific
+	to the 2013 paper?} in one of the following ways:\frank{how does it choose
+	which of these to do?}
+	\begin{enumerate}
+		\item augment $\Delta$ units of flow
+		\item increase (resp. decrease) $\mu$ (resp. $\Delta$) by a constant factor
+		\item send flow from isolated parts of the graph directly to the sink
+	\end{enumerate}
 \item Expand and find optimal primal solution via max flow (\ref{sec:motivate-dual})
 \end{enumerate}
-
 
 %\begin{definition}
 %	For $\Delta \geq 0$, the \textbf{$\Delta$-fat graph} consists of all
@@ -498,38 +510,115 @@ A high-level overview of the steps for Végh's initial algorithm \cite{Vegh2013}
 
 \subsection{Finding and Maintaining Conservative Pairs}
 \label{sec:findconserv2013}
-The algorithm maintains conservative labelings throughout which require feasible solutions to (P) and (D) as well as the complementary-slackness property $\giij=1$ whenever $f_{ij}>0 \quad \forall ij \in E$. An initial feasible flow can be found by first setting f to zero in the capacitated version and then finding the equivalent f in the uncapacitated representation. A conservative labeling, $\mu$, for f can then be found by running a cycle-canceling algorithm. 
+The algorithm maintains conservative labelings throughout\frank{why is this important?}, which require
+feasible solutions to (P) and (D) as well as the complementary-slackness
+property $\giij=1$ whenever $f_{ij}>0 \quad \forall ij \in E$. An initial
+feasible flow can be found by first setting $f$ to zero in the capacitated version
+and then finding the equivalent $f$ in the uncapacitated representation.
+\frank{why is this necessary? why can't we just set $f=0$ in the uncapcitated
+version directly?}
+A conservative labeling, $\mu$, for $f$ can then be found by running a
+cycle-canceling algorithm.\frank{why does this make it conservative?}
 
-Once a conservative pair $(f, \mu)$ is found, the algorithm maintains it by requiring that excess of node $i \geq$ incoming flow on non-tight edges. This ensures that a feasible solution without any flow-generating cycles is always "reachable" because setting the flow on non-tight edges to zero still leaves non-zero excess on every node. \todo{explain better}
+Once a conservative pair $(f, \mu)$ is found, the algorithm maintains it by
+requiring that excess of node $i \geq$ incoming flow on non-tight edges. This
+ensures that a feasible solution without any flow-generating cycles is always
+``reachable'' because setting the flow on non-tight edges to zero still leaves
+non-zero excess on every node. \todo{explain better}
 
 \subsection{Identifying Contractible Edges}
 \label{sec:findcontr2013}
-The measure of progress in this algorithm is finding a contractible edge in a strongly polynomial number of steps. An edge is contractible when the flow on that edge is very large compared to $\Delta$; however, rather than keeping track of this ratio, the algorithm maintains a non-decreasing ratio $\frac{\abs{b_i^\mu}}{\Delta}$. The original paper uses proof by contradiction to show that if a node i has $\abs{b_i^\mu} \geq 20mn\Delta$, then it must have a contractible edge adjacent to it. 
+The measure of progress in this algorithm is finding a contractible edge in a
+strongly polynomial number of steps. An edge is contractible when the flow on
+that edge is very large compared to $\Delta$; however, rather than keeping track
+of this ratio, the algorithm maintains a non-decreasing ratio
+$\frac{\abs{b_i^\mu}}{\Delta}$. The original paper uses proof by contradiction
+to show that if a node $i$ has $\abs{b_i^\mu} \geq 20mn\Delta$, then it must
+have a contractible edge adjacent to it.\frank{We might want to at least sketch
+the proof for why this is true}
 
 While finding and contracting edges, the algorithm maintains several sets as defined below:
+\frank{Not crucial, but consider giving these more intuitive variables. I think
+the worst is $T_0$ and $T$, I think it's confusing that they use the same
+letter.}
 	\begin{align*}
-	N&\text{: set containing sink and ``low relabeled excess'' nodes with excess of node i} < (d_i +1)\Delta \\
-	T_0&\text{: set of ``high relabeled excess'' nodes with  excess of node i } \geq (d_i + 2)\Delta \\
+	N&\text{: set containing sink and ``low relabeled excess'' nodes with excess of node } i < (d_i +1)\Delta \\
+	T_0&\text{: set of ``high relabeled excess'' nodes with  excess of node }i \geq (d_i + 2)\Delta \\
 	T&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
 	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
+	\frank{Why is $D$ constructed in this way?}
 
-On each iteration of the main while loop (the ``finding and contracting edge'' while loop), the algorithm first looks to augment $\Delta$ units of flow on tight paths from high relabeled excess nodes in set $T_0$ to low relabeled excess nodes (including the sink) in set N. The algorithm only augments on tight paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$. If the algorithm is not able to augment, then there must either be (i) no reachable low excess nodes to augment to or (ii) no high excess nodes to push flow from. 
+On each iteration of the main while loop (the ``finding and contracting edge''
+while loop), the algorithm first looks to augment $\Delta$ units of flow on
+tight paths from high relabeled excess nodes in set $T_0$ to low relabeled
+excess nodes (including the sink) in set N. The algorithm only augments on tight
+paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$.
+\frank{We need to make sure we mention somewhere that we do X,Y,Z so that we can
+assume networks are lossy}
+If the algorithm is not able to augment, then there must either be (i) no
+reachable low excess nodes to augment to or (ii) no high excess nodes to push
+flow from.
 
-The subroutine $\es$ resolves both potential problems by increasing $\mu$ and decreasing $\Delta$ by a factor of $\alpha > 1$. Increasing $\mu$ for the non-reachable nodes (i.e. nodes in set V $\setminus$ T) causes the ratio $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ to increase for edges from nodes in T to nodes in V $\setminus$ T. This can cause an edge between a reachable and a non-reachable node to become tight (i.e. $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} = 1$), which may add a low excess node to the set of reachable nodes. On the other hand, decreasing $\Delta$ decreases the lower threshold for $T_0$, which might create more high excess nodes. This $\es$ subroutine is the only part of the function that changes the $\frac{\abs{b_i^\mu}}{\Delta}$ ratio. The ratio $\frac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing: (i) the ratio for nodes in set T is scaled by $\frac{\alpha}{\alpha}$ since both the $\mu$ and $\Delta$ values are scaled and (ii) the ratio for nodes in set V$\setminus$T is increased by a factor of $\alpha$ because only the $\Delta$ is scaled. Since this ratio is non-decreasing, the algorithm is always making progress towards finding a contractible edge; however, this progress might be very slow. To speed the process up, the algorithm prioritizes increasing the $\frac{\abs{b_i^\mu}}{\Delta}$ ratio for nodes that are already approaching the 20mn threshold; these nodes are included in set D. 
+The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
+decreasing $\Delta$ by a factor of $\alpha > 1$. Increasing $\mu$ for the
+non-reachable nodes (i.e. nodes in set V $\setminus$ T) causes the ratio
+$\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ 
+\frank{What is this ratio and why does it have to be strictly less than 1?}
+to increase for edges from nodes in $T$
+to nodes in $V \setminus T$.
+\frank{It might be helpful to refer to this as edges crossing the V-T cut}
+This can cause an edge between a reachable and a
+non-reachable node to become tight (i.e. $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} =
+1$), which may add a low excess node to the set of reachable nodes. On the other
+hand, decreasing $\Delta$ decreases the lower threshold for $T_0$, which might
+create more high excess nodes. This $\es$ subroutine is the only part of the
+function that changes the $\sfrac{\abs{b_i^\mu}}{\Delta}$ ratio. 
+\begin{claim}
+The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing.
+\end{claim}
+\begin{proof}
+The ratio for nodes in set $T$ is scaled by $\frac{\alpha}{\alpha}=1$ since
+both the $\mu$ and $\Delta$ values are scaled. The ratio for nodes in 
+the set $V\setminus T$ is increased by a factor of $\alpha$ because only 
+$\Delta$ is scaled. 
+\end{proof}
 
-If there are no augmentations to be made on a certain iteration, $\es$ is called if $D \cap V\setminus T \neq \varnothing$. Since $\es$ only increases $\frac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus T$, the subroutine will only be called if that set contains nodes that are close to reaching 20mn. If there are no such nodes, a different subroutine, $\filtration$, is called first.
+Since this ratio is non-decreasing, the algorithm is always making progress towards finding a
+contractible edge; however, this progress might be very slow. \frank{Is there
+anything to say that it's not 0? Otherwise couldn't it just be stuck forever?}
+To speed the process up, the algorithm prioritizes increasing the
+$\sfrac{\abs{b_i^\mu}}{\Delta}$ ratio for nodes that are already approaching the
+$20mn$ threshold; these nodes are included in set D.\frank{Same thing as before:
+why this value?}
+
+If there are no augmentations to be made on a certain iteration, $\es$ is called
+if $D \cap V\setminus T \neq \varnothing$. Since $\es$ only increases
+$\sfrac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus T$, the subroutine will
+only be called if that set contains nodes that are close to reaching $20mn$. If
+there are no such nodes, a different subroutine, $\filtration$, is called first.
 
 \todo{cite masters thesis (borrowed intuition)}
 
-$\filtration$ runs a modified max flow iteration on nodes in set V$\setminus$T; the goal is to push flow directly to the sink from unreachable high excess nodes. The flow values computed in the max flow replace the current flows on edges contained in V$\setminus$T; all other edge flow values remain the same except for flow on edges going from nodes in V$\setminus$ T to T which are set to zero. This subroutine can speed up the finding the contractible arc process in the following ways:
+$\filtration$ runs a modified max flow iteration on nodes in set $V \setminus T$;
+the goal is to push flow directly to the sink from unreachable high excess
+nodes. The flow values computed in the max flow replace the current flows on
+edges contained in $V \setminus T$; all other edge flow values remain the same
+except for flow on edges going from nodes in $V \setminus T$  to $T$ which are set
+to zero\frank{again talking about cut might be clearer here}. This subroutine can speed up the finding the contractible arc process
+in the following ways:
 
 \begin{enumerate}[(i),itemsep=0mm]
-\item Setting the flow to zero on edges from nodes in V$\setminus$ T to T reduces the excess of nodes in T, which could cause the nodes to become low-excess nodes that are reachable to augment to in future iterations
-\item Reducing excess of nodes in V$\setminus$T might cause some of these nodes to join set D, allowing their $\frac{\abs{b_i^\mu}}{\Delta}$ to be increased during $\es$
+\item Setting the flow to zero on edges from nodes in $V\setminus T$ to $T$
+	reduces the excess of nodes in $T$, which could cause the nodes to become
+	low-excess nodes that are reachable to augment to in future iterations
+\item Reducing excess of nodes in $V \setminus T$ might cause some of these nodes
+	to join set $D$, allowing their $\sfrac{\abs{b_i^\mu}}{\Delta}$ to be increased
+	during $\es$
 \end{enumerate}
 
-This alternation between augmenting, rescaling, and pushing flow from V$\setminus$ T to t continues until the graph is contracted into one node. 
+This alternation between augmenting, rescaling, and pushing flow from
+V$\setminus$ T to $t$ continues until the graph is contracted into one node. 
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
