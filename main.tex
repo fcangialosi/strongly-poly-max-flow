@@ -481,7 +481,7 @@
 	\begin{lemma} \label{lem.bound-dist}
 	Suppose $(g, \mu)$ is a conservative pair. Then there is some optimal flow $g^*$
     uniformly ``close'' to $g$:
-    \[ \|(g^*)^\mu - g^\mu\|_\infty < \Ex(g, \mu). \]
+    \[ \|(g^*)^\mu - g^\mu\|_\infty \leq \Ex(g, \mu). \]
     \end{lemma}
     \begin{proof}
     The intuition is that the optimal flow improves on the feasible flow by
@@ -515,13 +515,13 @@
     decrease $\|h\|_1$, contradicting the assumption on $g^*$.
     \end{proof}
     
-    Now $h$ may be decomposed into a set of paths. Because $\gamma^\mu \leq 1$ on
-    $E_g$, flow is only lost along these paths. As such, the total flow deposited at
-    the ends of paths is at most the total flow leaving nodes. This is equal to
-    \[ \sum_i \max\,\{0, -\nabla h_i^\mu\}
+    Now $h$ may be decomposed into a set of paths. Because $h$ is supported in $E_g$ and
+    $\gamma^\mu \leq 1$ on $E_g$, flow can only decrease along these paths.
+    As such, the total flow along any edge is at most the total flow leaving nodes:
+    \[ \|h^\mu\|_\infty \leq \sum_i \max\,\{0, -\nabla h_i^\mu\}
      = \sum_i \max\,\{0, \nabla g_i^\mu - \nabla (g^*)_i^\mu\}
-     \leq \sum_i \max\,\{0, \nabla g_i^\mu - \biu \}
-     = \Ex(g, \mu). \qedhere \]
+     \leq \sum_i \max\,\{0, \nabla g_i^\mu - \biu \}, \]
+     which is $\Ex(g, \mu)$ as desired.
     
     \end{proof}
 
@@ -1005,11 +1005,16 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \begin{lemma} \label{lem.bound-dist2}
     Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some optimal flow $g^*$
     uniformly ``close'' to $g$:
-    \[ \|(g^*)^\mu - g^\mu\|_\infty < \Ex(g, \mu) + \Def(g, \mu). \]
+    \[ \|(g^*)^\mu - g^\mu\|_\infty \leq \Ex(g, \mu) + \Def(g, \mu). \]
     \end{lemma}
     \begin{proof}
-			As $g$ fits $\mu$, $g$ is supported on the tight edges $\tau(\mu)$. As
-			$\mu$ is safe, there is some feasible flow supported in $\tau(\mu)$. We first
+    We show that there is a feasible $\tilde{g}$ fitting $\mu$ and satisfying
+    \[ \|\tilde{g}^\mu - g^\mu\|_\infty \leq \Def(g, \mu) \quad \text{and} \quad
+       \Ex(\tilde{g}, \mu) \leq \Ex(g, \mu). \]
+    The conclusion then follows by Lemma \ref{lem.bound-dist} and the triangle inequality.
+    
+	As $g$ fits $\mu$, $g$ is supported on the tight edges $\tau(\mu)$. As
+	$\mu$ is safe, there is some feasible flow supported in $\tau(\mu)$. We first
     look for a feasible flow $\tilde{g}$ close to $g$. To that end, consider the
     difference $f^\mu = \tilde{g}^\mu - g^\mu$, which is also supported in $\tau(\mu)$.
     (If $f_{ij}$ are negative, we think of this as positive flow on the reverse edge $(j, i)$.)
@@ -1029,12 +1034,6 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     remains feasible. Therefore, $\|f^\mu\|_\infty \leq \Def(g, \mu)$. Because $\tilde{g}$ is feasible,
     the paths shipping flow to fill the deficits of $g$ must begin at nodes at which $g$ has
     excesses. Therefore, $\Ex(\tilde{g}, \mu) \leq \Ex(g, \mu)$.
-    
-    The second half of the proof continues along similar lines to show that there is an optimal
-    fitting pair $(g^*, \mu^*)$ with
-    \[ \|(g^*)^\mu - \tilde{g}^\mu\|_\infty \leq \Ex(\tilde{g}, \mu) \leq \Ex(g, \mu). \]
-    The conclusion then follows from the triangle inequality.
-    
     \end{proof}
     
     Lemma \ref{lem.bound-dist2} leads naturally to a concrete characterization of contractible edges:
