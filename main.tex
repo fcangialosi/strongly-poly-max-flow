@@ -409,7 +409,8 @@
 	with a primal objective value of zero. By strong duality, any feasible dual
 	solution on the contracted graph is optimal---in particular, the feasible
 	solution produced during the contractions is optimal.
-	In this case, the set of contractible edges
+	
+	In this case, the set of previously identified contractible edges
 	forms a spanning forest where each component is identified with one node
 	of the contracted graph. Given the values of the dual solution at these vertices,
 	the tight spanning forest provides a recipe for reconstructing
@@ -428,13 +429,16 @@
 	Figure~\ref{fig:ex-spanning}. By inspection, we can see that the maximum flow $f^{*}$
 	should send 8 units of flow from $i$ to $t$ and 8 units of flow from $j$ to $t$,
 	resulting in 6 units at the sink. On the right, we show the three possible spanning
-	trees of tight edges for this graph. Starting with $\mu_t = 1$, we compute the remaining $\mu$
-	for $i$ and $j$. In (a), the dual is not feasible because $\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
-	In (b) and (c) all of the dual constraints are feasible, but (b) produces a greater value of $\mu$
-	than (c). Solving a max flow on just the tight edges of (b) yields the max value we expect, 8, while the tight edges of (c) yields a flow of 5. This intuitively makes sense because flow traversing the path $i,j,t$ suffers a gain of $\frac{1}{2}\cdot\frac{1}{4}=\frac{1}{8}$, while the path $i,t$ is only $\frac{1}{2}$ so its clearly advantageous to send all flow from $i$ directly to $t$.
-\end{example}
-
-	\begin{figure*}[b!]
+	trees of tight edges for this graph.
+	For each tree, starting with $\mu_t = 1$, we can compute $\mu_i$
+	and $\mu_j$. In (a), the dual is not feasible because
+	$\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
+	In (b) and (c) all of the dual constraints are feasible,
+	but (b) produces a greater objective value
+	than (c). Solving a max flow on just the tight edges of (b) yields the max value
+	we expect, 6. The optimal collection of tight edges encodes all the information necessary
+	to reconstruct the optimal solution.
+	\begin{figure*}[h]
 	\centering
 	\begin{minipage}{.65\textwidth}
 		\centering
@@ -444,9 +448,12 @@
 		\centering
 		\includegraphics[width=.47\linewidth]{figs/tight-span}
 	\end{minipage}
-\label{fig:ex-spanning}
-\caption{(left) Example flow network. (right) All three possible spanning trees and their respective dual solutions. Dark edges are tight ($\gamma^{\mu} = 1$), gray dashed edges are not.}
+	\label{fig:ex-spanning}
+	\caption{(left) Example flow network. (right) All three possible tight
+	spanning trees and their respective dual solutions.
+	Dark edges are tight ($\gamma^{\mu} = 1$), gray dashed edges are not.}
 	\end{figure*}
+	\end{example}
 
 
 \section{The Initial Strongly Polynomial Algorithm}
