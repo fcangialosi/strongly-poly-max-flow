@@ -344,10 +344,10 @@
     Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
     Complementary slackness dictates that for any optimal flow $f$,
     $\giij = \gij\mu_i/\mu_j = 1$ whenever $f_{ij} > 0$. As such, the conservation
-    constraint for the relabeled optimum flow $f^\mu$ takes the form\frank{@david: can you double check the following equation? I think a few of the ij were flipped so I tried to fix it}
+    constraint for the relabeled optimum flow $f^\mu$ takes the form
     \[ b^{\mu} \leq \nabla f^{\mu}
-    = \sum_{(i,j) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
-    = \sum_{(i,j) \in \din(i)} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}. \]
+    = \sum_{(j,i) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
+    = \sum_{(j,i) \in \din(i)} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}. \]
     This is the conservation constraint of an ordinary maximum flow problem with demands
     $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
     ordinary maximum flow on the tight graph---a strongly polynomial operation.
@@ -493,16 +493,16 @@ Once a conservative pair $(f, \mu)$ is found, the algorithm maintains it by requ
 \subsection{Identifying Contractible Edges}
 The measure of progress in this algorithm is finding a contractible edge in a strongly polynomial number of steps. An edge is contractible when the flow on that edge is very large compared to $\Delta$; however, rather than keeping track of this ratio, the algorithm maintains a non-decreasing ratio $\frac{\abs{b_i^\mu}}{\Delta}$. The original paper uses proof by contradiction to show that if a node i has $\abs{b_i^\mu} \geq 20mn\Delta$, then it must have a contractible edge adjacent to it. 
 
-%While finding and contracting edges, the algorithm maintains several sets as defined below:
-%	\begin{align*}
-%	N&\text{: set containing sink and ``low relabeled excess'' nodes with }
- %           \nfiu - \biu < (d_i +1)\Delta \\
-%	T_0&\text{: set of ``high relabeled excess'' nodes with } \nfiu - \biu \geq (d_i + 2)\Delta \\
-%	T&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
-%	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
-	%\end{align*}
+While finding and contracting edges, the algorithm maintains several sets as defined below:
+	\begin{align*}
+	N&\text{: set containing sink and ``low relabeled excess'' nodes with }
+            \nfiu - \biu < (d_i +1)\Delta \\
+	T_0&\text{: set of ``high relabeled excess'' nodes with } \nfiu - \biu \geq (d_i + 2)\Delta \\
+	T&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
+	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
+	\end{align*}
 
-On each iteration of the main while loop (the ``finding and contracting edge'' while loop), the algorithm first looks to augment $\Delta$ units of flow on tight paths from high excess nodes to low excess nodes (including the sink). The algorithm only augments on tight paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$. \todo{somewhere, mention that this is a lossy network i.e. gamma=1 is the best you can do} If the algorithm is not able to augment, then there must either be (i) no reachable low excess nodes to augment to or (ii) no high excess nodes to push flow from. The subroutine $\es$ resolves both potential problems by increasing $\mu$ and decreasing $\Delta$ by a factor of $\alpha > 1$. Increasing $\mu$ causes the 
+On each iteration of the main while loop (the ``finding and contracting edge'' while loop), the algorithm first looks to augment $\Delta$ units of flow on tight paths from high excess nodes to low excess nodes (including the sink). The algorithm only augments on tight paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$. \todo{somewhere, mention that this is a lossy network i.e. gamma=1 is the best you can do} If the algorithm is not able to augment, then there must either be (i) no reachable low excess nodes to augment to or (ii) no high excess nodes to push flow from. The subroutine $\es$ resolves both potential problems by increasing $\mu$ and decreasing $\Delta$ by a factor of $\alpha > 1$. Increasing $\mu$ for the non-reachable nodes (i.e. nodes in set V $\setminus$ T) causes the ratio $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ to increase for edges from nodes in T to nodes in V $\setminus$ T. This can cause an edge between a reachable and a non-reachable node to become tight, which may add a low excess node to the set of reachable nodes. On the other hand, decreasing $\Delta$ 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
 %Orlin's \textit{abundant arc} concept can be applied to generalized max flow to show that if an edge has a large amount of flow in comparison to the value of the scaling factor $\Delta$, then that edge must have non-zero flow in the primal solution and, by complementary slackness, the edge must be tight in every dual solution. Therefore that edge can be contracted as shown in Section~\ref{sec:contract}. At a high-level, Végh's generalized max flow algorithm maintains a feasible primal solution while trying to identify these contractible edges to find an optimal dual solution. Once found, the optimal dual solution can be used to easily transform the feasible primal solution to an optimal primal solution via one traditional max flow iteration as shown in Section~\ref{sec:motivate-dual}.
