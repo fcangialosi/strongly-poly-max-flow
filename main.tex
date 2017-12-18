@@ -437,7 +437,7 @@
 	but (b) produces a greater objective value
 	than (c). Solving a max flow on just the tight edges of (b) yields the max value
 	we expect, 6. The optimal collection of tight edges encodes all the information necessary
-	to reconstruct the optimal solution.
+	to reconstruct the optimal solution.\frank{todo: mention u* is negative 6 because of change of variables}
 	\begin{figure*}[h]
 	\centering
 	\begin{minipage}{.65\textwidth}
@@ -502,9 +502,8 @@ The measure of progress in this algorithm is finding a contractible edge in a st
 
 While finding and contracting edges, the algorithm maintains several sets as defined below:
 	\begin{align*}
-	N&\text{: set containing sink and ``low relabeled excess'' nodes with }
-            \nfiu - \biu < (d_i +1)\Delta \\
-	T_0&\text{: set of ``high relabeled excess'' nodes with } \nfiu - \biu \geq (d_i + 2)\Delta \\
+	N&\text{: set containing sink and ``low relabeled excess'' nodes with excess of node i} < (d_i +1)\Delta \\
+	T_0&\text{: set of ``high relabeled excess'' nodes with  excess of node i } \geq (d_i + 2)\Delta \\
 	T&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
 	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
