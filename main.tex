@@ -728,7 +728,7 @@ This alternation between augmenting, rescaling, and pushing flow from V$\setminu
 \section{A Faster Strongly Polynomial Algorithm}\label{sec:2017}
 
 The most recent strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} takes the same overall approach as the original algorithm~\cite{Vegh2013}, but introduces several key ideas that improve the running time by a factor of almost $O(n^2)$. 
-In this section, we describe the algorithm, tying core ideas back to previous work, and highlighting and providing intuition for the novel ideas the contribute to the improved running time. 
+In this section, we describe the algorithm, tying core ideas back to previous work, and highlighting and providing intuition for the novel ideas that contribute to the improved running time. 
  %A highlight of the difficulties in
 %previous algorithms and the subsequent solutions from this algorithm are
 %summarized in Table~\ref{tab:improvements}.
@@ -1217,17 +1217,19 @@ where you can definitely send it}
     \end{proof}
 
 
-\section{Discussion and Future Work}\label{sec:discussion}
+\section{Conclusion}\label{sec:discussion} 
 
-	\subsection{Non-triviality of a strongly polynomial algorithm}
+We presented and compared two strongly polynomial algorithms for the maximum generalized flow problem. Both algorithms obtain optimal solutions by solving the relabeled dual problem and by identifying and contracting abundant edges. The more recent algorithm by Olver and Végh achieves a theoretical bound that is almost a factor of $O(n^2)$ faster than Végh's initial algorithm though by relaxing the feasibility of flow during the algorithm. \todo{brief explanation of key factor(s) that causes the new algorithm to have much better speed up}
 
-	\todo{Explain} why applying ideas from strongly polynomial algorithms for
-	min-cost flow was not straightforward. 
+%	\subsection{Non-triviality of a strongly polynomial algorithm}
 
-	We know that the feasibility problems are the same for min-cost and
-	generalized max-flow. Min-cost objective is additive: when you change the
-	value of the flow on one edge, that doesn't affect the objective piece for any
-	other edge, whereas in the
+%	\todo{Explain} why applying ideas from strongly polynomial algorithms for
+%	min-cost flow was not straightforward. 
+
+%	We know that the feasibility problems are the same for min-cost and
+	%generalized max-flow. Min-cost objective is additive: when you change the
+	%value of the flow on one edge, that doesn't affect the objective piece for any
+	%other edge, whereas in the
     
     %feedback 
     \vspace{10mm}
