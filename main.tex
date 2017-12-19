@@ -567,7 +567,7 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 		\item increase (resp. decrease) $\mu$ (resp. $\Delta$) by a constant factor
 		\item send flow from isolated parts of the graph directly to the sink
 	\end{enumerate}
-\item Expand and find optimal primal solution via max flow (\ref{sec:motivate-dual})
+\item Expand and find optimal primal solution via max flow (\ref{sec:motivate-dual}) \todo{check if correct ref and need to add section to talk about this or already covered in 3?}
 \end{enumerate}
 
 %\begin{definition}
@@ -605,21 +605,18 @@ have a contractible edge adjacent to it.\frank{We might want to at least sketch
 the proof for why this is true}
 
 While finding and contracting edges, the algorithm maintains several sets as defined below:
-\frank{Not crucial, but consider giving these more intuitive variables. I think
-the worst is $T_0$ and $T$, I think it's confusing that they use the same
-letter.}
 	\begin{align*}
-	N&\text{: set containing sink and ``low relabeled excess'' nodes with excess of node } i < (d_i +1)\Delta \\
-	T_0&\text{: set of ``high relabeled excess'' nodes with  excess of node }i \geq (d_i + 2)\Delta \\
-	T&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
+	L&\text{: set containing sink and ``low relabeled excess'' nodes with excess of node } i < (d_i +1)\Delta \\
+	H&\text{: set of ``high relabeled excess'' nodes with  excess of node }i \geq (d_i + 2)\Delta \\
+	R&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
 	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
 	\frank{Why is $D$ constructed in this way?}
 
 On each iteration of the main while loop (the ``finding and contracting edge''
 while loop), the algorithm first looks to augment $\Delta$ units of flow on
-tight paths from high relabeled excess nodes in set $T_0$ to low relabeled
-excess nodes (including the sink) in set N. The algorithm only augments on tight
+tight paths from high relabeled excess nodes in set H to low relabeled
+excess nodes (including the sink) in set L. The algorithm only augments on tight
 paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$.
 \frank{We need to make sure we mention somewhere that we do X,Y,Z so that we can
 assume networks are lossy}
@@ -629,25 +626,25 @@ flow from.
 
 The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
 decreasing $\Delta$ by a factor of $\alpha > 1$\frank{How is this value chosen?}. Increasing $\mu$ for the
-non-reachable nodes (i.e. nodes in set V $\setminus$ T) causes the ratio
+non-reachable nodes (i.e. nodes in set V $\setminus$ R) causes the ratio
 $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ 
 \frank{What is this ratio and why does it have to be strictly less than 1?}
-to increase for edges from nodes in $T$
-to nodes in $V \setminus T$.
-\frank{It might be helpful to refer to this as edges crossing the V-T cut}
+to increase for edges from nodes in $R$
+to nodes in $V \setminus R$.
+\frank{It might be helpful to refer to this as edges crossing the V-R cut}
 This can cause an edge between a reachable and a
 non-reachable node to become tight (i.e. $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} =
 1$), which may add a low excess node to the set of reachable nodes. On the other
-hand, decreasing $\Delta$ decreases the lower threshold for $T_0$, which might
+hand, decreasing $\Delta$ decreases the lower threshold for $H$, which might
 create more high excess nodes. This $\es$ subroutine is the only part of the
 function that changes the $\sfrac{\abs{b_i^\mu}}{\Delta}$ ratio. 
 \begin{claim}
 The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing.
 \end{claim}
 \begin{proof}
-$\alpha > 1$ by construction. The ratio for nodes in set $T$ is scaled by $\frac{\alpha}{\alpha}=1$ since
+$\alpha > 1$ by construction. The ratio for nodes in set $R$ is scaled by $\frac{\alpha}{\alpha}=1$ since
 both the $\mu$ and $\Delta$ values are scaled. The ratio for nodes in 
-the set $V\setminus T$ is multiplied by a factor of $\alpha > 1$ because only 
+the set $V\setminus R$ is multiplied by a factor of $\alpha > 1$ because only 
 $\Delta$ is scaled (i.e. divided by $\alpha$). 
 \end{proof}
 
@@ -660,30 +657,30 @@ $20mn$ threshold; these nodes are included in set D.\frank{Same thing as before:
 why this value?}
 
 If there are no augmentations to be made on a certain iteration, $\es$ is called
-if $D \cap V\setminus T \neq \varnothing$. Since $\es$ only increases
-$\sfrac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus T$, the subroutine will
+if $D \cap V\setminus R \neq \varnothing$. Since $\es$ only increases
+$\sfrac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus R$, the subroutine will
 only be called if that set contains nodes that are close to reaching $20mn$. If
 there are no such nodes, a different subroutine, $\filtration$, is called first.
 
-$\filtration$ runs a modified max flow iteration on nodes in set $V \setminus T$;
+$\filtration$ runs a modified max flow iteration on nodes in set $V \setminus R$;
 the goal is to push flow directly to the sink from unreachable high excess
 nodes. The flow values computed in the max flow replace the current flows on
-edges contained in $V \setminus T$; all other edge flow values remain the same
-except for flow on edges going from nodes in $V \setminus T$  to $T$ which are set
+edges contained in $V \setminus R$; all other edge flow values remain the same
+except for flow on edges going from nodes in $V \setminus R$  to $R$ which are set
 to zero\frank{again talking about cut might be clearer here}. This subroutine can speed up the finding the contractible arc process
 in the following ways:
 
 \begin{enumerate}[(i),itemsep=0mm]
-\item Setting the flow to zero on edges from nodes in $V\setminus T$ to $T$
-	reduces the excess of nodes in $T$, which could cause the nodes to become
+\item Setting the flow to zero on edges from nodes in $V\setminus R$ to $R$
+	reduces the excess of nodes in $R$, which could cause the nodes to become
 	low-excess nodes that are reachable to augment to in future iterations
-\item Reducing excess of nodes in $V \setminus T$ might cause some of these nodes
+\item Reducing excess of nodes in $V \setminus R$ might cause some of these nodes
 	to join set $D$, allowing their $\sfrac{\abs{b_i^\mu}}{\Delta}$ to be increased
 	during $\es$
 \end{enumerate}
 
 This alternation between augmenting, rescaling, and pushing flow from
-$V \setminus T$ to $t$ continues until the graph is contracted into one node. 
+$V \setminus R$ to $t$ continues until the graph is contracted into one node. 
 
 \subsection{Strongly Polynomial Bound}
 \frank{I think we at least need to say something tying this whole section back to a strongly polynomial runtime. If on top of that we can also say something about how they got the runtime, even if it's not too detailed, I think that'd be better.. }
