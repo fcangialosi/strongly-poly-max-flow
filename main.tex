@@ -686,7 +686,9 @@ This alternation between augmenting, rescaling, and pushing flow from
 $V \setminus R$ to $t$ continues until the graph is contracted into one node. 
 
 \subsection{Strongly Polynomial Bound}
-The full set of proofs for this runtime analysis in the original paper \cite{article} is lengthy and complex, so in this section we instead provide insight about the few key ideas that lead to a strongly polynomial bounded runtime. 
+In this section we analyze a few key ideas that lead to a strongly polynomial bounded runtime. The full (and lengthy) set of proofs for the runtime analysis can be found in the original paper \cite{article}.
+
+Since the stopping condition for the ``find contractible edge'' is reducing the graph to one node, there can only be n-1 contractions. Therefore the analysis aims to put a strongly polynomial bound on the runtime of iterations between contractions (i.e. prove a contractible edge can be found within a polynomial number of steps). 
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
