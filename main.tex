@@ -690,6 +690,12 @@ In this section we analyze a few key ideas that lead to a strongly polynomial bo
 
 First note that since the stopping condition for the ``find contractible edge'' is reducing the graph to one node, there can only be n-1 contractions. Therefore the analysis aims to put a strongly polynomial bound on the runtime of iterations between contractions (i.e. prove a contractible edge can be found within a polynomial number of steps). 
 
+To bound the number of iterations between contractions, we define the following potential function: 
+
+\[ \Psi \coloneqq \sum_{i \in H}  \lfloor \frac{e_i}{\Delta \mu_i} - (d_i + 1) \rfloor \]
+
+The potential increases 
+
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
 %Orlin's \textit{abundant arc} concept can be applied to generalized max flow to show that if an edge has a large amount of flow in comparison to the value of the scaling factor $\Delta$, then that edge must have non-zero flow in the primal solution and, by complementary slackness, the edge must be tight in every dual solution. Therefore that edge can be contracted as shown in Section~\ref{sec:contract}. At a high-level, Végh's generalized max flow algorithm maintains a feasible primal solution while trying to identify these contractible edges to find an optimal dual solution. Once found, the optimal dual solution can be used to easily transform the feasible primal solution to an optimal primal solution via one traditional max flow iteration as shown in Section~\ref{sec:motivate-dual}.
