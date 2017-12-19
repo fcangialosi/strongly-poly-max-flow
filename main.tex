@@ -1093,7 +1093,8 @@ where you can definitely send it}
     Each epoch alternates between the following augmentation and scaling phases:
     \begin{itemize}
     \item \textbf{Augmentation:} Reduce the total excess and deficit of the fitting flow $f$
-    by augmenting one unit of flow at a time along tight paths. Formally, let
+    by augmenting one unit of flow at a time along tight paths. Again we focus
+		on tight paths because these are the highest-gain paths. Formally, let
     $D$ (``destinations'') be the union of the sink $t$ and all nodes with 
     deficit ($\nabla f_i^{\mu} < b_i^{\mu}$). Let $S$ (``sources'') be
     the set of all nodes $i$ for which
