@@ -570,11 +570,10 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 
 \begin{enumerate}[(1),itemsep=0mm]
 \item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to
-	  $\max_{i \in V\setminus T} \nfiu - \biu$\frank{why this value?}
+	  $\max_{i \in V\setminus T} \nfiu - \biu$
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
 \item Find contractible edges and contract until a stopping condition is met
-	(\emph{cf.} Section \ref{sec:progress}) \frank{what's the stopping condition? is it not specific
-	to the 2013 paper?} in one of the following ways:\frank{how does it choose
+	(\emph{cf.} Section \ref{sec:progress} Case i) in one of the following ways:\frank{how does it choose
 	which of these to do?}
 	\begin{enumerate}
 		\item augment $\Delta$ units of flow
@@ -593,14 +592,13 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 \label{sec:findconserv2013}
 Following from primal-dual slackness, the optimality conditions for the primal are (i) $e_i = 0 \quad \forall i \in V-t$ and (ii) $\giij = 1$ if $f_{ij} > 0 \quad \forall ij \in E$. The first condition is satisfied at the end of this algorithm when a max flow computation transforms the optimal dual solution into an optimal primal solution \katie{explain better} (proof in \cite{article}). The second condition is achieved by finding and maintaining conservative pairs (Definition~\ref{def:conservative}) throughout the algorithm.
 
-To find an initial conservative pair (f,$\mu$), a feasible flow $\bar{f}$ with no flow-generating cycles must first be found. $\bar{f} \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). Flow-generating cycles are then removed by the \textsc{maximum-mean-gain cycle-canceling} algorithm, introduced by Goldberg et. al \cite{Goldberg:1991:CAG:105014.105022}. This is required because there cannot be flow-generating cycles if there is a finite conservative labeling $\mu$ as shown in Claim~\ref{claim:nocycles}. The initial conservative labeling is found by defining $\mu_t \coloneqq 1$ and then defining $\mu_i \coloneqq$(max $\gamma$ along path from i to t)$^{-1} \quad \forall i \in V-t$. 
-
+To find an initial conservative pair (f,$\mu$), a feasible flow $\bar{f}$ with no flow-generating cycles must first be found. $\bar{f} \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). Flow-generating cycles are then removed by the \textsc{maximum-mean-gain cycle-canceling} algorithm, introduced by Goldberg et. al \cite{Goldberg:1991:CAG:105014.105022}. This is required because there cannot be flow-generating cycles if there is a finite conservative labeling $\mu$ as shown in Claim~\ref{claim:nocycles}. The initial conservative labeling is then determined by defining $\mu_t \coloneqq 1$ and then defining $\mu_i \coloneqq$(max $\gamma$ along path from i to t)$^{-1} \quad \forall i \in V-t$. Finally, a max flow procedure is run to find a generalized flow f with respect to $\mu$, which gives us a conservative pair (f,$\mu$). At the end of this initialization phase, we also set the starting value of $\Delta$ equal to max $\max_{i \in V\setminus T} \nfiu - \biu$, which is the maximum relabeled excess for any node (excluding t). This value is chosen because $\Delta$ controls the amount of flow augmented at each iteration, and it wouldn't be feasible to send more flow along a path than the maximum excess. Since $\Delta$ is monotonically decreasing in the algorithm, we initialize it to the maximum feasible value. 
 
 Once a conservative pair $(f, \mu)$ is found, the algorithm maintains it by
 requiring that excess of node $i \geq$ incoming flow on non-tight edges. This
 ensures that a feasible solution without any flow-generating cycles is always
 ``reachable'' because setting the flow on non-tight edges to zero still leaves
-non-zero excess on every node. \todo{explain better}
+non-zero excess on every node. \katie{talk about relaxation and delta-conservative pairs}
 
 \subsection{Identifying Contractible Edges}
 \label{sec:findcontr2013}
