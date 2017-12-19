@@ -471,7 +471,7 @@
 	$g^*_e > 0$. This idea is formalized in the following lemma, adapted from Lemma 3.3 of
 	\cite{Olver2017}.
 	
-  	\begin{definition}
+  	\begin{definition} \label{def:conservative}
   	Let $f$ be a feasible solution to (P).
 	$\mu$ is a \textbf{conservative labeling} for $f$ if $\mu$ is
 	a feasible solution to (D) and all edges with positive flow are tight. In this case,
@@ -590,9 +590,9 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 
 \subsection{Finding and Maintaining Conservative Pairs}
 \label{sec:findconserv2013}
-The algorithm maintains conservative labelings throughout\frank{why is this important?}, which require
-feasible solutions to (P) and (D) as well as the complementary-slackness
-property $\giij=1$ whenever $f_{ij}>0 \quad \forall ij \in E$. $f \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). 
+Following from primal-dual slackness, the optimality conditions for the primal are (i) $e_i = 0 \quad \forall i \in V-t$ and (ii) $\giij = 1$ if $f_{ij} > 0 \quad \forall ij \in E$. The first condition is satisfied at the end of this algorithm when a max flow computation transforms the optimal dual solution into an optimal primal solution (proof in \cite{article}). The second condition is achieved by finding and maintaining conservative pairs (Definition~\ref{def:conservative}) throughout the algorithm.
+
+To find an initial conservative pair (f,$\mu$), a feasible flow $\bar{f}$ with no flow-generating cycles must first be found. $\bar{f} \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). 
 
 
 A conservative labeling, $\mu$, for $f$ can then be found by running a
