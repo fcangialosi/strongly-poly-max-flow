@@ -454,7 +454,7 @@
 	\end{figure*}
 	\end{example}
 
-	\subsection{Contraction Certificates} \label{sec:cert-contract}
+	\subsection{Contractibility Certificates} \label{sec:cert-contract}
 	Complementary slackness tells us that if there is a primal optimal flow
 	$f$ with positive value
 	on some edge $e$, then $e$ is tight with respect to \emph{every} dual
@@ -527,6 +527,19 @@
     \textbf{abundant} with respect to a conservative pair $(f, \mu)$
     if $f^\mu_e > \Ex(f, \mu)$.
     Lemma \ref{lem.bound-dist} shows that abundant edges are contractible.
+    
+    The contractibility certificate developed above determines the broad outlines
+    for any contraction-based generalized flow algorithm. The algorithm's objective
+    is to increase the maximum edge flow while keeping the total excess bounded.
+    In order to achieve this, it will have to increase the demand values. Thus, the algorithm
+    will consist of alternating \emph{scaling} and \emph{augmentation} phases.
+    In the scaling phases, the dual variables $\mu$ are adjusted so that
+    the values $|\biu|$ will increase. In the complementary augmentation phases,
+    the algorithm spreads excesses around to keep them small.
+    
+    Since the dual scaling will be a node-wise operation, it is more convenient
+    to use a node-wise certificate of contractibility.
+    
 
 \section{The Initial Strongly Polynomial Algorithm}
 \label{sec:2013}
@@ -712,7 +725,7 @@ $V \setminus R$ to $t$ continues until the graph is contracted into one node.
 	%edges that are tight in every optimal dual solution,
   %  in a strongly polynomial number of steps. This technique was
   %  originally developed to study the minimum cost flow problem (\emph{cf.}~\cite{Orlin1988}). \todo{need to define this or refer to section 3?}
-%	As we will show in Section~\ref{sec:cert} Lemma~\ref{lem.contractibility}, a large flow value along an edge can
+%	As we will show in Section~\ref{sec:infeasible} Lemma~\ref{lem.contractibility}, a large flow value along an edge can
  %   serve as a certificate of contractibility. To that end, we define
  %   \begin{definition}
  %   An edge $(i, j)$ is \textbf{abundant} at scale $\Delta$ if $f_{ij}^\mu \geq 17m\Delta$.
@@ -932,7 +945,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     (sufficient condition) for contractibility. This is an elaboration of the \emph{abundant edge}
     idea from Section \ref{sec:2013-notation}.
 
-	\subsection{Safety Certificates}\label{sec:cert}
+	\subsection{Working with Infeasible Flows}\label{sec:infeasible}
     
 	Instead of maintaining a conservative pair of feasible flow $f$ and feasible
 	dual solution $\mu$, the newer algorithm uses a possibly infeasible flow
@@ -993,9 +1006,13 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		contradicting our assumption. It follows that $T^- = \varnothing$, i.e., $f$
 		is feasible.
 	\end{proof}
-    So long as $\mu$ remains safe, we can obtain a feasible fitting flow $f$ at any time
-    by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
     
+    \subsection{A Refined Contractibility Certificate}
+    So long as the algorithm maintains the safety of $\mu$,
+    we can obtain a feasible fitting flow $f$ at any time
+    by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
+    Moreover, a modified version of Lemma $\ref{lem.bound-dist}$ applies to fitting
+    pairs.
     \begin{lemma} \label{lem.bound-dist2}
     Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some optimal flow $g^*$
     uniformly ``close'' to $g$:
@@ -1030,20 +1047,12 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     excesses. Therefore, $\Ex(\tilde{g}, \mu) \leq \Ex(g, \mu)$.
     \end{proof}
     
-    Lemma \ref{lem.bound-dist2} leads naturally to a concrete characterization of contractible edges:
+    Lemma \ref{lem.bound-dist2} suggests a more general certificate for contractibility:
     \begin{lemma} \label{lem.contractibility}
     Suppose $(g, \mu)$ is a fitting pair (with $g$ not necessarily feasible),
     $\mu$ is safe, and $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$.
     Then $e$ is contractible.
     \end{lemma}
-    
-    This observation inspires the structure of the algorithm. In each phase, its
-    goal is to increase the flow values while keeping the total excess and deficit
-    bounded. The only way to do this is to increase the demand values. Thus, the algorithm
-    consists of alternating \emph{scaling} and \emph{augmentation} phases. In the scaling phases, the
-    dual variables $\mu$ are adjusted so that the values $|\biu|$ will increase. In the
-    complementary augmentation phases, excesses and deficits of the fitting flow are
-    canceled to preserve boundedness.
 
 	\subsection{Plentiful Nodes}
     Lemma \ref{lem.contractibility} shows that a fitting pair with a very
