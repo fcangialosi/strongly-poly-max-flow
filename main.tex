@@ -506,7 +506,7 @@
     $(j, i) \in E$ and $g_{ji} > 0$. In other words,
     $(i, j) \in E_g$ and $(j, i) \in E_{g^*}$.
     
-    \begin{claim} $h$ is acyclic. \end{claim}
+    \begin{claim} \label{claim:nocycles} $h$ is acyclic. \end{claim}
     \begin{proof}[Proof of Claim]
     Suppose that $h$ contains a cycle $C$. Then consider the net gain around $C$:
     \[ 1 \geq \gamma^\mu(C) = \gamma(C) = \gamma^{\mu^*}(C) \geq 1, \]
@@ -571,7 +571,7 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 \begin{enumerate}[(1),itemsep=0mm]
 \item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to
 	  $\max_{i \in V\setminus T} \nfiu - \biu$\frank{why this value?}
-\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$\frank{maybe a quick reminder about why we want a conservative labeling?} 
+\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
 \item Find contractible edges and contract until a stopping condition is met
 	(\emph{cf.} Section \ref{sec:progress}) \frank{what's the stopping condition? is it not specific
 	to the 2013 paper?} in one of the following ways:\frank{how does it choose
@@ -591,13 +591,10 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 
 \subsection{Finding and Maintaining Conservative Pairs}
 \label{sec:findconserv2013}
-Following from primal-dual slackness, the optimality conditions for the primal are (i) $e_i = 0 \quad \forall i \in V-t$ and (ii) $\giij = 1$ if $f_{ij} > 0 \quad \forall ij \in E$. The first condition is satisfied at the end of this algorithm when a max flow computation transforms the optimal dual solution into an optimal primal solution (proof in \cite{article}). The second condition is achieved by finding and maintaining conservative pairs (Definition~\ref{def:conservative}) throughout the algorithm.
+Following from primal-dual slackness, the optimality conditions for the primal are (i) $e_i = 0 \quad \forall i \in V-t$ and (ii) $\giij = 1$ if $f_{ij} > 0 \quad \forall ij \in E$. The first condition is satisfied at the end of this algorithm when a max flow computation transforms the optimal dual solution into an optimal primal solution \katie{explain better} (proof in \cite{article}). The second condition is achieved by finding and maintaining conservative pairs (Definition~\ref{def:conservative}) throughout the algorithm.
 
-To find an initial conservative pair (f,$\mu$), a feasible flow $\bar{f}$ with no flow-generating cycles must first be found. $\bar{f} \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). 
+To find an initial conservative pair (f,$\mu$), a feasible flow $\bar{f}$ with no flow-generating cycles must first be found. $\bar{f} \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). Flow-generating cycles are then removed by the \textsc{maximum-mean-gain cycle-canceling} algorithm, introduced by Goldberg et. al \cite{Goldberg:1991:CAG:105014.105022}. This is required because there cannot be flow-generating cycles if there is a finite conservative labeling $\mu$ as shown in Claim~\ref{claim:nocycles}. The initial conservative labeling is found by defining $\mu_t \coloneqq 1$ and then defining $\mu_i \coloneqq$(max $\gamma$ along path from i to t)$^{-1} \quad \forall i \in V-t$. 
 
-
-A conservative labeling, $\mu$, for $f$ can then be found by running a
-cycle-canceling algorithm.\frank{why does this make it conservative?}
 
 Once a conservative pair $(f, \mu)$ is found, the algorithm maintains it by
 requiring that excess of node $i \geq$ incoming flow on non-tight edges. This
@@ -639,7 +636,6 @@ The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
 decreasing $\Delta$ by a factor of $\alpha > 1$\frank{How is this value chosen?}. Increasing $\mu$ for the
 non-reachable nodes (i.e. nodes in set V $\setminus$ R) causes the ratio
 $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ 
-\frank{What is this ratio and why does it have to be strictly less than 1?}
 to increase for edges from nodes in $R$
 to nodes in $V \setminus R$.
 \frank{It might be helpful to refer to this as edges crossing the V-R cut}
