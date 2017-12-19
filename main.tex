@@ -573,8 +573,7 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 	  $\max_{i \in V\setminus T} \nfiu - \biu$
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
 \item Find contractible edges and contract until a stopping condition is met
-	(\emph{cf.} Section \ref{sec:progress} Case i) in one of the following ways:\frank{how does it choose
-	which of these to do?}
+	(\emph{cf.} Section \ref{sec:progress} Case i) in one of the following ways:
 	\begin{enumerate}
 		\item augment $\Delta$ units of flow
 		\item increase (resp. decrease) $\mu$ (resp. $\Delta$) by a constant factor
@@ -619,19 +618,16 @@ While finding and contracting edges, the algorithm maintains several sets as def
 	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
 	\frank{Why is $D$ constructed in this way?}
-
-On each iteration of the main while loop (the ``finding and contracting edge''
-while loop), the algorithm first looks to augment $\Delta$ units of flow on
+\textbf{\textsc{Augmentation}} As shown in step 3a of the algorithmic overview above, each iteration of the main while loop (the ``finding and contracting edge''
+while loop) first looks to augment $\Delta$ units of flow on
 tight paths from high relabeled excess nodes in set H to low relabeled
 excess nodes (including the sink) in set L. The algorithm only augments on tight
-paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$.
-\frank{Mention scaled gamma is at most 1 by dual constraint for mu to be feasible}
+paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$ (recall the dual constrains $\gamma_{ij}^\mu$ to be $\leq 1$)
 If the algorithm is not able to augment, then there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
-flow from.
-
-The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
-decreasing $\Delta$ by a factor of $\alpha > 1$\frank{How is this value chosen?}. Increasing $\mu$ for the
+flow from. \\ \\
+\textbf{\textsc{Scaling}} The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
+decreasing $\Delta$ by a factor of $\alpha > 1$ (step 3b above)\frank{How is this value chosen?}. Increasing $\mu$ for the
 non-reachable nodes (i.e. nodes in set V $\setminus$ R) causes the ratio
 $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ 
 to increase for edges from nodes in $R$
@@ -665,11 +661,10 @@ If there are no augmentations to be made on a certain iteration, $\es$ is called
 if $D \cap V\setminus R \neq \varnothing$. Since $\es$ only increases
 $\sfrac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus R$, the subroutine will
 only be called if that set contains nodes that are close to reaching $20mn$. If
-there are no such nodes, a different subroutine, $\filtration$, is called first.
-
-$\filtration$ runs a modified max flow iteration on nodes in set $V \setminus R$;
+there are no such nodes, a different subroutine, $\filtration$, is called first. \\ \\
+\textbf{\textsc{Redistributing Excess}} $\filtration$ runs a modified max flow iteration on nodes in set $V \setminus R$;
 the goal is to push flow directly to the sink from unreachable high excess
-nodes. The flow values computed in the max flow replace the current flows on
+nodes (step 3c above). The flow values computed in the max flow replace the current flows on
 edges contained in $V \setminus R$; all other edge flow values remain the same
 except for flow on edges going from nodes in $V \setminus R$  to $R$ which are set
 to zero\frank{again talking about cut might be clearer here}. This subroutine can speed up the finding the contractible arc process
