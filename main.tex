@@ -616,8 +616,7 @@ while loop), the algorithm first looks to augment $\Delta$ units of flow on
 tight paths from high relabeled excess nodes in set H to low relabeled
 excess nodes (including the sink) in set L. The algorithm only augments on tight
 paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$.
-\frank{We need to make sure we mention somewhere that we do X,Y,Z so that we can
-assume networks are lossy}
+\frank{Mention scaled gamma is at most 1 by dual constraint for mu to be feasible}
 If the algorithm is not able to augment, then there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
 flow from.
