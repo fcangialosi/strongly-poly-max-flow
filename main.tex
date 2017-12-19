@@ -1052,53 +1052,60 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     Then $e$ is contractible.
     \end{lemma}
 
-		The safety of $\mu$ is important because it keeps the distance between
-		the (not necessarily feasible) primal $g$ we keep track of and the optimal
-		$g^{*}$ bounded. For example, consider the network in
-		Figure~\ref{fig:unsafe}, where $M$ is some arbitrarily large value. 
-		$g = 0$ fits $\mu = 1$, but $\mu$ is not safe because $b_s^{\mu} = 1 \nleq
-		0$. $\text{Ex}(g,\mu) + \text{Def}(g,\mu) = 1$, but the optimal solution is
-		clearly $g^{*}_{st} = 0, g^{*}_{ts} = M$, so
-		$||(g^{*})^{\mu} - g^{\mu}||_{\infty} = M$, which is unbounded.
+%	The safety of $\mu$ is important because it keeps the distance between
+%	the (not necessarily feasible) primal $g$ we keep track of and the optimal
+%	$g^{*}$ bounded. For example, consider the network in
+%	Figure~\ref{fig:unsafe}, where $M$ is some arbitrarily large value. 
+%	$g = 0$ fits $\mu = 1$, but $\mu$ is not safe because $b_s^{\mu} = 1 \nleq
+%	0$. $\text{Ex}(g,\mu) + \text{Def}(g,\mu) = 1$, but the optimal solution is
+%	clearly $g^{*}_{st} = 0, g^{*}_{ts} = M$, so
+%	$||(g^{*})^{\mu} - g^{\mu}||_{\infty} = M$, which is unbounded.
+%
+%    \begin{figure}[h]
+%    \centering
+%    \includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
+%    \caption{
+%    \label{fig:unsafe}
+%		If $\mu$ is not \textit{safe}, the distance between a $g$ fitting
+%		$\mu$ and the optimal solution could be unbounded.
+%    }
+%    \end{figure}
 
-    \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
-    \caption{
-    \label{fig:unsafe}
-		If $\mu$ is not \textit{safe}, the distance between a $g$ fitting
-		$\mu$ and the optimal solution could be unbounded.
-    }
-    \end{figure}
-
-	\subsection{Plentiful Nodes}
+	\subsection{Plentiful Nodes and Contraction}
     Lemma \ref{lem.contractibility} shows that a fitting pair with a very
     large flow value on one edge serves as a certificate that that edge is contractible.
     To develop a strongly polynomial algorithm, it remains to show that we can compute
     such a fitting pair.
-
-    Prior work used scaling to directly produce flows with ``abundant edges.''
-    A key novelty in this algorithm is to relax the problem further by maintaining
-    a flow which serves only as an upper bound, and to use node demand as a certificate
-    for edge contractibility:
+    
+    As stated, both conditions (bounded relabeled excess/deficit and
+    large flow value on one edge)
+    depend on the primal \emph{and} dual variables. In fact, we can associate each goal
+    with one of the variables so that the algorithm may more easily work toward both goals:
+    
     \begin{definition}
     A node $i$ is \textbf{plentiful} with respect
     to the current primal-dual solution pair $(f,u)$ if its scaled absolute
     demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
     \end{definition}
-
-    It is important to notice that, just as with the definition of an abundant edge,
-    this definition depends only on the size of the graph, which is a key property
-    that will keep our algorithm strongly polynomial because we will be iteratively
-    re-scaling the node demands until one of them satisfies this property.
-
-    \begin{theorem} Assume $(f, \mu)$ is a fitting pair with $\mu$ safe.
-    Then the existence of a plentiful node $i$ ensures
-    that there exists a contractible edge $e$ incident to $i$.
-    \end{theorem}
-    \begin{proof} (TODO)
-    \todo{Prove theorem 3.1 more succinctly and clearly}.
-    \end{proof}
+	\begin{theorem}
+		Let $(g, \mu)$ be a fitting pair such that
+		\begin{enumerate}[(i)]
+			\item $\Ex(g, \mu) \leq 2n$ and $\Def(g, \mu) < n - 1$.
+			\item $i$ is a plentiful node.
+		\end{enumerate}
+	\end{theorem}
+	\begin{proof}
+		Suppose that $i \in \vsrc$. The other case is similar. We have
+		\[ \sum_{e \in \din(i)} g^\mu_e \geq
+		\sum_{e \in \din(i)} g^\mu_e - \sum_{e \in \dout(i)} g^\mu_e
+		= -\nabla g^\mu_i \geq -b_i^\mu - \Ex(g, \mu), \]
+		where the last inequality is because $\nabla g_i^\mu - \biu$ appears
+		as a term in $\Ex(g, \mu)$ if it is positive. Now
+		\[ -b_i^\mu - \Ex(g, \mu) > 3n(d_i + 1) - 2n > 3nd_i > 3n|\dout(i)| \]
+		So there is some edge $e \in \dout(i)$ with
+		$g^\mu_e > 3n > \Ex(g, \mu) + \Def(g, \mu)$. This is an abundant and contractible
+		edge.
+	\end{proof}
 
     \subsection{Scaling and Augmentation}
     \label{sec:sub-ppn}
