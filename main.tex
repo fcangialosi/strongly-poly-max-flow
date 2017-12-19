@@ -522,8 +522,11 @@
      = \sum_i \max\,\{0, \nabla g_i^\mu - \nabla (g^*)_i^\mu\}
      \leq \sum_i \max\,\{0, \nabla g_i^\mu - \biu \}, \]
      which is $\Ex(g, \mu)$ as desired.
-    
     \end{proof}
+    The lemma suggests a concrete certificate for contractibility. An edge $e$ is
+    \textbf{abundant} with respect to a conservative pair $(f, \mu)$
+    if $f^\mu_e > \Ex(f, \mu)$.
+    Lemma \ref{lem.bound-dist} shows that abundant edges are contractible.
 
 \section{The Initial Strongly Polynomial Algorithm}
 \label{sec:2013}
@@ -1067,7 +1070,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
     \end{definition}
 
-    It is important to notice that, just as with the definition of an abundant  edge,
+    It is important to notice that, just as with the definition of an abundant edge,
     this definition depends only on the size of the graph, which is a key property
     that will keep our algorithm strongly polynomial because we will be iteratively
     re-scaling the node demands until one of them satisfies this property.
