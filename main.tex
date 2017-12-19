@@ -579,11 +579,9 @@ determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 \label{sec:findconserv2013}
 The algorithm maintains conservative labelings throughout\frank{why is this important?}, which require
 feasible solutions to (P) and (D) as well as the complementary-slackness
-property $\giij=1$ whenever $f_{ij}>0 \quad \forall ij \in E$. An initial
-feasible flow can be found by first setting $f$ to zero in the capacitated version
-and then finding the equivalent $f$ in the uncapacitated representation.
-\frank{why is this necessary? why can't we just set $f=0$ in the uncapcitated
-version directly?}
+property $\giij=1$ whenever $f_{ij}>0 \quad \forall ij \in E$. $f \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). 
+
+
 A conservative labeling, $\mu$, for $f$ can then be found by running a
 cycle-canceling algorithm.\frank{why does this make it conservative?}
 
