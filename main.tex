@@ -12,7 +12,14 @@
 \usepackage{color, soul}
 \usepackage{wrapfig}
 \usepackage{xfrac}
+\usepackage{xcolor}
 \usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={blue},
+    citecolor={blue},
+    urlcolor={blue}
+}
 \usepackage[colorinlistoftodos,textsize=tiny]{todonotes}
 \usepackage{comment}
 
@@ -954,15 +961,18 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	``safety certificate''. To simplify the exposition, we define 
 	\begin{definition}
 		Recall that $\tau(\mu)$ denotes the set of tight edges under a dual labeling $\mu$.
-		Given $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ such that
-		$\din(S) \cap \tau(\mu) = \varnothing$. An \textbf{outward-loose cut}
-		is such that $\dout(S) \cap \tau(\mu) = \varnothing$. A \textbf{bi-loose cut}
+		Given $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ that does
+		not have any tight incoming edges 
+		($\din(S) \cap \tau(\mu) = \varnothing$). An \textbf{outward-loose cut}
+		does not have any tight outgoing edges ($\dout(S) \cap \tau(\mu) = \varnothing$). A \textbf{bi-loose cut}
 		is both inward- and outward-loose.
 	\end{definition}
 	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts.
 	If $f$ is feasible, then it follows that the total demand inside an inward-loose
-	cut is negative. It turns out that this is a sufficient condition for the existence
+	cut is negative. \frank{why are these two statements true?}
+	It turns out that this is a sufficient condition for the existence
 	of a feasible fitting flow:
+	\frank{I think we need to provide intuition for why this is the definition}
 	\begin{lemma}[Certificate for Safety] \label{lem.safety}
 	$\mu$ is safe if and only if for any inward-loose cut $S$,
 	\[ \sum_{i \in S} \biu \leq 0. \]
@@ -1040,6 +1050,25 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     Then $e$ is contractible.
     \end{lemma}
 
+		The safety of $\mu$ is important because it keeps the distance between
+		the (not necessarily feasible) primal $g$ we keep track of and the optimal
+		$g^{*}$ bounded. For example, consider the network in
+		Figure~\ref{fig:unsafe}, where $M$ is some arbitrarily large value. 
+		$g = 0$ fits $\mu = 1$, but $\mu$ is not safe because $b_s^{\mu} = 1 \nleq
+		0$. $\text{Ex}(g,\mu) + \text{Def}(g,\mu) = 1$, but the optimal solution is
+		clearly $g^{*}_{st} = 0, g^{*}_{ts} = M$, so
+		$||(g^{*})^{\mu} - g^{\mu}||_{\infty} = M$, which is unbounded.
+
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
+    \caption{
+    \label{fig:unsafe}
+		If $\mu$ is not \textit{safe}, the distance between a $g$ fitting
+		$\mu$ and the optimal solution could be unbounded.
+    }
+    \end{figure}
+
 	\subsection{Plentiful Nodes}
     Lemma \ref{lem.contractibility} shows that a fitting pair with a very
     large flow value on one edge serves as a certificate that that edge is contractible.
@@ -1069,87 +1098,95 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \todo{Prove theorem 3.1 more succinctly and clearly}.
     \end{proof}
 
-    \rewrite{The safety of $\mu$ is important because, without it, the distance between
-    the primal solution we keep track of, $g$, and the optimal solution, $g^*$, could
-    be unbounded, as shown in the example below.} \todo{Describe.}
-
-    \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.45\textwidth]{figs/unsafe.pdf}
-    \caption{
-    \label{fig:unsafe}
-    \rewrite{Simple example showing how unsafe $\mu$ causes problems.}\todo{Keep?}
-    }
-    \end{figure}
-
     \subsection{Scaling and Augmentation}
     \label{sec:sub-ppn}
-		\todo{Maybe say something about why we don't scale everything. Ideas:
-		wouldn't do anything or alpha would have to be 1? Have to be able to send
-	the excesses somewhere to have to be conservative and only scale the things
-where you can definitely send it}
-	The algorithm starts with a feasible fitting pair and consists of a sequence
+		The algorithm starts with a feasible fitting pair and consists of a sequence
     of epochs, each dedicated to identifying a contractible edge via a plentiful node.
     Each epoch alternates between the following augmentation and scaling phases:
     \begin{itemize}
     \item \textbf{Augmentation:} Reduce the total excess and deficit of the fitting flow $f$
-    by augmenting one unit of flow at a time along tight paths. Again we focus
+    by augmenting as much flow as possible, one unit at a time, along tight paths from nodes with
+		excess to nodes with deficit. Again we focus
 		on tight paths because these are the highest-gain paths. Formally, let
     $D$ (``destinations'') be the union of the sink $t$ and all nodes with 
-    deficit ($\nabla f_i^{\mu} < b_i^{\mu}$). Let $S$ (``sources'') be
-    the set of all nodes $i$ for which
+		deficit ($\nabla f_i^{\mu} < b_i^{\mu}$) and let $S$ (``sources'') be the
+		set of all nodes $i$ for which $D$ is reachable from $i$ along a tight path
+		in the residual graph. Continue augmenting along tight paths from $i$ to
+		a node in  $D$ as long as there is some $i \in S$ for which the following conditions hold:
+		%Let $S$ (``sources'') be
+    %the set of all nodes $i$ for which
     \begin{enumerate}[(i)]
-    \item the excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$);
-    \item $D$ is reachable from $i$ along a tight path in the residual graph; and
+    \item $i$ has at least one unit of excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$); and
     \item $b_i < 0$ (this condition is important in the potential analysis).
     \end{enumerate}
-    Augment until $S$ is empty.
+    %Augment until $S$ is empty.
+
     \item \textbf{Scaling:} Once it is not possible to augment any more flow, the second step scales down
-    the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$,
+    the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$, 
+		\frank{we do we only scale nodes in $S$? maybe have to be able to send
+		excess somewhere to be conservative and only scale things where you can
+		definitely send it }
     which is chosen to be the largest value that \rewrite{does not violate} any of the dual
     constraints~(D) or produces a plentiful node.
     \end{itemize}
 
     \todo{RE-WRITE AS DJIKSTRAS}
 
-    Although it is not necessary in practice, for clarify of explanation, one can think of choosing the scaling factor $\alpha$ as solving
-    the following LP:
+    Although it is not necessary in practice, for clarify of explanation, one
+		can think of choosing the scaling factor $\alpha$ as solving     the following LP:
     \lpeq{\lpthree{max}
     {\alpha}
     {\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
     {\nfiu - \biu \le 1}
     {\nexists\ \text{plentiful}\ i \in \vsink}
-    }
+    }\frank{Should
+			the last constraint be taken out? Because otherwise generating a plentiful
+		node would not be a feasible solution...}
+
+
+
+%    \begin{figure}[b!]
+%    \centering
+%    \includegraphics[width=0.35\textwidth]{figs/water.pdf}
+%    \caption{
+%    \label{fig:alpha}
+%    Informal analogy for the maximization of scaling parameter $\alpha$.
+%    Each pipe represents a constraint. $\alpha$ can only be increased until
+%    one of them becomes tight as increasing it further would leak into
+%    the lowest pipe and violate that constraint.
+%    At each step, the order of which constraint becomes tight first may be different.
+%    }
+%    \end{figure}
+%    Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to filling
+%    a basin with water as much as possible without any of the water leaking into one
+%    of three pipes, where each pipe represents a constraint and its height in the basin
+%    represents the value of $\alpha$ at which point it becomes tight.
+%
+%    Thus, $\alpha$ is chosen such that one of the following constraints becomes
+%    tight, or, in other words, one of the following becomes true corresponding to
+%    each constraint, respectively:
+%    \begin{enumerate}[(1),itemsep=-1mm]
+%        \item An edge entering $S$ becomes tight, and thus a new node is added to $S$
+%        \item A node in $S$ has excess $>1$, which allows us to augment flow from it
+%        \item A node becomes plentiful
+%    \end{enumerate}
+%
+%    If (3) is true, we're done. If (1) or (2) are true, it ensures that we will now
+%    be able to make progress in the next iteration of the first step. Below, we show
+%    in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
+%    that the algorithm can make progress in the second step. 
+
     \begin{figure}[b!]
     \centering
-    \includegraphics[width=0.35\textwidth]{figs/water.pdf}
+    \includegraphics[width=\textwidth]{figs/basin.pdf}
     \caption{
     \label{fig:alpha}
     Informal analogy for the maximization of scaling parameter $\alpha$.
-    Each pipe represents a constraint. $\alpha$ can only be increased until
-    one of them becomes tight as increasing it further would leak into
-    the lowest pipe and violate that constraint.
-    At each step, the order of which constraint becomes tight first may be different.
     }
     \end{figure}
-    Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to filling
-    a basin with water as much as possible without any of the water leaking into one
-    of three pipes, where each pipe represents a constraint and its height in the basin
-    represents the value of $\alpha$ at which point it becomes tight.
-
-    Thus, $\alpha$ is chosen such that one of the following constraints becomes
-    tight, or, in other words, one of the following becomes true corresponding to
-    each constraint, respectively:
-    \begin{enumerate}[(1),itemsep=-1mm]
-        \item An edge entering $S$ becomes tight, and thus a new node is added to $S$
-        \item A node in $S$ has excess $>1$, which allows us to augment flow from it
-        \item A node becomes plentiful
-    \end{enumerate}
-
-    If (3) is true, we're done. If (1) or (2) are true, it ensures that we will now
-    be able to make progress in the next iteration of the first step. Below, we show
-    in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
-    that the algorithm can make progress in the second step. 
+		Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to
+		filling a basin with water, where the height of the water represents
+		$\alpha$, and the successively
 
     Although it is conceptually easier to imagine increasing $\alpha$ continuously
     until one of these constraints becomes tight, in practice, it is possible to
@@ -1365,8 +1402,6 @@ We presented and compared two strongly polynomial algorithms for the maximum gen
     %feedback 
     \vspace{10mm}
 \todo{Main feedback from emails:} 
-
-\todo{(1) more "english descriptions" for safe sets and loose cuts}
 
 \todo{(2) too many definitions}
 
