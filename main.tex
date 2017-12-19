@@ -321,14 +321,7 @@
 	\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
 	\end{align*}
     \end{definition}
-	
-  \frank{add something about individual node excess}
-  Although the algorithms focus on solving the dual first, they maintain some solution to the primal throughout, and thus it often makes sense to talk about a pair of primal-dual solutions $(f, \mu)$.
-  \begin{definition}
-	$\mu$ is a \textbf{conservative labeling} for $f$, a feasible solution to (P), if $\mu$ is
-	a feasible solution to (D) and all edges with positive flow are tight. In this case,
-	$(f, \mu)$ is called a \textbf{conservative pair}.
-	\end{definition}
+  	\frank{add something about individual node excess}
   
   
 \section{Motivating Ideas and Techniques}
@@ -461,7 +454,7 @@
 	\end{figure*}
 	\end{example}
 
-	\subsection{Contraction Certificates}
+	\subsection{Contraction Certificates} \label{sec:cert-contract}
 	Complementary slackness tells us that if there is a primal optimal flow
 	$f$ with positive value
 	on some edge $e$, then $e$ is tight with respect to \emph{every} dual
@@ -477,6 +470,13 @@
 	flow $g^*$. Then if $g$ had a sufficiently large value on some edge $e$, we would know that
 	$g^*_e > 0$. This idea is formalized in the following lemma, adapted from Lemma 3.3 of
 	\cite{Olver2017}.
+	
+  	\begin{definition}
+  	Let $f$ be a feasible solution to (P).
+	$\mu$ is a \textbf{conservative labeling} for $f$ if $\mu$ is
+	a feasible solution to (D) and all edges with positive flow are tight. In this case,
+	$(f, \mu)$ is called a \textbf{conservative pair}.
+	\end{definition}
 
 	\begin{lemma} \label{lem.bound-dist}
 	Suppose $(g, \mu)$ is a conservative pair. Then there is some optimal flow $g^*$
@@ -932,10 +932,12 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     (sufficient condition) for contractibility. This is an elaboration of the \emph{abundant edge}
     idea from Section \ref{sec:2013-notation}.
 
-	\subsection{Certificates}\label{sec:cert}
+	\subsection{Safety Certificates}\label{sec:cert}
     
-	In fact, the algorithm goes one step further. Instead of maintaining a feasible flow
-	fitting the dual solution $\mu$, it maintains a possibly infeasible flow. More precisely,
+	Instead of maintaining a conservative pair of feasible flow $f$ and feasible
+	dual solution $\mu$, the newer algorithm uses a possibly infeasible flow
+	as a certificate for identifying contractible edges.
+	More precisely,
     at each iteration of the algorithm we ensure that we have a \textbf{fitting pair}
 	of primal and dual solutions $(f,\mu)$:
 	\begin{definition}
@@ -944,13 +946,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     In this case, we refer to $(f, \mu)$ as a \textbf{fitting pair}.
 	\end{definition}
     Note: as $f$ is \emph{not} required to be a feasible primal solution,
-    this definition is a relaxation of the
-	conservative labeling from Section \ref{sec:2013-notation}.
-	
-	The fitting condition mimics complementary
-	slackness for optimal pairs and allows $f^\mu$ to be viewed as a regular flow
-	on the tight subgraph. The algorithm can then avail itself of the previously developed
-	strongly polynomial tools for manipulating regular flows.
+    this definition is a relaxation of the idea of
+	conservative pair from Section \ref{sec:cert-contract}.
     
 	In lieu of maintaining a feasible $f$ at each step,
 	the algorithm ensures that $\mu$ is \textbf{safe}---i.e.,
