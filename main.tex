@@ -1069,20 +1069,25 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     idea from Section \ref{sec:2013-notation}.
 
 	\subsection{Working with Infeasible Flows}\label{sec:infeasible}
-	\david{Related back to 2013 algorithm: say something about how cancelling excess instead of spreading it is
-	more efficient}
-	Instead of maintaining a conservative pair of feasible flow $f$ and feasible
-	dual solution $\mu$, the newer algorithm uses a possibly infeasible flow
-	as a certificate for identifying contractible edges.
-	More precisely,
-    at each iteration of the algorithm we ensure that we have a \textbf{fitting pair}
+	The algorithm described in Section \ref{sec:2013} maintains a feasible flow
+	at all times. In order to produce a contractibility certificate, it has
+	to keep the excess at each node bounded. In order to do that, it has to spread
+	flow around, leveling out the excesses. In contrast, the newer algorithm maintains
+	a possibly infeasible flow. Instead of spreading excesses around, it can cancel them
+	with deficits. Whereas leveling excesses could require augmenting between all pairs of
+	nodes (roughly an $O(n^3)$ operation), cancelling excess only requires identifying
+	a corresponding deficit for each excess. This is an informal argument for why the
+	newer algorithm is more efficient.
+	
+	More precisely, at each iteration of the algorithm we ensure that we have a
+	\textbf{fitting pair}
 	of primal and dual solutions $(f,\mu)$:
 	\begin{definition}
 	A (not necessarily feasible) flow $f$ is said to \textbf{fit} a feasible dual solution $\mu$
     if it satisfies the putative complementary slackness condition: $f_e > 0 \implies \giij = 1$.
     In this case, we refer to $(f, \mu)$ as a \textbf{fitting pair}.
 	\end{definition}
-    Note: as $f$ is \emph{not} required to be a feasible primal solution,
+    Note: as $f$ is not required to be a feasible primal solution,
     this definition is a relaxation of the idea of
 	conservative pair from Section \ref{sec:cert-contract}.
     
@@ -1098,21 +1103,11 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		does not have any tight outgoing edges ($\dout(S) \cap \tau(\mu) = \varnothing$). A \textbf{bi-loose cut}
 		is both inward- and outward-loose.
 	\end{definition}
-	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts.
+	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts because
+	there are no tight edges to flow along.
 	If $f$ is feasible, then it follows that the total demand inside an inward-loose
-	cut is negative.
-	\david{
-		Add intuition:
-		Only flow from tight edges.
-		If nothing flowing in, can't satisfy any demand. If there's positive demand
-		it has to satisfy it because it's feasible.
-	}
-	\david{
-		Add intuition:
-		Whenever there's demand that is satisfied there's a path to satisfying it. 
-		If there's no path to sending any flow in there then it's not going to need
-		to send any. 
-	}
+	cut is nonpositive because otherwise $f$ would have to satisfy this demand by flowing
+	into the cut.
 	It turns out that this is a sufficient condition for the existence
 	of a feasible fitting flow:
 	\begin{lemma}[Certificate for Safety] \label{lem.safety}
