@@ -607,7 +607,7 @@ Following from primal-dual slackness, the optimality conditions for the primal a
 
 To find an initial conservative pair (f,$\mu$), a feasible flow $\bar{f}$ with no flow-generating cycles must first be found. $\bar{f} \equiv 0$ is a trivial feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by following the transformation in the paper \cite{article} (this just requires adding a few additional edges and nodes). Flow-generating cycles are then removed by the \textsc{maximum-mean-gain cycle-canceling} algorithm, introduced by Goldberg et. al \cite{Goldberg:1991:CAG:105014.105022}. This is required because there cannot be flow-generating cycles if there is a finite conservative labeling $\mu$ as shown in Claim~\ref{claim:nocycles}. The initial conservative labeling is then determined by defining $\mu_t \coloneqq 1$ and then defining $\mu_i \coloneqq$(max $\gamma$ along path from i to t)$^{-1} \quad \forall i \in V-t$. Finally, a max flow procedure is run to find a generalized flow f with respect to $\mu$, which gives us a conservative pair (f,$\mu$). At the end of this initialization phase, we also set the starting value of $\Delta$ equal to $\max_{i \in V\setminus T} \nfiu - \biu$, which is the maximum relabeled excess for any node (excluding t). This value is chosen because $\Delta$ controls the amount of flow augmented at each iteration, and it wouldn't be feasible to send more flow along a path than the maximum excess. Since $\Delta$ is monotonically decreasing in the algorithm, we initialize it to the maximum feasible value. 
 
-Once a conservative pair $(f, \mu)$ is found, the algorithm maintains a relaxed version of the pair called a $\Delta$-conservative pair. This key new idea allows a bounded amount of flow to pass along non-tight edges, while maintaining a ``security reserve''. The security reserve requires that the excess of a node i must be $\geq$ the incoming flow on non-tight edges; this keeps a conservative pair within reach because setting the flow on all non-tight edges to zero still leaves non-zero excess on every node and results in a feasible flow with no flow-generating cycles. Additionally, $\Delta$-conservative pairs require that the flow on a non-tight edge ij must be $\leq \Delta$. As $\Delta$ decreases, the amount of flow on these non-tight edges decreases and the amount relabeled excess that is created when the non-tight edges are reset to zero also decreases. This means the algorithm gets closer to an optimal solution as $\Delta$ decreases.
+Once a conservative pair $(f, \mu)$ is found, the algorithm maintains a relaxed version of the pair called a $\Delta$-conservative pair (or equivalently a $\Delta$-feasible pair). This key new idea allows a bounded amount of flow to pass along non-tight edges, while maintaining a ``security reserve''. The security reserve requires that the excess of a node i must be $\geq$ the incoming flow on non-tight edges; this keeps a conservative pair within reach because setting the flow on all non-tight edges to zero still leaves non-zero excess on every node and results in a feasible flow with no flow-generating cycles. Additionally, $\Delta$-conservative pairs require that the flow on a non-tight edge ij must be $\leq \Delta$. As $\Delta$ decreases, the amount of flow on these non-tight edges decreases and the amount relabeled excess that is created when the non-tight edges are reset to zero also decreases. This means the algorithm gets closer to an optimal solution as $\Delta$ decreases.
 
 \subsection{Identifying Contractible Edges}
 \label{sec:findcontr2013}
@@ -625,26 +625,26 @@ While finding and contracting edges, the algorithm maintains several sets as def
 	L&\text{: set containing sink and ``low relabeled excess'' nodes with excess of node } i < (d_i +1)\Delta \\
 	H&\text{: set of ``high relabeled excess'' nodes with  excess of node }i \geq (d_i + 2)\Delta \\
 	R&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
-	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
+	D&\text{: set of nodes ``approaching contraction'' $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
 	\katie{Why is $D$ constructed in this way?}
 \textbf{\textsc{Augmentation}} As shown in step 3a of the algorithmic overview above, each iteration of the main while loop (the ``finding and contracting edge''
 while loop) first looks to augment $\Delta$ units of flow on
 tight paths from high relabeled excess nodes in set H to low relabeled
 excess nodes (including the sink) in set L. The algorithm only augments on tight
-paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$ (recall the dual constrains $\gamma_{ij}^\mu$ to be $\leq 1$)
+paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$ (recall the dual constrains $\gamma_{ij}^\mu$ to be $\leq 1$). If the algorithm augments, set R is reset to set H and the next iteration begins.
 If the algorithm is not able to augment, then there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
 flow from. \\ \\
 \textbf{\textsc{Scaling}} The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
-decreasing $\Delta$ by a factor of $\alpha > 1$ (step 3b above)\katie{Should this just be gamma without the fraction?}. Increasing $\mu$ for the
-non-reachable nodes (i.e. nodes in set V $\setminus$ R) causes the ratio
-$\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ 
-to increase for edges from nodes in $R$
+decreasing $\Delta$ by a factor of $\alpha > 1$ (step 3b above). Increasing $\mu$ for the
+reachable nodes (i.e. nodes in set R) causes the ratio
+$\gamma_{ij}^\mu = \gamma_{ij} \frac{\mu_i}{\mu_j} < 1$ 
+to increase to $\gamma_{ij} \frac{\alpha\mu_i}{\mu_j}$  for edges from nodes in $R$
 to nodes in $V \setminus R$.
 \katie{It might be helpful to refer to this as edges crossing the V-R cut}
 This can cause an edge between a reachable and a
-non-reachable node to become tight (i.e. $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} =
+non-reachable node to become tight (i.e. $\gamma_{ij} \frac{\mu_i}{\mu_j} =
 1$), which may add a low excess node to the set of reachable nodes. On the other
 hand, decreasing $\Delta$ decreases the lower threshold for $H$, which might
 create more high excess nodes. This $\es$ subroutine is the only part of the
@@ -695,7 +695,20 @@ $V \setminus R$ to $t$ continues until the graph is contracted into one node.
 \subsection{Strongly Polynomial Bound}
 In this section we analyze a few key ideas that lead to a strongly polynomial bounded runtime. The full (and lengthy) set of proofs for the runtime analysis can be found in the original paper \cite{article}.
 
-First note that since the stopping condition for the ``find contractible edge'' is reducing the graph to one node, there can only be n-1 contractions. Therefore the analysis aims to put a strongly polynomial bound on the runtime of iterations between contractions (i.e. prove a contractible edge can be found within a polynomial number of steps). 
+First note that since the stopping condition for the ``find contractible edge'' is reducing the graph to one node, there can only be n-1 contractions. Therefore the analysis aims to put a strongly polynomial bound on the iterations between contractions (i.e. prove a contractible edge can be found within a polynomial number of steps). For analysis, we divide these iterations into the following categories:
+
+\begin{enumerate}[(1),itemsep=0mm]
+	\item Shrinking Iteration: set R decreases by at least one node 
+    	\begin{enumerate}
+    	\item Augmentation shrinks R because R is reset to H
+        \item $\es$ causes node's excess to decrease below H threshold and node becomes unreachable on tight path from H (i.e. no longer in set R)
+    	\end{enumerate}
+    \item Expanding Iteration: set R increases by at least one node
+    	\begin{enumerate}
+    	\item 
+    	\end{enumerate}
+    \item Neutral Iteration: Neither shrinking or expanding
+\end{enumerate}
 
 To bound the number of iterations between contractions, we define the following potential function: 
 
