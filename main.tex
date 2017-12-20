@@ -1283,20 +1283,33 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		%Let $S$ (``sources'') be
     %the set of all nodes $i$ for which
     \begin{enumerate}[(i)]
-    \item $i$ has at least one unit of excess ($\nabla f_i^{\mu} \ge \lceil b_i^{\mu} \rceil$); and
+    \item $i$ has at least one unit of excess ($\nabla f_i^{\mu} \ge b_i^{\mu} + 1$); and
     \item $b_i < 0$ (this condition is important in the potential analysis).
     \end{enumerate}
     %Augment until $S$ is empty.
 
-    \item \textbf{Scaling:} Once it is not possible to augment any more flow, the second step scales down
-    the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$, 
-		\david{we do we only scale nodes in $S$? maybe have to be able to send
-		excess somewhere to be conservative and only scale things where you can
-		definitely send it }
-    which is chosen to be the smallest value that will allow us to make more
-		progress in the augmentation phase or produces a plentiful node. As we will
-		show below, this scaling strictly increases $|b_{i}^{\mu}|$ for $i \in S$
-		towards the definiton of a plentiful node.
+    \item \textbf{Scaling:} Work toward producing a plentiful node by scaling the
+    dual $\mu$ to increase $|b^\mu|$. Any excesses created during this
+    phase must be cancelled by augmentation. In order to make this possible,
+    the scaling only occurs in the set $S$ of reachable nodes.
+    (In the original paper, there are
+    actually two sets $S$ and $\bar{S}$---this is necessary to bound the size
+    of the numbers used in the algorithm, but it is beyond the scope of this exposition.)
+    
+    Notionally, a scaling factor $\alpha > 1$ is increased continuously, and
+    $\mu_i \gets \mu_i / \alpha$ for $i \in S$.
+    $\alpha$ increases until either there is a plentiful node in $S$ or some
+    node in $S$ has an excess of at least $1$, triggering an augmentation phase.
+    
+%    Once it is not possible to augment any more flow, the second step scales down
+%    the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$, 
+%		\david{we do we only scale nodes in $S$? maybe have to be able to send
+%		excess somewhere to be conservative and only scale things where you can
+%		definitely send it }
+%    which is chosen to be the smallest value that will allow us to make more
+%		progress in the augmentation phase or produces a plentiful node. As we will
+%		show below, this scaling strictly increases $|b_{i}^{\mu}|$ for $i \in S$
+%		towards the definiton of a plentiful node.
     \end{itemize}
 
 		\david{Add / rewrite intuition about djikstras}
