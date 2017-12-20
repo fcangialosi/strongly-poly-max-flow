@@ -132,8 +132,8 @@
 	generalized maximum flow problem and the minimum cost flow problem by
 	adapting techniques from well-known combinatorial min cost flow algorithms,
 	namely~\cite{Orlin1988}.
-	\frank{Do we want to add a related work section? e.g. weakly-polynomial,
-	fat-graph, cycle-cancelling, etc.}
+	\frank{Check if the A projects all have related work sections.}
+	\frank{Add related work at the end if we have enough space.}
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
 	In this paper, we aim to
@@ -191,8 +191,11 @@
 	-\gamma_{ij}f_{ij}$. If the cumulative gain of a cycle $C$ ($\prod_{e \in C} \gamma_e$)
 	in $G_f$ is greater than 1, we call $C$ a ``flow-generating cycle.'' 
 	This captures the idea of arbitrage: sending a unit of flow around the cycle
-	generates a net surplus.\frank{We need to mention that we assume no flow generating cycles, and how to cancel them}
-
+	generates a net surplus.
+	\frank{Rewrite: These can make the problem unbounded / cause problems / leave unbounded
+	solutions. Can always increase the flow
+	without violating any of the constraints. For the remainder of this discussion.
+	we'll assume they don't exist. It's easy to eliminate them blah blah.}
 
 
 
@@ -266,8 +269,10 @@
 
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and 
-	\frank{We mentioned at one point changing the word label to something more intuitive. Let's decide.}
-	optimal labelings. \frank{@david: do you have an intuitive sense of \textit{why} we take the approach of solving the dual? Is it because it simplifies the problem as we say below or is there more to it?} 
+	optimal labelings.\frank{Double check throughout paper to make sure word label
+	is used consistently.}
+	\frank{Resassign to david: Reduces to problem of finding tight tree and that's inherently more
+	combinatorial.}
     We make the simplifying assumption that the sink is
 	reachable from every node, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
 	Complementary slackness requires that for an optimal flow $f^*$ and optimal labeling $\mu^*$,
@@ -331,8 +336,6 @@
 	\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
 	\end{align*}
     \end{definition}
-  	\frank{add something about individual node excess}
-  
   
 \section{Motivating Ideas and Techniques}
 \label{sec:motivate}
@@ -363,7 +366,7 @@
     Then it is easy to recover $f$ from $f^\mu$.
     
     In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing the set of tight edges.
-		\frank{@david: what is THE set of tight edges? I think tight is a little overloaded, because really we mean tight under a particular $\mu$ right?}
+		\david{What is THE set of tight edges? Rearrange / merge with some things in 3.3}
     Since regular maximum
     flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
     algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
@@ -614,7 +617,7 @@ that edge is very large compared to $\Delta$; however, rather than keeping track
 of this ratio, the algorithm maintains a non-decreasing ratio
 $\frac{\abs{b_i^\mu}}{\Delta}$. The original paper uses proof by contradiction
 to show that if a node $i$ has $\abs{b_i^\mu} \geq 20mn\Delta$, then it must
-have a contractible edge adjacent to it.\frank{We might want to at least sketch
+have a contractible edge adjacent to it.\katie{We might want to at least sketch
 the proof for why this is true}
 
 While finding and contracting edges, the algorithm maintains several sets as defined below:
@@ -624,7 +627,7 @@ While finding and contracting edges, the algorithm maintains several sets as def
 	R&\text{: set of nodes reachable on a tight path from $T_0$ } \\ 
 	D&\text{: set of nodes $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
-	\frank{Why is $D$ constructed in this way?}
+	\katie{Why is $D$ constructed in this way?}
 \textbf{\textsc{Augmentation}} As shown in step 3a of the algorithmic overview above, each iteration of the main while loop (the ``finding and contracting edge''
 while loop) first looks to augment $\Delta$ units of flow on
 tight paths from high relabeled excess nodes in set H to low relabeled
@@ -634,12 +637,12 @@ If the algorithm is not able to augment, then there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
 flow from. \\ \\
 \textbf{\textsc{Scaling}} The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
-decreasing $\Delta$ by a factor of $\alpha > 1$ (step 3b above)\frank{How is this value chosen?}. Increasing $\mu$ for the
+decreasing $\Delta$ by a factor of $\alpha > 1$ (step 3b above)\katie{Should this just be gamma without the fraction?}. Increasing $\mu$ for the
 non-reachable nodes (i.e. nodes in set V $\setminus$ R) causes the ratio
 $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} < 1$ 
 to increase for edges from nodes in $R$
 to nodes in $V \setminus R$.
-\frank{It might be helpful to refer to this as edges crossing the V-R cut}
+\katie{It might be helpful to refer to this as edges crossing the V-R cut}
 This can cause an edge between a reachable and a
 non-reachable node to become tight (i.e. $\gamma_{ij}^\mu \frac{\mu_i}{\mu_j} =
 1$), which may add a low excess node to the set of reachable nodes. On the other
@@ -657,11 +660,11 @@ $\Delta$ is scaled (i.e. divided by $\alpha$).
 \end{proof}
 
 Since this ratio is non-decreasing, the algorithm is always making progress towards finding a
-contractible edge; however, this progress might be very slow. \frank{Is there
+contractible edge; however, this progress might be very slow. \katie{Is there
 anything to say that it's not 0? Otherwise couldn't it just be stuck forever?}
 To speed the process up, the algorithm prioritizes increasing the
 $\sfrac{\abs{b_i^\mu}}{\Delta}$ ratio for nodes that are already approaching the
-$20mn$ threshold; these nodes are included in set D.\frank{Same thing as before:
+$20mn$ threshold; these nodes are included in set D.\katie{Same thing as before:
 why this value?}
 
 If there are no augmentations to be made on a certain iteration, $\es$ is called
@@ -674,7 +677,7 @@ the goal is to push flow directly to the sink from unreachable high excess
 nodes (step 3c above). The flow values computed in the max flow replace the current flows on
 edges contained in $V \setminus R$; all other edge flow values remain the same
 except for flow on edges going from nodes in $V \setminus R$  to $R$ which are set
-to zero\frank{again talking about cut might be clearer here}. This subroutine can speed up the finding the contractible arc process
+to zero\katie{again talking about cut might be clearer here}. This subroutine can speed up the finding the contractible arc process
 in the following ways:
 
 \begin{enumerate}[(i),itemsep=0mm]
@@ -951,6 +954,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     idea from Section \ref{sec:2013-notation}.
 
 	\subsection{Working with Infeasible Flows}\label{sec:infeasible}
+	\david{Related back to 2013 algorithm: say something about how cancelling excess instead of spreading it is
+	more efficient}
     
 	Instead of maintaining a conservative pair of feasible flow $f$ and feasible
 	dual solution $\mu$, the newer algorithm uses a possibly infeasible flow
@@ -981,10 +986,21 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	\end{definition}
 	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts.
 	If $f$ is feasible, then it follows that the total demand inside an inward-loose
-	cut is negative. \frank{why are these two statements true?}
+	cut is negative.
+	\david{
+		Add intuition:
+		Only flow from tight edges.
+		If nothing flowing in, can't satisfy any demand. If there's positive demand
+		it has to satisfy it because it's feasible.
+	}
+	\david{
+		Add intuition:
+		Whenever there's demand that is satisfied there's a path to satisfying it. 
+		If there's no path to sending any flow in there then it's not going to need
+		to send any. 
+	}
 	It turns out that this is a sufficient condition for the existence
 	of a feasible fitting flow:
-	\frank{I think we need to provide intuition for why this is the definition}
 	\begin{lemma}[Certificate for Safety] \label{lem.safety}
 	$\mu$ is safe if and only if for any inward-loose cut $S$,
 	\[ \sum_{i \in S} \biu \leq 0. \]
@@ -1159,7 +1175,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
     \item \textbf{Scaling:} Once it is not possible to augment any more flow, the second step scales down
     the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$, 
-		\frank{we do we only scale nodes in $S$? maybe have to be able to send
+		\david{we do we only scale nodes in $S$? maybe have to be able to send
 		excess somewhere to be conservative and only scale things where you can
 		definitely send it }
     which is chosen to be the smallest value that will allow us to make more
@@ -1176,11 +1192,12 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     {\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
     {\nfiu - \biu \le 1}
     {\nexists\ \text{plentiful}\ i \in \vsink}
-    }\frank{Should
-			the last constraint be taken out? Because otherwise generating a plentiful
-		node would not be a feasible solution...}
-		\frank{why do we want to stop at excess of 1? why not more than that? is it
-		because of diminishing returns?}
+    }\frank{Change this to be actual condition of plentiful node that way it can
+	become tight and add some insight in the text about this.}
+		\frank{Want to ensure that all times the excess is bounded. Dual mandate
+		thing. Keep the excess and deficit bounded, other one is make b really big.
+	Every time they create excess they have to cancel it off. Add a todo for david
+about massaging this out in 5.2.}
 
 
 
@@ -1243,6 +1260,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     we further prove that it terminates in strongly polynomial time and derive
     an upper bound on the running time.
 
+		\frank{Make this more of a sketch than complete proof. Don't need to give
+		all the cases.}
     \begin{lemma}
     $f^{\mu}$ remains unchanged throughout the subroutine.
     \label{lem:fsame}
@@ -1274,6 +1293,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     modifies the primal solution is the relabeling of $f_e$, and by
     Lemma~\ref{lem:fsame}, this never changes the value of $f^{\mu}$.
     \end{proof}
+		\frank{Make this more of a sketch}
     \begin{lemma}
         \label{lem:scaling}
         For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
@@ -1321,6 +1341,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
         solution even though we haven't kept track of it.
     \end{lemma}
     \begin{proof}
+			\david{Fix this proof}
     The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
     where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
     is safe before running the subroutine. For sake of contradiction, assume that
@@ -1360,6 +1381,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \fi
     
     \subsection{Scaling and Rounding} 
+		\frank{Revisit this, hasn't been touched in a while}
     Since the second phase of the algorithm relies on the relabeled flow, $f^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair $(f, \mu)$ and corresponding feasible relabeled flow $f^\mu$ and setting a lower bound of $\lfloor \nabla f_i^\mu \rfloor$ and an upper bound of $\lceil \nabla f_i^\mu \rceil$. The corresponding integral relabeled max flow on each edge $(i, j)$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of $f_{ij}^\mu$ remains unchanged because if $f_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, $f_{ij}^\mu$ remains integral after the initial rounding.
     
     In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to $\max_{i \in V \setminus t} \nfiu - \biu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which reduces $f^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nfiu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $\biu - 1 \leq \nfiu \leq \biu + 2$ for all $i \in V \setminus t$; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nfiu \geq \biu$ because it must be feasible. After rounding, $\nfiu \geq \biu - 1$ because $\nfiu$ decreases by at most $1$ during rounding. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of $\Ex(f, \mu)$ in Section~\ref{sec:lp}. Since we scale $\nfiu$ down by the maximum excess in the initial solution, the maximum in $\Ex(f,\mu)$ will never be more than $2$. This gives the upper bound $\nfiu \leq \biu + 2$. 
