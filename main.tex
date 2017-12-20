@@ -366,11 +366,12 @@
 %	So the operation of collapsing $i$ into $j$ along $(i, j)$ and summing their demands
 %	preserves the objective and constraints.
 
-	There is one dual variable for every vertex. Thus the number of edge
-    contractions is at most $n - 1$ before the graph is left with a single vertex.
-    Put differently, a spanning tree of tight edges encodes all the information
-    necessary to encode a dual optimal solution.
-	Contractions continue until one of the following cases occurs:
+	An algorithm based on edge contractions identifies and contracts one contractible
+	edge at a time. There can be at most $n - 1$ contractions
+	before the graph is left with a single vertex. The set of edges identified
+	over the course of the contractions is acyclic, and takes the form of
+	either a spanning tree or a spanning forest depending on which of the following
+	cases occurs. The set of tight edges can be used to reconstruct a dual solution.
 	\begin{enumerate}[(i),itemsep=0mm]
 	\item the contracted graph has just one node remaining, i.e., every node has been merged
 	into the sink $t$. In this case, the set of previously identified
@@ -391,13 +392,36 @@
 %	an optimal dual over the original graph.
 	Each component of the tight forest has net demand zero under a suitable relabeling.
 	As such, the flows in separate components are independent, effectively reducing
-	the problem to case (i)
+	the problem to case (i). The maximum flow value only depends on the flow in the
+	tree component of $t$.
 %	objective
 %	value only depends on the flow on the tight tree component containing the sink $t$.
 %	As observed in Section \ref{sec:motivate-dual}, this
 %	can be computed (in strongly polynomial time)
 %	by an ordinary maximum flow computation over the edges of the tight tree containing $t$.
 	\end{enumerate}
+	
+%	In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing the set of tight edges.
+%		\david{What is THE set of tight edges? Rearrange / merge with some things in 3.3}
+%    Since regular maximum
+%    flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
+%    algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
+%    is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
+	
+	Once a set of tight edges has been identified and used to compute dual labels,
+%	Both algorithms discussed below employ a simple (and strongly polynomial)
+%	reduction to the dual problem (D).
+%    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
+    complementary slackness dictates that for any optimal flow $f$,
+    $\giij = \gij\mu_i/\mu_j = 1$ whenever $f_{ij} > 0$. As such, the conservation
+    constraint for the relabeled optimum flow $f^\mu$ takes the form
+    \[ b^{\mu} \leq \nabla f^{\mu}
+    = \sum_{(j,i) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
+    = \sum_{(j,i) \in \din(i)} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}. \]
+    This is the conservation constraint of an ordinary maximum flow problem with demands
+    $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
+    ordinary maximum flow on the tight graph---a strongly polynomial operation.
+    Then it is easy to recover $f$ from $f^\mu$.
     
 	\begin{example}
 	Consider the flow network in
@@ -430,50 +454,26 @@
 	\end{figure*}
 	\end{example}
 	
-	We can make one additional simplification: if the contraction leads to parallel edges,
-	only the one with the highest gain is maintained.
-	This is motivated by the primal problem: in
-	the absence of edge capacity constraints, there is no reason to send flow along an edge of
-	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
-	essential features of the problem.
-	
-	Both algorithms discussed below employ a simple (and strongly polynomial)
-	reduction to the dual problem (D).
-    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
-    Complementary slackness dictates that for any optimal flow $f$,
-    $\giij = \gij\mu_i/\mu_j = 1$ whenever $f_{ij} > 0$. As such, the conservation
-    constraint for the relabeled optimum flow $f^\mu$ takes the form
-    \[ b^{\mu} \leq \nabla f^{\mu}
-    = \sum_{(j,i) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
-    = \sum_{(j,i) \in \din(i)} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}. \]
-    This is the conservation constraint of an ordinary maximum flow problem with demands
-    $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
-    ordinary maximum flow on the tight graph---a strongly polynomial operation.
-    Then it is easy to recover $f$ from $f^\mu$.
-    
-    In fact, modulo an ordinary maximum flow computation, the dual problem reduces to computing the set of tight edges.
-		\david{What is THE set of tight edges? Rearrange / merge with some things in 3.3}
-    Since regular maximum
-    flow has already been solved in strongly polynomial time, it suffices to find a strongly polynomial
-    algorithm to compute a set of tight edges consistent with a dual optimal solution. This problem
-    is inherently combinatorial, suggesting that it can be solved in strongly polynomial time.
-    
-    \subsection{Contracting edges}\label{sec:contract}
-    To organize the search for tight edges, both algorithms inductively reduce the graph.
-    
-	
 	\subsection{Progress} \label{sec:progress}
 
 	%Following from the previous two sections, in order to optimize the dual,
 	%both algorithms make progress by alternating between finding contractible
 	%edges and contracting them.
 	The heart of both strongly polynomial algorithms is a procedure for
-	identifying contractible edges and then contracting them. The key
-	differences between the two algorithms are in 
+	identifying contractible edges and then contracting them.
+	As an additional simplification, if the contraction leads to parallel edges,
+	only the one with the highest gain is maintained.
+	This is motivated by the primal problem: in
+	the absence of edge capacity constraints, there is no reason to send flow along an edge of
+	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
+	essential features of the problem.
+	
+	The key differences between the two algorithms are in 
 	\textit{how} they find contractible edges, which
 	we will describe in Sections~\ref{sec:2013} and~\ref{sec:2017}. These differences
 	allow Olver and Végh \cite{Olver2017} to achieve a better running time bound than
-	Végh \cite{Vegh2013}.
+	Végh \cite{Vegh2013}. Both algorithms use primal-dual pairs as certificates for
+	contractibility.
 
 	\subsection{Contractibility Certificates} \label{sec:cert-contract}
 	Complementary slackness tells us that if there is a primal optimal flow
