@@ -1050,7 +1050,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		is feasible.
 	\end{proof}
     
-    \subsection{A Refined Contractibility Certificate}
+    \subsection{A Refined Contractibility Certificate}\label{sec:contract-cert}
     So long as the algorithm maintains the safety of $\mu$,
     we can obtain a feasible fitting flow $f$ at any time
     by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
@@ -1168,6 +1168,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
     \subsection{Scaling and Augmentation}
     \label{sec:sub-ppn}
+		\frank{Replace any instances of "algorithm" in this section with "subroutine
+		to be clear}
 		The algorithm starts with a feasible fitting pair and consists of a sequence
     of epochs, each dedicated to identifying a contractible edge via a plentiful node.
     Each epoch alternates between the following augmentation and scaling
@@ -1204,8 +1206,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \end{itemize}
 
 		\david{Add / rewrite intuition about djikstras}
-    Although it is not necessary in practice, for clarify of explanation, one
-		can think of choosing the scaling factor $\alpha$ as solving     the following LP:
+    Although it is not necessary in practice, for clarity of explanation, one
+		can think of choosing the scaling factor $\alpha$ as solving the following LP:
     \lpeq{\lpthree{max}
     {\alpha}
     {\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
@@ -1213,10 +1215,6 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     {\nexists\ \text{plentiful}\ i \in \vsink}
     }\frank{Change this to be actual condition of plentiful node that way it can
 	become tight and add some insight in the text about this.}
-		\frank{Want to ensure that all times the excess is bounded. Dual mandate
-		thing. Keep the excess and deficit bounded, other one is make b really big.
-	Every time they create excess they have to cancel it off. Add a todo for david
-about massaging this out in 5.2.}
 
 
 
@@ -1253,15 +1251,35 @@ about massaging this out in 5.2.}
 
     \begin{figure}[b!]
     \centering
-    \includegraphics[width=\textwidth]{figs/basin.pdf}
+    \includegraphics[width=\textwidth]{figs/alpha.pdf}
     \caption{
     \label{fig:alpha}
-    Informal analogy for the maximization of scaling parameter $\alpha$.
+		Informal analogy showing how the dual is scaled at each iteration just
+		enough to keep the dual feasible and the primal bounded.
     }
     \end{figure}
-		Intuitively, as illustrated in Figure~\ref{fig:alpha}, this is akin to
-		filling a basin with water, where the height of the water represents
-		$\alpha$, and the successively
+		\david{Please review this section for correctness. Feel free to change.}
+		Intuitively, scaling $\alpha$ is
+		akin to filling a basin with water. As illustrated in
+		Figure~\ref{fig:alpha},	imagine a basin with various levels,
+		where the height of the water represents $\alpha$, and the height of each
+		level corresponds to the point at which a constraint in the above LP becomes
+		tight. Scaling $\alpha$ past one of these points in a single iteration would break the constraint.
+		Thus, at each scaling step, we can only increase $\alpha$ by at most one
+		level in the basin.
+		For example, consider point (b) where the incoming edge $(i,j) \in \din(S)$ becomes tight.
+		Increasing $\alpha$ past this point would cause $\gamma_{ij}^{\mu}$ to be
+		greater than 1, breaking the the feasibility of the dual. Setting $\alpha$
+		to exactly this value will make the edge tight, meaning we can add $i$ to our
+		list of potential augmentation sources $S$. Expanding $S$ helps, but we
+		cannot actually augment until a node in $S$ has excess at least 1. However,
+		we do not want to scale $\alpha$ past this point because, as described in
+		Section~\ref{sec:contract-cert},
+		\david{Perhaps bring this point out more in 5.2 if necessary}
+		we need to keep the primal bounded. Thus, we
+		continue filling the basin one step at a time until we reach this condition
+		(e.g. at point (d)), or the stopping condition where the plentiful node
+		constraint becomes tight.
 
     Although it is conceptually easier to imagine increasing $\alpha$ continuously
     until one of these constraints becomes tight, in practice, it is possible to
