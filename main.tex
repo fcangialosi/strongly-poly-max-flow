@@ -25,9 +25,9 @@
 \usepackage{setspace}
 
 \let\comment\todo
-\newcommand{\frank}[1]{\comment[nolist,color=blue!40]{f: #1}}
-\newcommand{\david}[1]{\comment[nolist,color=orange!40]{d: #1}}
-\newcommand{\katie}[1]{\comment[nolist,color=green!40]{k: #1}}
+\newcommand{\frank}[1]{\comment[nolist,color=blue!40]{@frank\\ #1}}
+\newcommand{\david}[1]{\comment[nolist,color=orange!40]{@david\\ #1}}
+\newcommand{\katie}[1]{\comment[nolist,color=green!40]{@katie\\ #1}}
 
 \addbibresource{main.bib}
 
@@ -133,8 +133,7 @@
 	generalized maximum flow problem and the minimum cost flow problem by
 	adapting techniques from well-known combinatorial min cost flow algorithms,
 	namely~\cite{Orlin1988}.
-	\frank{Check if the A projects all have related work sections.}
-	\frank{Add related work at the end if we have enough space.}
+	\frank{Many of the A papers have some related work. Add related work at the end if we have enough space.}
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
 	In this paper, we aim to
@@ -183,22 +182,18 @@
 
 	Then we can define the net flow at a node $i$ as the amount of flow that
 	reaches a node (scaled by the gain factor on the incoming edges) minus the
-	amount of flow that leaves the node: 
+	amount of flow that leaves the node:
 	$$ \nfi \coloneqq \sum_{e \in \din(i)} \gamma_e f_e - \sum_{e \in \dout(i)} f_e.$$
-
 	The residual graph $G_f = (V,E_f)$ is defined as in the traditional problem,
 	except the reverse residual edges $(j,i) \in E_f$ have inverted gain 
 	$\gamma_{ji} = 1 / \gamma_{ij}$ and negated flow $f_{ji} =
 	-\gamma_{ij}f_{ij}$. If the cumulative gain of a cycle $C$ ($\prod_{e \in C} \gamma_e$)
 	in $G_f$ is greater than 1, we call $C$ a ``flow-generating cycle.'' 
 	This captures the idea of arbitrage: sending a unit of flow around the cycle
-	generates a net surplus.
-	\frank{Rewrite: These can make the problem unbounded / cause problems / leave unbounded
-	solutions. Can always increase the flow
-	without violating any of the constraints. For the remainder of this discussion.
-	we'll assume they don't exist. It's easy to eliminate them blah blah.}
-
-
+	generates a net surplus. Such cycles could make the problem unbounded;
+	it is always possible to increase the flow without violating any of the
+	constraints. There is extensive prior work on eliminating such
+	cycles~\cite{Vegh2013} so for the remainder of this discussion we assume they do not exist.
 
 
 	\subsection{Linear Program Formulation}
@@ -206,7 +201,7 @@
 
 	We formulate the generalized flow maximization problem with demands as in the 2017
 	paper~\cite{Olver2017}:
-	\vspace{-0.35cm}
+	\vspace{-0.5cm}
 %		\begin{align*}
 %		\text{max} \quad
 %		\nabla f_t& \\
@@ -230,8 +225,9 @@
 	The dual linear program, given on the left below, has a variable $\eta_i$ for
 	every node $i$. 
 	Making the change of variables $\eta_i = - \mu_t / \mu_i$ yields the
-	dual optimization problem on the right.
-    \vspace{0.5cm}
+	dual optimization problem on the right.\frank{Hack for now. Rewrite above 
+		or change font size to	make this fit}
+    \vspace{-0.5cm}
 
 	\begin{tabular}{rcll}
 		\hspace*{-1.05cm}
@@ -266,14 +262,13 @@
 }
 } & \hspace*{0.4cm}(D)
 \end{tabular}
-\vspace{0.5cm}
-
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and 
-	optimal labelings.\frank{Double check throughout paper to make sure word label
-	is used consistently.}
-	\frank{Resassign to david: Reduces to problem of finding tight tree and that's inherently more
-	combinatorial.}
+	optimal labelings. 
+	\david{We want to make sure it's clear why we're focusing on solving the dual instead of
+		the primal. Mention (either here or in S3) that it reduces to problem of
+		finding tight tree and that's inherently more combinatorial, or something
+		along those lines...}
     We make the simplifying assumption that the sink is
 	reachable from every node, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
 	Complementary slackness requires that for an optimal flow $f^*$ and optimal labeling $\mu^*$,
@@ -306,7 +301,7 @@
     \begin{claim}
     $f^\mu$ is a feasible (resp. optimal) solution to the relabeled primal problem with gains
     $\gamma^\mu$ and demands $b^\mu$ if and only if $f$ is a feasible (resp. optimal) solution
-    to the original problem with gains $\gamma$ and demands $b$. \katie{which original problem?}
+    to the original problem with gains $\gamma$ and demands $b$.
     \end{claim}
     \begin{claim}
     If $\mu$ is a feasible solution to the original dual problem and
@@ -439,19 +434,19 @@
 	\end{enumerate}
     
 	\begin{example}
-	Consider the simple flow network in
+	Consider the flow network in
 	Figure~\ref{fig:ex-spanning}. By inspection, we can see that the maximum flow $f^{*}$
-	should send 8 units of flow from $i$ to $t$ and 8 units of flow from $j$ to $t$,
+	should send 8 units of flow from $i$ to $t$ and 8 units from $j$ to $t$,
 	resulting in 6 units at the sink. On the right, we show the three possible spanning
 	trees of tight edges for this graph.
 	For each tree, starting with $\mu_t = 1$, we can compute $\mu_i$
-	and $\mu_j$. In (a), the dual is not feasible because
+	and $\mu_j$ based on the tight edges. In (a), the dual is not feasible because
 	$\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
 	In (b) and (c) all of the dual constraints are feasible,
-	but (b) produces a greater objective value
+	but (b) produces a greater objective value ($-6$ vs. $-8$)
 	than (c). Solving a max flow on just the tight edges of (b) yields the max value
 	we expect, 6. The optimal collection of tight edges encodes all the information necessary
-	to reconstruct the optimal solution.\frank{todo: mention u* is negative 6 because of change of variables}
+	to reconstruct the optimal solution.
 	\begin{figure*}[h]
 	\centering
 	\begin{minipage}{.49\textwidth}
@@ -465,7 +460,7 @@
 	\label{fig:ex-spanning}
 	\caption{(left) Example flow network. (right) All three possible tight
 	spanning trees and their respective dual solutions.
-	Dark edges are tight ($\gamma^{\mu} = 1$), gray dashed edges are not.}
+	Blue edges are tight ($\gamma^{\mu} = 1$), gray dashed edges are not.}
 	\end{figure*}
 	\end{example}
 
