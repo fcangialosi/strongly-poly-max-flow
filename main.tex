@@ -335,7 +335,7 @@
   
 \section{Motivating Ideas and Techniques}
 \label{sec:motivate}
-	\subsection{Solving the Dual Problem Combinatorially}
+	\subsection{Solving the Problem Combinatorially}
 	\label{sec:motivate-dual}
     	%* Talk about idea of solving dual 
       %  	* Key insight about this algorithm is that they maintain $f^{\mu}$ (without any extra work apparently) to be integral
@@ -354,8 +354,9 @@
     We might as well remove one of the variables entirely by collapsing the edge $(i, j)$,
     leaving a single node $j$ with a single dual variable $\mu_j$, and summing the
     demands $b_i$ and $b_j$. This operation is called an \textbf{edge contraction},
-    and it preserves the dual objective and constraints. An edge $e$ which is
-    tight under any dual-optimal solution is accordingly called \textbf{contractible}.
+    and it preserves the dual objective and other constraints.
+    An edge $e$ which is tight under any dual-optimal solution is accordingly
+    called \textbf{contractible}.
     
 %    It remains to set the demand $b_j$ so
 %    that the problem remains equivalent. Rewritten in terms of the variables in
@@ -366,22 +367,26 @@
 %	So the operation of collapsing $i$ into $j$ along $(i, j)$ and summing their demands
 %	preserves the objective and constraints.
 
-	An algorithm based on edge contractions identifies and contracts one contractible
-	edge at a time. There can be at most $n - 1$ contractions
-	before the graph is left with a single vertex. The set of edges identified
-	over the course of the contractions is acyclic, and takes the form of
+	An algorithm based on edge contractions identifies one contractible
+	edge at a time and contracts it. 
+    (As an additional simplification, if the contraction leads to parallel edges,
+	only the one with the highest gain is maintained---there is no reason to send
+	flow along an edge of lower gain when one of higher gain is available.)
+	There can be at most $n - 1$ contractions
+	before the graph is left with a single vertex. The set of guaranteed-tight edges identified
+	over the course of the contractions is acyclic, and it takes the form of
 	either a spanning tree or a spanning forest depending on which of the following
-	cases occurs. The set of tight edges can be used to reconstruct a dual solution.
+	cases occurs:
 	\begin{enumerate}[(i),itemsep=0mm]
 	\item the contracted graph has just one node remaining, i.e., every node has been merged
 	into the sink $t$. In this case, the set of previously identified
 	contractible edges forms a spanning tree. Given a value for $\mu_t$, the tightness
 	constraints then uniquely determine the values of the optimal $\mu$ at all other vertices.
 	
-	\item the contracted graph has multiple nodes, but the (merged)
+	\item the contracted graph has multiple nodes, but the (merged, relabeled)
 	demands $\biu$ are all zero. In this case, the dual objective on the contracted
-	graph is identically zero, and the primal solution $f \equiv 0$ is feasible,
-	with a primal objective value of zero. By strong duality, any feasible dual
+	graph is identically zero. Meanwhile $f \equiv 0$ is primal-feasible on the contracted
+	graph, with a primal objective value of zero. By strong duality, any feasible dual
 	solution on the contracted graph is optimal.
 	
 	In this case, the set of previously identified contractible edges
@@ -412,8 +417,9 @@
 %	Both algorithms discussed below employ a simple (and strongly polynomial)
 %	reduction to the dual problem (D).
 %    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
-    complementary slackness dictates that for any optimal flow $f$,
-    $\giij = \gij\mu_i/\mu_j = 1$ whenever $f_{ij} > 0$. As such, the conservation
+    complementary slackness dictates that any optimal flow $f$ is supported only on
+    the tight edges---$\giij = \gij\mu_i/\mu_j = 1$
+    whenever $f_{ij} > 0$. As such, the conservation
     constraint for the relabeled optimum flow $f^\mu$ takes the form
     \[ b^{\mu} \leq \nabla f^{\mu}
     = \sum_{(j,i) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
@@ -421,7 +427,8 @@
     This is the conservation constraint of an ordinary maximum flow problem with demands
     $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
     ordinary maximum flow on the tight graph---a strongly polynomial operation.
-    Then it is easy to recover $f$ from $f^\mu$.
+    Then it is easy to recover $f$ from $f^\mu$. We have shown how to reduce the generalized
+    flow problem to a combinatorial problem, computing an optimal set of tight edges.
     
 	\begin{example}
 	Consider the flow network in
@@ -454,28 +461,20 @@
 	\end{figure*}
 	\end{example}
 	
-	\subsection{Progress} \label{sec:progress}
-
+	
+	\subsection{Contractibility Certificates} \label{sec:cert-contract}
 	%Following from the previous two sections, in order to optimize the dual,
 	%both algorithms make progress by alternating between finding contractible
 	%edges and contracting them.
-	The heart of both strongly polynomial algorithms is a procedure for
+	The heart of both strongly polynomial algorithms detailed below is a procedure for
 	identifying contractible edges and then contracting them.
-	As an additional simplification, if the contraction leads to parallel edges,
-	only the one with the highest gain is maintained.
-	This is motivated by the primal problem: in
-	the absence of edge capacity constraints, there is no reason to send flow along an edge of
-	lower gain when one of higher gain is available. Thus, culling parallel edges preserves the
-	essential features of the problem.
-	
 	The key differences between the two algorithms are in 
 	\textit{how} they find contractible edges, which
 	we will describe in Sections~\ref{sec:2013} and~\ref{sec:2017}. These differences
 	allow Olver and Végh \cite{Olver2017} to achieve a better running time bound than
-	Végh \cite{Vegh2013}. Both algorithms use primal-dual pairs as certificates for
-	contractibility.
+	Végh \cite{Vegh2013}. The algorithms have in common the use of primal-dual pairs
+	as certificates for contractibility.
 
-	\subsection{Contractibility Certificates} \label{sec:cert-contract}
 	Complementary slackness tells us that if there is a primal optimal flow
 	$f$ with positive value
 	on some edge $e$, then $e$ is tight with respect to \emph{every} dual
@@ -1072,7 +1071,6 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	\subsection{Working with Infeasible Flows}\label{sec:infeasible}
 	\david{Related back to 2013 algorithm: say something about how cancelling excess instead of spreading it is
 	more efficient}
-    
 	Instead of maintaining a conservative pair of feasible flow $f$ and feasible
 	dual solution $\mu$, the newer algorithm uses a possibly infeasible flow
 	as a certificate for identifying contractible edges.
@@ -1267,6 +1265,10 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \label{sec:sub-ppn}
 		\frank{Replace any instances of "algorithm" in this section with "subroutine
 		to be clear}
+		\frank{When I used the term epoch here,
+		I was referring to the "subroutine" \textsc{Produce Plentiful Node} as an epoch,
+		as we don't give it a name anywhere else. The epochs are demarcated by contractions. Is
+		this incorrect? -- David}
 		The algorithm starts with a feasible fitting pair and consists of a sequence
     of epochs, each dedicated to identifying a contractible edge via a plentiful node.
     Each epoch alternates between the following augmentation and scaling
