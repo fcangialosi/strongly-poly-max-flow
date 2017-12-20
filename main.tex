@@ -125,13 +125,15 @@
 	(i.e. one that depends only on the number of nodes and edges in the graph,
 	and is independent of the size of their values). In 2017, Olver and Végh
 	built on this work and developed an algorithm~\cite{Olver2017}
-    that is faster by a factor of
+	that is faster by a factor of
 	almost $O(n^2)$, resulting in a running time that is as fast as the best
 	weakly polynomial algorithms even for small parameter values. These
 	algorithms take advantage of the structural similarities between the
 	generalized maximum flow problem and the minimum cost flow problem by
 	adapting techniques from well-known combinatorial min cost flow algorithms,
-    namely~\cite{Orlin1988}.
+	namely~\cite{Orlin1988}.
+	\frank{Do we want to add a related work section? e.g. weakly-polynomial,
+	fat-graph, cycle-cancelling, etc.}
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
 	In this paper, we aim to
@@ -263,7 +265,8 @@
 \vspace{0.5cm}
 
         
-	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and
+	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and 
+	\frank{We mentioned at one point changing the word label to something more intuitive. Let's decide.}
 	optimal labelings. \frank{@david: do you have an intuitive sense of \textit{why} we take the approach of solving the dual? Is it because it simplifies the problem as we say below or is there more to it?} 
     We make the simplifying assumption that the sink is
 	reachable from every node, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
@@ -553,6 +556,7 @@
 \label{sec:2013}
 	%\subsection{Introduced Concepts and Notation}
     \label{sec:2013-notation}
+		\frank{Do we want to add the tables back in?}
 
 %Notes for "Intuitive Section 4":
 
@@ -1164,8 +1168,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		towards the definiton of a plentiful node.
     \end{itemize}
 
-    \todo{RE-WRITE AS DJIKSTRAS}
-
+		\david{Add / rewrite intuition about djikstras}
     Although it is not necessary in practice, for clarify of explanation, one
 		can think of choosing the scaling factor $\alpha$ as solving     the following LP:
     \lpeq{\lpthree{max}
@@ -1309,14 +1312,13 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \begin{proof}
         In order to be a fitting pair, we must have the following relationship between
         $f$ and $\mu$: for all $(i, j) \in E$, $\giij \leq 1$, and when $f_{ij} > 0$, 
-        $\giij = 1$. \todo{This is a definition, not a proof.}
+				$\giij = 1$. \frank{finish this}
     \end{proof}
 
     \begin{lemma}
         The rescaling of $\mu$ during produce-plentiful-node does not break 
         the safety of $\mu$, i.e. there is a corresponding feasible primal
         solution even though we haven't kept track of it.
-        \todo{Why is this here:} (~\ref{lem:usafe})
     \end{lemma}
     \begin{proof}
     The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
