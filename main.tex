@@ -157,7 +157,7 @@
 	%An instance of the generalized flow problem is specified as	
 	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$,
 	$t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
-	across the edges. Although we have typically seen flow constraints defined in terms of
+	across the edges. We also make the assumption that m $\geq$ n. Although we have typically seen flow constraints defined in terms of
 	edge capacities, recent work on the generalized problem defines flow
 	constraints using node demands $b \in \R^{V \setminus t}$ instead (and leave
 	edge capacities unbounded). Thus, an instance of the generalized flow problem
@@ -663,7 +663,7 @@ have a contractible edge adjacent to it.
 \begin{proof}
 Suppose, for sake of contradiction, none of the edges adjacent to $i$ are
 contractible; this means that each edge $(i,j)$ and $(j,i)$ must have $f_{ij}^\mu < 17m\Delta$.
-Consider the two cases below and note that $m \geq n \geq d_i + 1$.\katie{why?}
+Consider the two cases below and note that $m \geq n \geq d_i + 1$ (\ref{sec:notation}).
 \begin{enumerate}[itemsep=0mm]
 \item 
 		If $b_i^\mu > 0$, then $$\nfiu - \biu = \sum_{j:ji \in E} \giij f_{ij}^\mu -
@@ -727,13 +727,8 @@ if $D \cap V\setminus R \neq \varnothing$. Since $\es$ only increases
 $\sfrac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus R$, the subroutine will
 only be called if that set contains nodes that are close to reaching $20mn$. If
 there are no such nodes, a different subroutine, $\filtration$, is called first. \\ \\
-\textbf{\textsc{Redistributing Excess}} $\filtration$ runs a modified max flow iteration on nodes in set $V \setminus R$;
-the goal is to push flow directly to the sink from unreachable
-\katie{What is the definition of unreachable? If it's given somewhere already
-	and I missed it, maybe just point back to it. Also, if it's "unreachable" how
-can we push flow from it? Seems counter-intuitive..}
-high excess
-nodes (step 3c above). The flow values computed in the max flow replace the current flows on
+\textbf{\textsc{Redistributing Excess}} $\filtration$ (step 3c above) runs a modified max flow iteration on nodes in set $V \setminus R$;
+the goal is to push flow directly to the sink from ``isolated'' nodes (nodes that cannot be augmented to on a tight path from the high excess nodes). The flow values computed in the max flow replace the current flows on
 edges contained in $V \setminus R$; all other edge flow values remain the same
 except for flow on edges going from nodes in $V \setminus R$  to $R$ which are set
 to zero. This subroutine can speed up the finding the contractible arc process
