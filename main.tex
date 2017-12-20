@@ -690,10 +690,10 @@ in the following ways:
 \end{enumerate}
 
 This alternation between augmenting, rescaling, and pushing flow from
-$V \setminus R$ to $t$ continues until the graph is contracted into one node. 
+$V \setminus R$ to $t$ continues until the graph is contracted into one node. \katie{mention expanding and computing primal or ref section 3 for this?}
 
 \subsection{Strongly Polynomial Bound}
-In this section we analyze a few key ideas that lead to a strongly polynomial bounded runtime. The full (and lengthy) set of proofs for the runtime analysis can be found in the original paper \cite{article}.
+\katie{finish section and possibly cut out some definitions of iterations if need to save space}In this section we analyze a few key ideas that lead to a strongly polynomial bounded runtime. The full (and lengthy) set of proofs for the runtime analysis can be found in the original paper \cite{article}.
 
 First note that since the stopping condition for the ``find contractible edge'' is reducing the graph to one node, there can only be n-1 contractions. Therefore the analysis aims to put a strongly polynomial bound on the iterations between contractions (i.e. prove a contractible edge can be found within a polynomial number of steps). For analysis, we divide these iterations into the following categories:
 
