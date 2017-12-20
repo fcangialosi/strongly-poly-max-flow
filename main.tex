@@ -1113,11 +1113,28 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		edge.
 	\end{proof}
 
+
+%    It is important to notice that, just as with the definition of an abundant edge,
+%    this definition depends only on the size of the graph, which is a key property
+%    that will keep our algorithm strongly polynomial because we will be iteratively
+%    re-scaling the node demands until one of them satisfies this property.
+%
+%    \begin{theorem} Assume $(f, \mu)$ is a fitting pair with $\mu$ safe.
+%    Then the existence of a plentiful node $i$ ensures
+%    that there exists a contractible edge $e$ incident to $i$.
+%    \end{theorem}
+%    \begin{proof} 
+%    \todo{Prove theorem 3.1 more succinctly and clearly}.
+%    \end{proof}
+
     \subsection{Scaling and Augmentation}
     \label{sec:sub-ppn}
 		The algorithm starts with a feasible fitting pair and consists of a sequence
     of epochs, each dedicated to identifying a contractible edge via a plentiful node.
-    Each epoch alternates between the following augmentation and scaling phases:
+    Each epoch alternates between the following augmentation and scaling
+		phases:\frank{we need to rewrite this. each epoch does not find a plentiful
+		node, there's only one produced at the end, we need to make this distinction
+		from the outer loop in the main algorithm where this is the case}
     \begin{itemize}
     \item \textbf{Augmentation:} Reduce the total excess and deficit of the fitting flow $f$
     by augmenting as much flow as possible, one unit at a time, along tight paths from nodes with
@@ -1141,8 +1158,10 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		\frank{we do we only scale nodes in $S$? maybe have to be able to send
 		excess somewhere to be conservative and only scale things where you can
 		definitely send it }
-    which is chosen to be the largest value that \rewrite{does not violate} any of the dual
-    constraints~(D) or produces a plentiful node.
+    which is chosen to be the smallest value that will allow us to make more
+		progress in the augmentation phase or produces a plentiful node. As we will
+		show below, this scaling strictly increases $|b_{i}^{\mu}|$ for $i \in S$
+		towards the definiton of a plentiful node.
     \end{itemize}
 
     \todo{RE-WRITE AS DJIKSTRAS}
@@ -1157,6 +1176,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     }\frank{Should
 			the last constraint be taken out? Because otherwise generating a plentiful
 		node would not be a feasible solution...}
+		\frank{why do we want to stop at excess of 1? why not more than that? is it
+		because of diminishing returns?}
 
 
 
