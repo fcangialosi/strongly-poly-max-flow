@@ -1295,6 +1295,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     $\mu_i \gets \mu_i / \alpha$ for $i \in S$.
     $\alpha$ increases until either there is a plentiful node in $S$ or some
     node in $S$ has an excess of at least $1$, triggering an augmentation phase.
+    Flow on edges entirely within $S$ is also scaled by $f_e \gets f_e/\alpha$,
+    so that $f_{ij}^\mu$ does not change when $i, j \in S$.
     
 %    Once it is not possible to augment any more flow, the second step scales down
 %    the labels and flow for all nodes and edges in $S$ by the same factor $\alpha$, 
@@ -1308,18 +1310,18 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \end{itemize}
 
 		\david{Add / rewrite intuition about djikstras}
-    Although it is not necessary in practice, for clarity of explanation, one
-		can think of choosing the scaling factor $\alpha$ as solving the following LP:
-    \lpeq{\lpthree{max}
-    {\alpha}
-    {\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
-    {\nfiu - \biu \le 1}
-    {\nexists\ \text{plentiful}\ i \in \vsink}
-    }\frank{Change this to be actual condition of plentiful node that way it can
-	become tight and add some insight in the text about this.}
-
-
-
+%    Although it is not necessary in practice, for clarity of explanation, one
+%		can think of choosing the scaling factor $\alpha$ as solving the following LP:
+%    \lpeq{\lpthree{max}
+%    {\alpha}
+%    {\gamma_{ij}^{\mu} \le 1\ \forall\ i,j \in \din(S)}
+%    {\nfiu - \biu \le 1}
+%    {\nexists\ \text{plentiful}\ i \in \vsink}
+%    }\frank{Change this to be actual condition of plentiful node that way it can
+%	become tight and add some insight in the text about this.}
+%
+%
+%
 %    \begin{figure}[b!]
 %    \centering
 %    \includegraphics[width=0.35\textwidth]{figs/water.pdf}
@@ -1350,7 +1352,6 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 %    be able to make progress in the next iteration of the first step. Below, we show
 %    in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
 %    that the algorithm can make progress in the second step. 
-
     \begin{figure}[b!]
     \centering
     \includegraphics[width=\textwidth]{figs/alpha.pdf}
@@ -1360,28 +1361,34 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		enough to keep the dual feasible and the primal bounded.
     }
     \end{figure}
-		\david{Please review this section for correctness. Feel free to change.}
-		Intuitively, scaling $\alpha$ is
-		akin to filling a basin with water. As illustrated in
-		Figure~\ref{fig:alpha},	imagine a basin with various levels,
-		where the height of the water represents $\alpha$, and the height of each
-		level corresponds to the point at which a constraint in the above LP becomes
-		tight. Scaling $\alpha$ past one of these points in a single iteration would break the constraint.
-		Thus, at each scaling step, we can only increase $\alpha$ by at most one
-		level in the basin.
-		For example, consider point (b) where the incoming edge $(i,j) \in \din(S)$ becomes tight.
-		Increasing $\alpha$ past this point would cause $\gamma_{ij}^{\mu}$ to be
-		greater than 1, breaking the the feasibility of the dual. Setting $\alpha$
-		to exactly this value will make the edge tight, meaning we can add $i$ to our
-		list of potential augmentation sources $S$. Expanding $S$ helps, but we
-		cannot actually augment until a node in $S$ has excess at least 1. However,
-		we do not want to scale $\alpha$ past this point because, as described in
-		Section~\ref{sec:contract-cert},
-		\david{Perhaps bring this point out more in 5.2 if necessary}
-		we need to keep the primal bounded. Thus, we
-		continue filling the basin one step at a time until we reach this condition
-		(e.g. at point (d)), or the stopping condition where the plentiful node
-		constraint becomes tight.
+	\david{Please review this section for correctness. Feel free to change.}
+	Intuitively, scaling is
+	akin to filling a basin with water. As illustrated in
+	Figure~\ref{fig:alpha},	imagine a basin with various levels,
+	where the height of the water represents $\alpha$ and each
+	level corresponds to a vertex on the boundary of $S$. The area under water
+	represents $S$.
+	As $\alpha$ rises, an incoming edge $(i, j)$ becomes tight. This in turn
+	causes $i$ to be added to $S$, as $S$ is now reachable along a tight
+	path from $i$. Updating $S$ during scaling maintains the invariant that
+	$S$ is inward-loose.
+		
+%	Scaling $\alpha$ past one of these points in a single iteration would break the constraint.
+%	Thus, at each scaling step, we can only increase $\alpha$ by at most one
+%	level in the basin.
+%	For example, consider point (b) where the incoming edge $(i,j) \in \din(S)$ becomes tight.
+%	Increasing $\alpha$ past this point would cause $\gamma_{ij}^{\mu}$ to be
+%	greater than 1, breaking the the feasibility of the dual. Setting $\alpha$
+%	to exactly this value will make the edge tight, meaning we can add $i$ to our
+%	list of potential augmentation sources $S$. Expanding $S$ helps, but we
+%	cannot actually augment until a node in $S$ has excess at least 1. However,
+%	we do not want to scale $\alpha$ past this point because, as described in
+%	Section~\ref{sec:contract-cert},
+%	\david{Perhaps bring this point out more in 5.2 if necessary}
+%	we need to keep the primal bounded. Thus, we
+%	continue filling the basin one step at a time until we reach this condition
+%	(e.g. at point (d)), or the stopping condition where the plentiful node
+%	constraint becomes tight.
 
     Although it is conceptually easier to imagine increasing $\alpha$ continuously
     until one of these constraints becomes tight, in practice, it is possible to
