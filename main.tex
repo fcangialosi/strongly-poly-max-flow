@@ -1399,91 +1399,81 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     The details of calculating the value are not particularly insightful so we omit them here, but the
     fact that it can be done is important for the running time analysis.
 
-    We now make some important claims about the variables as the algorithm
-    progresses that allow us to prove its correctness: i.e. that it terminates,
-    producing a plentiful node.
-    In the following section,
-    we further prove that it terminates in strongly polynomial time and derive
-    an upper bound on the running time.
-
-		\frank{Make this more of a sketch than complete proof. Don't need to give
-		all the cases.}
+	\subsection{Analysis}
+	We now present some invariants that the algorithm preserves during each
+	epoch. These will allow us to prove that it finds a plentiful node in
+	strongly polynomial time, and that the overall algorithm produces a correct
+	optimal solution.
     \begin{lemma}
-    $f^{\mu}$ remains unchanged throughout the subroutine.
+    Relabeled flow $f^{\mu}$ remains unchanged during each epoch.
     \label{lem:fsame}
     \end{lemma} 
     \begin{proof}
-        We must show that, for all edges $(i,j)$, $f_{ij}^{\mu}$ does not change.
-        Recall that $f_{ij}^{\mu} = \frac{f_{ij}}{\mu_i}$. There
-        are four possible cases for $(i, j)$:
-        \begin{enumerate}
-            \item Both outside of $S$. The subroutine only scales $i \in S$, so $\mu_i$ 
-                does not change, and thus nor does $\fiju$.
-            \item Both inside of $S$. The subroutine scales both $f_{ij}$ and $\mu$ by
-                $\alpha$, which cancel each other out in the definition of $\fiju$.
-            \item Only $i$ in $S$, which implies $i,j \in \dout(S)$. Then $f_{ij}=0$,
-                because otherwise there would be a tight residual edge $j,i \in \din(S)$,
-                and by definition $S$ has no incoming tight edges.
-            \item Only $j$ in $S$, which implies $i,j \in \din(S)$. Again, incoming edges
-                are not tight by definition of $S$ and we only augment along tight edges,
-                so $f_{ij}$ is not augmented. Also, if $i \notin S$, then $\mu_i$ doesn't
-                change. \qedhere
-        \end{enumerate}
+    	As seen above, the scaling is designed so that $f_{ij}^\mu = f_{ij}/\mu_i$
+    	stays constant when both $i$ and $j$ are in $S$. Moreover, it maintains the
+    	invariant that there is no flow across the cut $S$---so flow across $S$ is vacuously
+    	preserved under scaling. Finally, scaling does not affect edges entirely
+    	outside $S$.
     \end{proof}
     \begin{corollary}
     $f^{\mu}$ is always integral.
     \end{corollary}
     \begin{proof}
+    The flow is initially rounded to be integral (Section \ref{sec:2017-rounding} below). 
     The augmentation step clearly maintains integrality of $f^{\mu}$ because we
-    always augment by 1 unit at a time. The only other part of the algorithm that
-    modifies the primal solution is the relabeling of $f_e$, and by
-    Lemma~\ref{lem:fsame}, this never changes the value of $f^{\mu}$.
+    always augment by 1 unit at a time. By
+    Lemma~\ref{lem:fsame}, scaling never changes the value of $f^{\mu}$ at all.
+    Finally, at a contraction, a new integral flow is computed.
     \end{proof}
 		\frank{Make this more of a sketch}
-    \begin{lemma}
-        \label{lem:scaling}
-        For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
-        strictly increases $|\biu|$. For all other nodes, $|\biu|$ remains unchanged.
-        \todo{Show S cannot be empty?}
-    \end{lemma}
-    \begin{proof}
-        First, trivially, scaling a node with zero demand cannot change its value
-        ($0\cdot\mu=0$), and the algorithm only updates $\mu_i$ for $i \in S$. Recall
-        that $\biu$ is defined as $b_i / \mu_i$, and thus, if $\mu_i\leftarrow \mu_i / \alpha$,
-        then
-        \[ \biu \leftarrow \frac{b_i}{\mu_i / \alpha} = \alpha\frac{b_i}{\mu_i} = \alpha \biu. \] 
-        Now it suffices to prove that $\alpha > 1$ always holds when any of the three
-        constraints become tight.
-
-        By construction, before rescaling, $S$ has no tight
-        incoming edges. Recall $\giij = \gamma_i\frac{u_i}{u_j}$. In order for an
-        incoming edge $i \notin S, j\in S$ to become tight (1), we must have $\giij=1$:
-        since we only scale values in $S$, $\alpha$ must be ${1}/{\giij}$, which is
-        always greater than $1$ because $\giij < 1$ (by the feasibility of the dual).
-
-        From the terminating condition of the augmentation step (the lack of any nodes
-        in $S$ having excess), we know $\Ex(f) = \nfiu - \biu < 1$. Since, by
-        Lemma~\ref{lem:fsame}, $\nfiu$ is unchanged and only nodes in $\vsrc$ (i.e. $b_i<0$)
-        can have excess, the only way for to make $\Ex(f) \ge 1$ is if $\biu$ becomes
-        more negative, which only happens if $\alpha > 1$. 
-
-        Finally, we start out with the assumption that there are no plentiful nodes.
-        In order for a node to become plentiful (3), its demand $\biu$ must increase,
-        which is only possible if $\alpha > 1$.
-    \end{proof}
+%    \begin{lemma}
+%        \label{lem:scaling}
+%        For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
+%        strictly increases $|\biu|$. For all other nodes, $|\biu|$ remains unchanged.
+%        \todo{Show S cannot be empty?}
+%    \end{lemma}
+%    \begin{proof}
+%        First, trivially, scaling a node with zero demand cannot change its value
+%        ($0\cdot\mu=0$), and the algorithm only updates $\mu_i$ for $i \in S$. Recall
+%        that $\biu$ is defined as $b_i / \mu_i$, and thus, if $\mu_i\leftarrow \mu_i / \alpha$,
+%        then
+%        \[ \biu \leftarrow \frac{b_i}{\mu_i / \alpha} = \alpha\frac{b_i}{\mu_i} = \alpha \biu. \] 
+%        Now it suffices to prove that $\alpha > 1$ always holds when any of the three
+%        constraints become tight.
+%
+%        By construction, before rescaling, $S$ has no tight
+%        incoming edges. Recall $\giij = \gamma_i\frac{u_i}{u_j}$. In order for an
+%        incoming edge $i \notin S, j\in S$ to become tight (1), we must have $\giij=1$:
+%        since we only scale values in $S$, $\alpha$ must be ${1}/{\giij}$, which is
+%        always greater than $1$ because $\giij < 1$ (by the feasibility of the dual).
+%
+%        From the terminating condition of the augmentation step (the lack of any nodes
+%        in $S$ having excess), we know $\Ex(f) = \nfiu - \biu < 1$. Since, by
+%        Lemma~\ref{lem:fsame}, $\nfiu$ is unchanged and only nodes in $\vsrc$ (i.e. $b_i<0$)
+%        can have excess, the only way for to make $\Ex(f) \ge 1$ is if $\biu$ becomes
+%        more negative, which only happens if $\alpha > 1$. 
+%
+%        Finally, we start out with the assumption that there are no plentiful nodes.
+%        In order for a node to become plentiful (3), its demand $\biu$ must increase,
+%        which is only possible if $\alpha > 1$.
+%    \end{proof}
     \begin{lemma}
         \label{lem:still-fit}
-        $\fp$ remains a fitting pair throughout the subroutine.
+        $\fp$ remains a fitting pair throughout each epoch.
     \end{lemma}
     \begin{proof}
-        In order to be a fitting pair, we must have the following relationship between
-        $f$ and $\mu$: for all $(i, j) \in E$, $\giij \leq 1$, and when $f_{ij} > 0$, 
-				$\giij = 1$. \frank{finish this}
+    Suppose that at the beginning of the epoch $f$ fits $\mu$. That is, $\mu$
+    is dual-feasible, and whenever
+    $f_{ij} > 0$, $\giij = 1$. Augmentation only occurs along tight edges, thus
+    maintaining the fitting property. Scaling only changes $\giij = \gij \mu_i / \mu_j$
+    when $(i, j)$ crosses between $S$ and $V \setminus S$. But there is no flow crossing
+    this cut, so scaling never violates the fitting property. Moreover, as soon as an edge
+    crossing the cut becomes tight, $S$ is expanded. Thus, the constraint
+    $\giij \leq 1$ is never violated during scaling, i.e., $\mu$ remains feasible.
     \end{proof}
 
     \begin{lemma}
-        The rescaling of $\mu$ during produce-plentiful-node does not break 
-        the safety of $\mu$, i.e. there is a corresponding feasible primal
+        $\mu$ remains safe throughout each epoch, i.e. there is a corresponding feasible primal
         solution even though we haven't kept track of it.
     \end{lemma}
     \begin{proof}
@@ -1526,7 +1516,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
     \fi
     
-    \subsection{Scaling and Rounding} 
+    \subsection{Scaling and Rounding} \label{sec:2017-rounding}
 		\frank{Revisit this, hasn't been touched in a while}
     Since the second phase of the algorithm relies on the relabeled flow, $f^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair $(f, \mu)$ and corresponding feasible relabeled flow $f^\mu$ and setting a lower bound of $\lfloor \nabla f_i^\mu \rfloor$ and an upper bound of $\lceil \nabla f_i^\mu \rceil$. The corresponding integral relabeled max flow on each edge $(i, j)$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of $f_{ij}^\mu$ remains unchanged because if $f_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, $f_{ij}^\mu$ remains integral after the initial rounding.
     
