@@ -1112,13 +1112,12 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	This is Lemma 2.3 in \cite{Olver2017}, where it is described as a corollary of Hoffman's Circulation
 	Theorem, Theorem 11.2 in \cite{Schrijver2002}. We provide a proof for completeness:
 	\begin{proof}
-		Suppose the cut condition holds. Let $f$ be a function on tight edges minimizing
+		Suppose the cut condition holds. Let $f$ be a flow on tight edges minimizing
 		the total deficit $\Def(f, \mu) = \sum_i \min\{0, \biu - \nfiu\}$. Let
 		$T^+$, $T^-$ be the sets of nodes with excess and deficit, respectively:
-		\begin{align*}
-			T^+ &= \{i \in V \mid \nfiu > \biu \} \\
-			T^- &= \{i \in V \mid \nfiu < \biu \}.
-		\end{align*}
+		\[
+			T^+ = \{i \in V \mid \nfiu > \biu \} \qquad T^- = \{i \in V \mid \nfiu < \biu \}.
+		\]
 		Consider the residual graph of $f$ in the tight graph. If there were a path
 		connecting $T^+$ to $T^-$, then we could augment along the path
 		to reduce the total deficit. Therefore, there is no such path. Consider the
@@ -1207,9 +1206,9 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     To develop a strongly polynomial algorithm, it remains to show that we can compute
     such a fitting pair.
     
-    As stated, both conditions (bounded relabeled excess/deficit and
-    large flow value on one edge)
-    depend on the primal \emph{and} dual variables. In fact, we can associate each goal
+    As stated above, both goals---bounded relabeled excess/deficit and
+    large flow value on one edge---depend on the primal
+    \emph{and} dual variables. In fact, we can associate each goal
     with one of the variables so that the algorithm may more easily work toward both goals:
     
     \begin{definition}
@@ -1217,15 +1216,31 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     to the current primal-dual solution pair $(f,u)$ if its scaled absolute
     demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
     \end{definition}
-	\begin{theorem}
-		Let $(g, \mu)$ be a fitting pair such that
+	\begin{theorem} \label{thm:2017-contraction}
+		Let $(f, \mu)$ be a fitting pair such that
 		\begin{enumerate}[(i)]
-			\item $\Ex(g, \mu) \leq 2n$ and $\Def(g, \mu) < n - 1$.
+			\item Excess is uniformly bounded: $\nabla f_i^\mu - \biu \leq 2$ everywhere.
 			\item $i$ is a plentiful node.
 		\end{enumerate}
+		Then a contractible edge neighboring $i$ can be found in strongly polynomial time.
 	\end{theorem}
 	\begin{proof}
-		Suppose that $i \in \vsrc$. The other case is similar. We have
+		First we compute a flow with bounded excess and deficit. Then we use it to obtain
+		an abundant edge.
+		
+		Since $\mu$ is safe, there is some flow $f'$ satisfying $\biu \leq (f')_i^\mu$
+		for all $i$ and $f'_e > 0$ only if $e$ is tight. Meanwhile, $\nfiu \leq \biu + 2$.
+		By an ordinary maximum flow computation on the tight edges defined by $\mu$
+		(\emph{cf.} \cite{Schrijver2002}, Corollary 11.2j),
+		it is possible to compute a flow $g$ which is not necessarily feasible but satisfies
+		\[ \lfloor \biu \rfloor \leq \biu \leq \nabla (f')_i^\mu
+		   \leq \nabla g_i^\mu \leq \nfiu \leq \max \{\nfiu, \lceil\biu\rceil\}. \]
+		Clearly, $\Ex(g, \mu) \leq 2n$ and $\Def(g, \mu) \leq n - 1$. (Note that the
+		sink $t$ is excluded from total excess and deficit.) Moreover, if $f$ is
+		integral, then the outer bounds above are integral; so
+		the computed flow $g$ will also be integral.
+	
+		Suppose that $i \in \vsrc$. (The other case is similar.) We have
 		\[ \sum_{e \in \din(i)} g^\mu_e \geq
 		\sum_{e \in \din(i)} g^\mu_e - \sum_{e \in \dout(i)} g^\mu_e
 		= -\nabla g^\mu_i \geq -b_i^\mu - \Ex(g, \mu), \]
@@ -1237,6 +1252,12 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		edge.
 	\end{proof}
 
+	In practice, the algorithm maintains a fitting pair $(f, \mu)$ satisfying
+	assumption (i) of Theorem \ref{thm:2017-contraction}. When it encounters
+	a plentiful node $i$, it computes a new integral flow $g$, uses it to identify
+	an abundant edge neighboring $i$, and then contracts the edge.
+	After contraction, $(g, \mu)$ is used to initialize the search for the next
+	plentiful node.
 
 %    It is important to notice that, just as with the definition of an abundant edge,
 %    this definition depends only on the size of the graph, which is a key property
