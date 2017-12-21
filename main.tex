@@ -1532,11 +1532,24 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	Drawing inspiration from the Simplex algorithm, the first step in this algorithm is finding a trivial feasible solution $(\bar{f}, \bar{\mu})$, which clearly also satisfies the definition of a fitting pair necessary for the algorithm. In order to find this initial solution, rather than using Radzik's cycle-cancelling subroutine as in prior work, the authors develop a new method based on negative cycle detection, which can be run in $O(nm)$ time. \todo{references} 
     \fi
     
-    \subsection{Scaling and Rounding} \label{sec:2017-rounding}
+    \subsection{Initialization} \label{sec:2017-rounding}
 		\frank{Revisit this, hasn't been touched in a while}
-    Since the second phase of the algorithm relies on the relabeled flow, $f^\mu$, being integral, we must first round the initial feasible flow (which does not have an integrality constraint) and then maintain its integrality throughout the second phase until finding the final optimum. Using the integrality properties of maximum flow, we can run a feasible circulation problem on the relabeled graph to find an integral max flow. We do this by taking the initial fitting pair $(f, \mu)$ and corresponding feasible relabeled flow $f^\mu$ and setting a lower bound of $\lfloor \nabla f_i^\mu \rfloor$ and an upper bound of $\lceil \nabla f_i^\mu \rceil$. The corresponding integral relabeled max flow on each edge $(i, j)$ can be turned into an integral flow by multiplying by $\mu_i$. Throughout the second phase, the value of $f_{ij}^\mu$ remains unchanged because if $f_{ij}$ is scaled, the algorithm scales $\mu_i$ by the same amount; therefore, $f_{ij}^\mu$ remains integral after the initial rounding.
-    
-    In addition to rounding the initial feasible flow, the initial labels, $\mu$, are scaled at the beginning of phase 2. Before rounding, we set a scaling factor $\Delta$ equal to $\max_{i \in V \setminus t} \nfiu - \biu$, which is the maximum excess at a node in the initial feasible solution. We multiply $\mu$ by $\Delta$, which reduces $f^\mu$ by a factor of $\Delta$. This scaling is useful because it bounds $\nfiu$, which is used to bound the total excess in the amortized analysis (explained in Section 5.8). The resulting bound is $\biu - 1 \leq \nfiu \leq \biu + 2$ for all $i \in V \setminus t$; the derivation leading to this result is not explicitly explained in the original paper \cite{Olver2017}, but we provide a clearer explanation. Initially, $\nfiu \geq \biu$ because it must be feasible. After rounding, $\nfiu \geq \biu - 1$ because $\nfiu$ decreases by at most $1$ during rounding. This gives the lower bound of the result. The upper bound comes from the scaling and the definition of $\Ex(f, \mu)$ in Section~\ref{sec:lp}. Since we scale $\nfiu$ down by the maximum excess in the initial solution, the maximum in $\Ex(f,\mu)$ will never be more than $2$. This gives the upper bound $\nfiu \leq \biu + 2$. 
+	The algorithm needs to start with a fitting pair $(f, \mu)$ where $\mu$ is safe,
+	$f$ integral, and $f$ has bounded excess, as required in Theorem \ref{thm:2017-contraction}.
+	
+	To do this, the algorithm starts by computing a conservative pair $(f, \mu)$, ensuring
+	that $\mu$ is safe. This feasibility problem can be solved by running the same
+	generalized flow algorithm on a carefully constructed graph whose optimum is a feasible
+	solution to the original problem. This is akin to the way the
+	simplex algorithm is initialized.
+	
+	Next, $\mu$ is scaled so that the excess and deficit are uniformly bounded:
+	\[ \biu - 1 \leq \nfiu \leq \biu - 2. \]
+	Then, the flow
+	is ``rounded'' to be integral by computing an ordinary flow $f'^\mu$ on the tight edges
+	defined by $\mu$ under the constraints
+	\[ \lfloor \nfiu \rfloor \leq \nabla (f')_i^\mu \leq \lceil \nfiu \rceil. \]
+	The first epoch begins with the fitting pair $(f', \mu)$.
 
     \subsection{Running Time Analysis}
     The algorithm consists of three basic types of operations: scaling, augmentation, and contraction.
