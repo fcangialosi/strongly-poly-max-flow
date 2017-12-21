@@ -264,11 +264,7 @@
 \end{tabular}
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and 
-	optimal labelings. 
-	\david{We want to make sure it's clear why we're focusing on solving the dual instead of
-		the primal. Mention (either here or in S3) that it reduces to problem of
-		finding tight tree and that's inherently more combinatorial, or something
-		along those lines...}
+	optimal labelings.
     We make the simplifying assumption that the sink is
 	reachable from every node, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
 	Complementary slackness requires that for an optimal flow $f^*$ and optimal labeling $\mu^*$,
@@ -668,7 +664,7 @@ Consider the two cases below and note that $m \geq n \geq d_i + 1$ (\ref{sec:not
 \item 
 		If $b_i^\mu > 0$, then $$\nfiu - \biu = \sum_{j:ji \in E} \giij f_{ij}^\mu -
 		\sum_{j:ij \in E} f_{ij}^\mu - b_i^\mu < 17d_im\Delta - 20nm\Delta < 0.$$ This
-		contradicts the requirement $\nfiu - \biu \geq 0$ (f is a feasible flow).
+		contradicts the requirement $\nfiu - \biu \geq 0$ ($f$ is a feasible flow).
 \item If $b_i^\mu < 0$, then $$\nfiu - \biu = \sum_{j:ji \in E} \giij f_{ij}^\mu - \sum_{j:ij \in E} f_{ij}^\mu - b_i^\mu > -17d_im\Delta + 20nm\Delta \geq 3nm\Delta + 17m\Delta.$$
 This value is greater than the required upper bound, $(4d_i + 8)\Delta$, for $\nfiu - \biu$ though, which is a contradiction. 
 \end{enumerate}
@@ -1106,7 +1102,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	It turns out that this is a sufficient condition for the existence
 	of a feasible fitting flow:
 	\begin{lemma}[Certificate for Safety] \label{lem.safety}
-	$\mu$ is safe if and only if for any inward-loose cut $S$,
+	$\mu$ is safe if and only if for any inward-loose cut $S \subseteq \vnott$,
 	\[ \sum_{i \in S} \biu \leq 0. \]
 	\end{lemma}
 	This is Lemma 2.3 in \cite{Olver2017}, where it is described as a corollary of Hoffman's Circulation
@@ -1219,6 +1215,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	\begin{theorem} \label{thm:2017-contraction}
 		Let $(f, \mu)$ be a fitting pair such that
 		\begin{enumerate}[(i)]
+			\item $\mu$ is safe.
 			\item Excess is uniformly bounded: $\nabla f_i^\mu - \biu \leq 2$ everywhere.
 			\item $i$ is a plentiful node.
 		\end{enumerate}
@@ -1253,7 +1250,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	\end{proof}
 
 	In practice, the algorithm maintains a fitting pair $(f, \mu)$ satisfying
-	assumption (i) of Theorem \ref{thm:2017-contraction}. When it encounters
+	assumptions (i) and (ii) of Theorem \ref{thm:2017-contraction}. When it encounters
 	a plentiful node $i$, it computes a new integral flow $g$, uses it to identify
 	an abundant edge neighboring $i$, and then contracts the edge.
 	After contraction, $(g, \mu)$ is used to initialize the search for the next
@@ -1329,8 +1326,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 %		show below, this scaling strictly increases $|b_{i}^{\mu}|$ for $i \in S$
 %		towards the definiton of a plentiful node.
     \end{itemize}
-
-		\david{Add / rewrite intuition about djikstras}
+    
 %    Although it is not necessary in practice, for clarity of explanation, one
 %		can think of choosing the scaling factor $\alpha$ as solving the following LP:
 %    \lpeq{\lpthree{max}
@@ -1372,17 +1368,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 %    If (3) is true, we're done. If (1) or (2) are true, it ensures that we will now
 %    be able to make progress in the next iteration of the first step. Below, we show
 %    in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
-%    that the algorithm can make progress in the second step. 
-    \begin{figure}[b!]
-    \centering
-    \includegraphics[width=\textwidth]{figs/alpha.pdf}
-    \caption{
-    \label{fig:alpha}
-		Informal analogy showing how the dual is scaled at each iteration just
-		enough to keep the dual feasible and the primal bounded.
-    }
-    \end{figure}
-	\david{Please review this section for correctness. Feel free to change.}
+%    that the algorithm can make progress in the second step.
+
 	Intuitively, scaling is
 	akin to filling a basin with water. As illustrated in
 	Figure~\ref{fig:alpha},	imagine a basin with various levels,
@@ -1393,6 +1380,15 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	causes $i$ to be added to $S$, as $S$ is now reachable along a tight
 	path from $i$. Updating $S$ during scaling maintains the invariant that
 	$S$ is inward-loose.
+    \begin{figure}[b!]
+    \centering
+    \includegraphics[width=\textwidth]{figs/alpha.pdf}
+    \caption{
+    \label{fig:alpha}
+		Informal analogy showing how the dual is scaled at each iteration just
+		enough to keep the dual feasible and the primal bounded.
+    }
+    \end{figure}
 		
 %	Scaling $\alpha$ past one of these points in a single iteration would break the constraint.
 %	Thus, at each scaling step, we can only increase $\alpha$ by at most one
@@ -1411,20 +1407,24 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 %	(e.g. at point (d)), or the stopping condition where the plentiful node
 %	constraint becomes tight.
 
-    Although it is conceptually easier to imagine increasing $\alpha$ continuously
-    until one of these constraints becomes tight, in practice, it is possible to
-    calculate $\alpha$ arithmetically in $O(n)$ by picking a value for each node
-    that would satisfy one of the tightness conditions and then choosing the minimum
-    such value so that only one of the constraints become tight and none are
-    violated.
-    The details of calculating the value are not particularly insightful so we omit them here, but the
-    fact that it can be done is important for the running time analysis.
+    In practice, $\alpha$ and $S$ can be updated via a modified Dijkstra's algorithm.
+    Let $c_{ij} = - \log \gij$ be the ``cost'' of edge $(i, j)$.
+    Then $(i, j)$ is tight exactly when
+    \[ c_{ij} = \log \mu_i - \log \mu_j. \]
+    In other words, tight paths are shortest paths, $\log \mu$ is a distance function,
+    and $S$ is a ``frontier.'' Scaling $\mu$ by $\alpha^{-1}$ in $S$ amounts to adding
+    $\log \alpha$ to the distance of every node in $S$. Each new node added to $S$
+    is the closest node under the costs $c_{ij}$, and it is encountered when $\log \alpha$
+    reaches its distance.
+    Dijkstra's algorithm with costs $c_{ij}$ will compute the maximum distance $\log \alpha$,
+    and it can be terminated when either a plentiful node or an excess greater than
+    one is encountered.
 
 	\subsection{Analysis}
-	We now present some invariants that the algorithm preserves during each
-	epoch. These will allow us to prove that it finds a plentiful node in
-	strongly polynomial time, and that the overall algorithm produces a correct
-	optimal solution.
+	We now demonstrate some invariants preserved by the algorithm. In particular,
+	we show that the algorithm maintains assumptions (i) and (ii) of
+	Theorem \ref{thm:2017-contraction}, so that a plentiful node guarantees the
+	existence of a contractible edge.
     \begin{lemma}
     Relabeled flow $f^{\mu}$ remains unchanged during each epoch.
     \label{lem:fsame}
@@ -1446,7 +1446,6 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     Lemma~\ref{lem:fsame}, scaling never changes the value of $f^{\mu}$ at all.
     Finally, at a contraction, a new integral flow is computed.
     \end{proof}
-		\frank{Make this more of a sketch}
 %    \begin{lemma}
 %        \label{lem:scaling}
 %        For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
@@ -1497,35 +1496,31 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
         $\mu$ remains safe throughout each epoch, i.e. there is a corresponding feasible primal
         solution even though we haven't kept track of it.
     \end{lemma}
-    \begin{proof}
-			\david{Fix this proof}
-    The initialization subroutine is guaranteed to produce a fitting pair $\fp$,
-    where $f$ is feasible, so we have that initially $\mu$ is safe. Now assume $\mu$
-    is safe before running the subroutine. For sake of contradiction, assume that
-    after running the subroutine, the updated labeling $\mu'$,
-    is no longer safe. That is, there exists some subset of nodes $X \subseteq \vnott$  
-    without any incoming tight edges ($\{\gamma_e^{\mu'} = 1\ \forall\ e \in \din(X)\} = \varnothing$)
-    and where all nodes have positive demand $b^{\mu'}(X) > 0$.
+    \begin{proof}[Proof Sketch]
+	Only the scaling steps modify $\mu$, so it suffices to show that one scaling step,
+	during which at most one node is added to $S$,
+	preserves safety. Assume that $\mu$ is initially safe, and
+	assume by way of contradiction that the updated labeling $\mu'$ is no longer safe.
+    That is, there exists some inward-loose cut $X \subseteq \vnott$
+    with net positive demand $b^{\mu'}(X) > 0$.
 
-    Suppose we divide $X$ into two parts: the subset of nodes in $S$, $X \cap S$, and those
-    not in $S$, $X \setminus S$. Recall that $\mu_i' = \frac{\mu}{\alpha}$ for $i\in S$
-    and $\mu' = \mu$ for $i \notin S$. Then we can rewrite the node demands under $\mu'$
-    in terms of the demands under $\mu$ as follows:
-    $$b^{\mu'}(X) = \frac{1}{\alpha}b^{\mu}(X \cap S) + b^{\mu}(X \setminus S)$$
-    If, as we assumed, $b^{\mu'}(X) > 0$, then either $b^{\mu}(X \cap S)$ or 
-    $b^{\mu}(X \setminus S)$ must be positive.
-    \todo{Fill in details. $\mu'$ is defined in terms of $S$.}
-    Now consider the set of edges coming into each of these subsets...
-    Any edge that's tight under $\mu'$ was tight under $\mu$, because $\geu$, if
-    it has no tight edges under $\mu'$ then it also had no tight edges under
+    Divide $X$ into $X \cap S$ and $X \setminus S$, where $S$ is defined by the original
     $\mu$.
-
-    Therefore, since neither of the two parts of $X$
-    have any tight incoming edges under $\mu$ and at least one of them
-    must have strictly positive node demands, at least one of them
-    violates the safety conditions of $\mu$ and thus $\mu$ was not safe.
-    This is a contradiction, and thus if $\mu$ was safe, $\mu'$ must also be safe.
-
+    Recall that scaling only affects $X \cap S$, so we can write the net demand under $\mu'$
+    in terms of the demands under $\mu$ as follows:
+    \[ b^{\mu'}(X) = \frac{1}{\alpha}b^{\mu}(X \cap S) + b^{\mu}(X \setminus S) \]
+    Either $b^{\mu}(X \cap S)$ or $b^{\mu}(X \setminus S)$ must be positive.
+    
+    Suppose $b^\mu(X \cap S) > 0$.
+    Observe that $\din(X \cap S) \subseteq (\din(X) \cap E[S]) \cup \din(S)$, where $E[S]$
+    denotes the edges entirely inside $S$.
+    By definition of $S$, $\din(S) \cap \tau(\mu) = \varnothing$. Moreover,
+    $E[S] \cap \tau(\mu) \subseteq E[S] \cap \tau(\mu')$. So
+    \[ \din(X) \cap E[S] \cap \tau(\mu) \subseteq \din(X) \cap \tau(\mu) = \varnothing. \]
+    So $X \cap S$ is an inward-loose cut with positive net demand under $\mu$, contradicting
+    the safety of $\mu$.
+    
+    The case where $b^\mu(X \setminus S) > 0$ is similar, though slightly more complicated.
     \end{proof}
 
     In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
@@ -1551,15 +1546,13 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     (number of arithmetic operations) between any two contractions.
 
     Augmentation itself consists of a graph search on the tight subgraph, an $O(m)$ operation.
-    Between rounds of augmentation, there is a scaling round. Each atomic scaling step stops
-    when either (i) a node has become plentiful, leading to a contraction; (ii) a node has an
-    excess greater than $1$, leading to a new augmentation round; or (iii) the loose cut
-    $S$ has been extended by at least one node. (iii) can only happen at most $n$ times; thus,
-    there are at most $n$ scaling steps between any two augmentations. Each scaling step
-    is an $O(n)$ operation, leading to a naive time bound of $O(n^2)$ between any two augmentations.
-    This can be improved to $O(m + n \log n)$ by applying the framework of Dijkstra's
-    algorithm with costs $-\log \gamma^u_e$. The loose cut $S$ corresponds to the expanding
-    frontier of Dijkstra's algorithm.
+    Between rounds of augmentation, there is a scaling round. Each scaling phase stops
+    when either (i) a node has become plentiful, leading to a contraction, or (ii) a node has an
+    excess greater than $1$, leading to a new augmentation round.
+    If the scaling is done by Dijkstra's algorithm as
+    described in Section \label{sec:sub-ppn},
+    the cost of each scaling phase (and thus the overall cost per augmentation) is
+    $O(m + n \log n)$.
 
     It remains to bound the total number of augmentations the algorithm may perform. We'd
     like to show that after a strongly polynomial number of augmentations, the algorithm
