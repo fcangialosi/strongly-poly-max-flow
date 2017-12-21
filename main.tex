@@ -1563,7 +1563,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \end{lemma}
     First, a preliminary lemma. We denote the period between successive contraction
     steps as an epoch.
-    \begin{lemma}
+    \begin{lemma} \label{lem:deficit-bound}
     At any node $i \in \vsrc$, the deficit is at most one. Moreover, at most one augmentation
     ends at such a node during any epoch.
     \end{lemma}
@@ -1588,11 +1588,24 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     Define two potential functions
     \begin{align*}
     \Psi(\mu) &= - \sum_{i \in \vsrc} \biu \\
-    \Phi(\mu) &= \sum_{i \in \vsrc} \nfiu + \Psi(\mu) = \sum_{i \in \vsrc} \nfiu - \biu
-               \leq \Ex(\mu)
+    \Phi(f, \mu) &= \sum_{i \in \vsrc} \nfiu + \Psi(\mu) = \sum_{i \in \vsrc} \nfiu - \biu
+                 \leq \Ex(\mu)
     \end{align*}
-    \todo{complete proof}
+    By Lemma \ref{lem:deficit-bound}, $\Phi(f, \mu) \geq -\Def(f, \mu) \geq -n$
+    throughout the algorithm. Similarly, $\Phi(f, \mu) \leq \Ex(f, \mu) \leq 2n$.
+    Finally, it follows from Lemma \ref{lem:deficit-bound} that at most $n$ augmentations
+    may end in $\vsrc$, thus not decreasing $\Phi$. So after $r$ augmentations,
+    $\Phi$ has decreased by at least $r - n$. Its total decrease is bounded by $2n - -n = 3n$,
+    so there must be a corresponding increase of at least $r - 4n$ during scaling. So
+    $\Psi$ also increases by at least $r - 4n$, as $f^\mu$ is constant under scaling.
+    
+    Therefore, after $O(mn)$ augmentations, $\Psi$ is sufficiently large so as to guarantee
+    the existence of a plentiful node in $V^s$.
     \end{proof}
+    We have shown that there are at most $n$ epochs of $O(mn)$ augmentations each, with
+    each augmentation costing $O(m + n\log n)$. This implies an $O(mn^2(m + n\log n))$
+    time bound overall. With a more careful potential analysis, the bound can be improved
+    to $O(mn\log(n^2/m)(m + n \log n))$.
 
 
 \section{Conclusion}\label{sec:discussion} 
