@@ -1533,23 +1533,26 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \fi
     
     \subsection{Initialization} \label{sec:2017-rounding}
-		\frank{Revisit this, hasn't been touched in a while}
 	The algorithm needs to start with a fitting pair $(f, \mu)$ where $\mu$ is safe,
-	$f$ integral, and $f$ has bounded excess, as required in Theorem \ref{thm:2017-contraction}.
+	$f$ is integral, and $f$ has bounded excess,
+	as required in Theorem \ref{thm:2017-contraction}.
 	
-	To do this, the algorithm starts by computing a conservative pair $(f, \mu)$, ensuring
+	To do this, the algorithm starts by computing a conservative pair $(\bar{f}, \mu)$,
+	thus ensuring
 	that $\mu$ is safe. This feasibility problem can be solved by running the same
 	generalized flow algorithm on a carefully constructed graph whose optimum is a feasible
 	solution to the original problem. This is akin to the way the
 	simplex algorithm is initialized.
 	
-	Next, $\mu$ is scaled so that the excess and deficit are uniformly bounded:
-	\[ \biu - 1 \leq \nfiu \leq \biu - 2. \]
+	Next, $\mu$ is scaled so that the relabeled excess is uniformly bounded.
 	Then, the flow
-	is ``rounded'' to be integral by computing an ordinary flow $f'^\mu$ on the tight edges
+	is ``rounded'' to be integral by computing an ordinary flow $f^\mu$ on the tight edges
 	defined by $\mu$ under the constraints
-	\[ \lfloor \nfiu \rfloor \leq \nabla (f')_i^\mu \leq \lceil \nfiu \rceil. \]
-	The first epoch begins with the fitting pair $(f', \mu)$.
+	\[ \lfloor \nabla \bar{f}^\mu_i \rfloor \leq \nfiu
+	 \leq \lceil \nabla \bar{f}^\mu_i \rceil. \]
+	The result is a fitting pair such that $f^\mu$ is integral and satisfies
+	\[ \biu - 1 \leq \nfiu \leq \biu - 2. \]
+	The first epoch begins with this fitting pair.
 
     \subsection{Running Time Analysis}
     The algorithm consists of three basic types of operations: scaling, augmentation, and contraction.
