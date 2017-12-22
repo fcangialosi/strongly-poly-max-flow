@@ -100,7 +100,7 @@
 }
 
 \title{Strongly Polynomial Algorithms for Generalized Flow Maximization}
-\author{Francis Cangialosi, Katie Lewis, David Palmer}
+\author{Francis Cangialosi \\ \texttt{frankc@mit.edu} \and Katie Lewis \\ \texttt{kmlewis@mit.edu} \and David Palmer \\ \texttt{drp@mit.edu}}
 \date{}
 
 \begin{document}
@@ -294,6 +294,7 @@ namely~\cite{Orlin1988}.}
     f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
 	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \]
     The relabeled dual problem is equivalent to the original dual problem. In particular,
+    \katie{I think we could probably cut out the two claims below. Might want to focus on the why and not how of relabeling (if that makes sense :))}
     \begin{claim}
     $f^\mu$ is a feasible (resp. optimal) solution to the relabeled primal problem with gains
     $\gamma^\mu$ and demands $b^\mu$ if and only if $f$ is a feasible (resp. optimal) solution
@@ -350,7 +351,7 @@ namely~\cite{Orlin1988}.}
     We might as well remove one of the variables entirely by collapsing the edge $(i, j)$,
     leaving a single node $j$ with a single dual variable $\mu_j$, and summing the
     demands $b_i$ and $b_j$. This operation is called an \textbf{edge contraction},
-    and it preserves the dual objective and other constraints.
+    and it preserves the dual objective and the constraints on edges other than $(i, j)$.
     An edge $e$ which is tight under any dual-optimal solution is accordingly
     called \textbf{contractible}.
     
@@ -369,7 +370,7 @@ namely~\cite{Orlin1988}.}
 	only the one with the highest gain is maintained---there is no reason to send
 	flow along an edge of lower gain when one of higher gain is available.)
 	There can be at most $n - 1$ contractions
-	before the graph is left with a single vertex. The set of guaranteed-tight edges identified
+	before the graph is left with a single node. The set of guaranteed-tight edges identified
 	over the course of the contractions is acyclic, and it takes the form of
 	either a spanning tree or a spanning forest depending on which of the following
 	cases occurs:
@@ -377,13 +378,12 @@ namely~\cite{Orlin1988}.}
 	\item the contracted graph has just one node remaining, i.e., every node has been merged
 	into the sink $t$. In this case, the set of previously identified
 	contractible edges forms a spanning tree. Given a value for $\mu_t$, the tightness
-	constraints then uniquely determine the values of the optimal $\mu$ at all other vertices.
+	constraints then uniquely determine the values of the optimal $\mu$ at all other nodes.
 	
 	\item the contracted graph has multiple nodes, but the (merged, relabeled)
 	demands $\biu$ are all zero. In this case, the dual objective on the contracted
 	graph is identically zero. Meanwhile $f \equiv 0$ is primal-feasible on the contracted
-	graph, with a primal objective value of zero. By strong duality, any feasible dual
-	solution on the contracted graph is optimal.
+	graph, with a primal objective value of zero. By strong duality, $f \equiv 0$ is optimal.
 	
 	In this case, the set of previously identified contractible edges
 	forms a spanning forest wherein each tree component is the preimage of one node
@@ -414,10 +414,10 @@ namely~\cite{Orlin1988}.}
 %	reduction to the dual problem (D).
 %    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
     complementary slackness dictates that any optimal flow $f$ is supported only on
-    the tight edges---$\giij = \gij\mu_i/\mu_j = 1$
+    the tight edges---$\giij = 1$ 
     whenever $f_{ij} > 0$. As such, the conservation
     constraint for the relabeled optimum flow $f^\mu$ takes the form
-    \[ b^{\mu} \leq \nabla f^{\mu}
+    \[ \biu \leq \nfiu
     = \sum_{(j,i) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
     = \sum_{(j,i) \in \din(i)} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}. \]
     This is the conservation constraint of an ordinary maximum flow problem with demands
@@ -426,7 +426,7 @@ namely~\cite{Orlin1988}.}
     Then it is easy to recover $f$ from $f^\mu$. We have shown how to reduce the generalized
     flow problem to a combinatorial problem, computing an optimal set of tight edges.
     
-	\begin{example}
+	\begin{example}\frank{consider putting in smaller caption and trying to shrink image}
 	Consider the flow network in
 	Figure~\ref{fig:ex-spanning}. By inspection, we can see that the maximum flow $f^{*}$
 	should send 8 units of flow from $i$ to $t$ and 8 units from $j$ to $t$,
@@ -438,7 +438,7 @@ namely~\cite{Orlin1988}.}
 	In (b) and (c) all of the dual constraints are feasible,
 	but (b) produces a greater objective value ($-6$ vs. $-8$)
 	than (c). Solving a max flow on just the tight edges of (b) yields the max value
-	we expect, 6. The optimal collection of tight edges encodes all the information necessary
+	we expect, 6. The optimal collection of tight edges encodes all the information necessary \katie{possibly shorten it or shrink image? It provides some extra in comparison to the paper but takes up a lot of space}
 	to reconstruct the optimal solution.
 	\begin{figure*}[h]
 	\centering
@@ -503,7 +503,7 @@ namely~\cite{Orlin1988}.}
     The intuition is that the optimal flow improves on the feasible flow by
     sending more of its excess to the sink. Thus, the difference $g^* - g$
     is a flow of value at most $\Ex(g, \mu)$ at $t$. The maximum edge value of
-    the flow is bounded, in turn, by its total flow value.
+    the difference is bounded, in turn, by its total flow value.
     
 	Since we are working with generalized flows, it will take a little work to formalize
 	this idea. First, among all the optimal solutions to (P), let $g^*$ be the one
@@ -562,7 +562,6 @@ namely~\cite{Orlin1988}.}
 \label{sec:2013}
 	%\subsection{Introduced Concepts and Notation}
     \label{sec:2013-notation}
-		\frank{Do we want to add the tables back in?}
 
 %Notes for "Intuitive Section 4":
 
@@ -578,6 +577,7 @@ namely~\cite{Orlin1988}.}
 %-cycle canceling only once in beginning -- explain why and assumptions?
 
 
+
 A high-level overview of Végh's initial algorithm \cite{Vegh2013}
 is shown below. This algorithm is characterized by a scaling factor $\Delta$,
 which controls the amount of flow that can be augmented at each iteration and the threshold for
@@ -591,10 +591,10 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 	  $\max_{i \in V\setminus T} \nfiu - \biu$
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
 \item Find contractible edges and contract until a stopping condition is met
-	(\emph{cf.} Section \ref{sec:progress}(i)) in one of the following ways:
+	(\emph{cf.} Section \ref{sec:motivate-dual}(i)) in one of the following ways:
 	\begin{enumerate}
 		\item augment $\Delta$ units of flow
-		\item increase (resp. decrease) $\mu$ (resp. $\Delta$) by a constant factor
+		\item increase $\mu$ and decrease $\Delta$ by a constant factor
 		\item send flow from isolated parts of the graph directly to the sink
 	\end{enumerate}
 \item Expand and find optimal primal solution via traditional max flow (\ref{sec:motivate-dual})
@@ -607,104 +607,96 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 
 \subsection{Finding and Maintaining Conservative Pairs}
 \label{sec:findconserv2013}
-Following from primal-dual slackness, the optimality conditions for the primal are (i) $\nfiu - \biu = 0 \quad \forall i \in V-t$ and (ii) $\giij = 1$ if $f_{ij} > 0 \quad \forall ij \in E$. The first condition is achieved by slowly reducing an upper bound on the excess at each node as the algorithm continues. The second condition is achieved by finding and maintaining conservative pairs (Definition~\ref{def:conservative}) throughout the algorithm.
+Following from primal-dual slackness, the optimality conditions for the primal are (i) $\nfiu - \biu = 0$ for all $i \in \vnott$ and (ii) $\giij = 1$ if $f_{ij} > 0$. The first condition is achieved by slowly reducing an upper bound on the excess at each node as the algorithm continues. The second condition is achieved by finding and maintaining conservative pairs (Definition~\ref{def:conservative}) throughout the algorithm.
 
-To find an initial conservative pair $(f,\mu)$, a feasible flow $\bar{f}$ with
-no flow-generating cycles must first be found. $\bar{f} \equiv 0$ is a trivial
-feasible solution to the capacitated version of the primal; this can be used to
-find an initial feasible solution for the uncapacitated representation by
+To find an initial conservative pair $(f,\mu)$, we must find a feasible flow $\bar{f}$, eliminate any cycles, calculate the initial labels using $\mu_t \coloneqq 1$, and run a max flow to modify $\bar{f}$ with respect to $\mu$. $\bar{f} \equiv 0$ is a trivial
+feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by
 following the transformation in \cite{article} (this just requires
-adding a few additional edges and nodes). Flow-generating cycles are then
-removed by the \textsc{maximum-mean-gain cycle-canceling} algorithm, introduced
-by Goldberg et. al \cite{Goldberg:1991:CAG:105014.105022}. This is required
-because there cannot be flow-generating cycles if there is a finite conservative
-labeling $\mu$ as shown in Claim~\ref{claim:nocycles}. The initial conservative
-labeling is then determined by defining $\mu_t \coloneqq 1$ and then defining
-$\mu_i \coloneqq$ (max $\gamma$ along path from $i$ to $t$)$^{-1} \quad \forall i \in
-V-t$. Finally, a max flow procedure is run to find a generalized flow $f$ with
-respect to $\mu$, which gives us a conservative pair $(f,\mu)$. At the end of
-this initialization phase, we also set the starting value of $\Delta$ equal to
+adding a few additional edges and nodes). Once we have an initial conservative pair, we set the starting value of $\Delta$ equal to
 $\max_{i \in V\setminus T} \nfiu - \biu$, which is the maximum relabeled excess
 for any node (excluding $t$). This value is chosen because $\Delta$ controls the
 amount of flow augmented at each iteration, and it wouldn't be feasible to send
 more flow along a path than the maximum excess. Since $\Delta$ is monotonically
 decreasing in the algorithm, we initialize it to the maximum feasible value.
 
-Once a conservative pair $(f, \mu)$ is found, the algorithm maintains a relaxed
-version of the pair called a $\Delta$-conservative pair (or equivalently a
-$\Delta$-feasible pair) such that $\nfiu - \biu \leq 4(d_i + 2)\Delta \quad
-\forall i \in V-t$. This key new idea allows a bounded amount of flow to pass
-along non-tight edges, while maintaining a ``security reserve''. The security
-reserve requires that the excess of a node $i$ must be $\geq$ the incoming flow on
-non-tight edges; this keeps a conservative pair within reach because setting the
-flow on all non-tight edges to zero still leaves non-zero excess on every node
-and results in a feasible flow with no flow-generating cycles. Additionally,
-$\Delta$-conservative pairs require that the flow on a non-tight edge $(i,j)$ must be
-$\leq \Delta$. As $\Delta$ decreases, the amount of flow on these non-tight
-edges decreases and the amount relabeled excess that is created when the
-non-tight edges are reset to zero also decreases. This means the algorithm gets
-closer to an optimal solution.
+The algorithm maintains a relaxed \textbf{$\Delta$-conservative pair}.
+That is, it allows small (less than $\Delta$) flows along non-tight edges.
+The excess at each node is required to be at least the
+net inflow along non-tight edges. Thus, at any time, the flow can be made conservative
+(while remaining feasible) by zeroing flow along non-tight edges.
+The algorithm also maintains a uniform upper bound on excess,
+$\nfiu - \biu \leq 4(d_i + 2)\Delta$. As $\Delta$ decreases, the amount of flow on these non-tight
+edges decreases and the algorithm gets closer to an optimal solution.
 
 \subsection{Identifying Contractible Edges}
 \label{sec:findcontr2013}
-The measure of progress in this algorithm is finding a contractible edge in a
-strongly polynomial number of steps. An edge is contractible when the flow on
-that edge is very large compared to $\Delta$. In this algorithm, it can be shown by flow decomposition techniques that once an edge has $f_{ij}^\mu \geq 17m\Delta$, then that edge must be tight in every dual optimal solution. However, rather than keeping track
-of this ratio, the algorithm maintains a non-decreasing ratio
-$\sfrac{\abs{b_i^\mu}}{\Delta}$.
+As discussed in Section \ref{sec:motivate-dual},
+the algorithm makes progress by finding contractible edges.
+As discussed in Section \ref{sec:cert-contract}, an edge is guaranteed
+to be contractible when it is abundant---when its relabeled flow value
+under some conservative pair $(f, \mu)$
+exceeds $\Ex(f, \mu)$. The algorithm maintains a pair with
+a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$.
+Thus, an edge $(i, j)$ with $f_{ij}^\mu \geq 17m\Delta$ is abundant.
+However, it is simpler to keep track of a certificate which depends only
+on the dual variables $\mu$ as the flow $f$ changes:
 \begin{claim}
 If a node $i$ has $\abs{b_i^\mu} \geq 20nm\Delta$, then it must
 have a contractible edge adjacent to it.
 \end{claim}
 \begin{proof}
-Suppose, for sake of contradiction, none of the edges adjacent to $i$ are
+Suppose by way of contradiction that none of the edges adjacent to $i$ are
 contractible; this means that each edge $(i,j)$ and $(j,i)$ must have $f_{ij}^\mu < 17m\Delta$.
 Consider the two cases below and note that $m \geq n \geq d_i + 1$ (\ref{sec:notation}).
 \begin{enumerate}[itemsep=0mm]
-\item 
-		If $b_i^\mu > 0$, then $$\nfiu - \biu = \sum_{j:ji \in E} \giij f_{ij}^\mu -
-		\sum_{j:ij \in E} f_{ij}^\mu - b_i^\mu < 17d_im\Delta - 20nm\Delta < 0.$$ This
-		contradicts the requirement $\nfiu - \biu \geq 0$ ($f$ is a feasible flow).
-\item If $b_i^\mu < 0$, then $$\nfiu - \biu = \sum_{j:ji \in E} \giij f_{ij}^\mu - \sum_{j:ij \in E} f_{ij}^\mu - b_i^\mu > -17d_im\Delta + 20nm\Delta \geq 3nm\Delta + 17m\Delta.$$
-This value is greater than the required upper bound, $(4d_i + 8)\Delta$, for $\nfiu - \biu$ though, which is a contradiction. 
+\item First suppose $b_i^\mu > 0$. Then we obtain a contradiction to the feasibility of $f$:
+      \[ \nfiu - \biu = \sum_{j \in \din(i)} \gamma_{ji}^\mu f_{ji}^\mu -
+	  \sum_{j \in \dout(i)} f_{ij}^\mu - b_i^\mu < 17d_im\Delta - 20nm\Delta < 0. \]
+\item On the other hand, if $b_i^\mu < 0$, then we obtain a contradiction to the
+      bound $\nfiu - \biu \leq (4d_i + 8)\Delta$:
+	  \[ \nfiu - \biu = \sum_{j \in \din(i)} \gamma_{ji}^\mu f_{ji}^\mu -
+		 \sum_{j \in \dout(i)} f_{ij}^\mu - b_i^\mu
+         > -17d_im\Delta + 20nm\Delta \geq 3nm\Delta + 17m\Delta. \qedhere \]
 \end{enumerate}
 \end{proof}
 While finding and contracting edges, the algorithm maintains several sets as defined below:
 	\begin{align*}
-	L&\text{: set containing sink and ``low relabeled excess'' nodes with excess of node } i < (d_i +1)\Delta \\
-	H&\text{: set of ``high relabeled excess'' nodes with  excess of node }i \geq (d_i + 2)\Delta \\
+	L&\text{: consists of the sink and ``low relabeled excess'' nodes with excess less than } (d_i +1)\Delta \\
+	H&\text{: consists of ``high relabeled excess'' nodes with  excess at least } (d_i + 2)\Delta \\
 	R&\text{: set of nodes reachable on a tight path from H } \\ 
-	D&\text{: set of nodes ``approaching contraction'' $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
+	D&\text{: set of nodes ``approaching contraction,'' $i \in V \setminus t$ with } \abs{b_i^\mu} \geq \Delta / n
 	\end{align*}
 Set $L$ is initialized to contain all nodes satisfying the condition. Sets $H$,
 $R$, and $D$ are initially empty. Nodes must be equal to the upper excess bound, 
 $\nfiu - \biu \leq 4(d_i + 2)\Delta$, to enter set $H$, but remain in the set until they
-fall below the $(d_i + 2)\Delta$ bound.
+fall below the $(d_i + 2)\Delta$ bound. This requirement will help us bound the total number of iterations in the runtime analysis (\ref{sec:runtime2013}).
 
-\frank{Re-organize to match up with previous section without repeating too much}
-\textbf{\textsc{Augmentation}} As shown in (3a) above, each iteration of the main while loop (the ``finding and contracting edge''
-while loop) first looks to augment $\Delta$ units of flow on
-tight paths from high relabeled excess nodes in set H to low relabeled
-excess nodes (including the sink) in set L. The algorithm only augments on tight
-paths because these paths are the highest-gain paths since $\gamma_{ij}^\mu = 1$ (recall the dual constrains $\gamma_{ij}^\mu$ to be $\leq 1$). If the algorithm augments, set R is reset to set H and the next iteration begins.
+\begin{itemize}
+\item \textbf{\textsc{Augmentation}} Each iteration of step (3) first looks to augment $\Delta$ units of flow on
+tight paths (highest-gain paths) from $H$ to $L$. If the algorithm augments,
+$R$ is reset to $H$ and the next iteration begins.
 If the algorithm is not able to augment, then there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
-flow from. \\ \\
-\textbf{\textsc{Scaling}} The subroutine $\es$ resolves both potential problems by increasing $\mu$ and
-decreasing $\Delta$ by a factor of $\alpha > 1$ (step 3b above). The solutions to the two augmentation barriers and an intuitive explanation of their $\alpha$ values are explained below. Each solution puts forth a candidate $\alpha$ value that optimizes its impact; the actual $\alpha$ is chosen to be the minimum of the candidate $\alpha$ values so that no feasibility conditions are broken.
+flow from.
+\frank{Re-organize to match up with previous section without repeating too much}
+\item \textbf{\textsc{Scaling}} The scaling phase resolves both potential problems by increasing $\mu$ in $R$ and
+decreasing $\Delta$ by a factor $\alpha > 1$ (step (3b) above). $\alpha$ is
+notionally increased ``continuously'' until one of the following occurs, making room
+for augmentation to continue:
 \begin{enumerate}[(i),itemsep=0mm]
-\item Increasing $\mu$ for the
-reachable nodes (i.e. nodes in set R) causes the ratio
-$\gamma_{ij}^\mu = \gamma_{ij} \frac{\mu_i}{\mu_j} < 1$ 
-to increase to $\gamma_{ij} \frac{\alpha\mu_i}{\mu_j}$  for edges from nodes in $R$
-to nodes in $V \setminus R$. This can cause an edge between a reachable and a
-non-reachable node to become tight (i.e. $\gamma_{ij} \frac{\mu_i}{\mu_j} = 1$), which may add a low excess node to the set of reachable nodes. $\alpha_1$ is chosen to be $min \{\frac{1}{\giij}: ij \in E[R, V \setminus R]\}$. Intuitively, we want to choose an $\alpha$ that will bring $\gamma_{ij} \frac{\mu_i}{\mu_j}$ as close to 1 as possible without going over 1.
-\item Decreasing $\Delta$ decreases the lower threshold for $H$, which might create more high excess nodes. $\alpha_2$ is chosen to optimize a series of equations that aim to decrease $\Delta$ such that nodes will have excess equal (but not more than) the upper bound $4(d_i + 2)\Delta$.
+\item Increasing $\mu$ in $R$ causes the ratio
+$\gamma_{ij}^\mu$ to increase for edges from $R$
+to $V \setminus R$. This can cause an edge crossing this cut to become tight, which may add a low excess node to the set of reachable nodes.
+% $\alpha_1$ is chosen to be $min \{\frac{1}{\giij}: ij \in E[R, V \setminus R]\}$. Intuitively, we want to choose an $\alpha$ that will bring $\gamma_{ij} \frac{\mu_i}{\mu_j}$ as close to 1 as possible without going over 1.
+\item Decreasing $\Delta$ decreases the lower threshold for $H$, which might create more high excess nodes.
+This can continue until some node has excess equal to the upper bound $4(d_i + 2)\Delta$.
 \end{enumerate}
-This $\es$ subroutine is the only part of the function that changes the $\sfrac{\abs{b_i^\mu}}{\Delta}$ ratio. 
-\frank{Consider rewriting without subroutine names}
+\end{itemize}
+Scaling is the only phase of the algorithm that changes the important ratio
+$\sfrac{\abs{b_i^\mu}}{\Delta}$.
 \begin{claim}
 The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing.
+\frank{Consider rewriting without subroutine names}
 \end{claim}
 \begin{proof}
 $\alpha > 1$ by construction. The ratio for nodes in set $R$ is scaled by $\frac{\alpha}{\alpha}=1$ since
@@ -727,16 +719,14 @@ there are no such nodes, a different subroutine, $\filtration$, is called first.
 the goal is to push flow directly to the sink from ``isolated'' nodes (nodes that cannot be augmented to on a tight path from the high excess nodes). The flow values computed in the max flow replace the current flows on
 edges contained in $V \setminus R$; all other edge flow values remain the same
 except for flow on edges going from nodes in $V \setminus R$  to $R$ which are set
-to zero. This subroutine can speed up the finding the contractible arc process
+to zero. This subroutine can speed up finding contractible arcs
 in the following ways:
 
 \begin{enumerate}[(i),itemsep=0mm]
 \item Setting the flow to zero on edges from nodes in $V\setminus R$ to $R$
 	reduces the excess of nodes in $R$, which could cause the nodes to become
 	low-excess nodes that are reachable to augment to in future iterations
-\item Reducing excess of nodes in $V \setminus R$ might cause some of these nodes
-	to join set $D$, allowing their $\sfrac{\abs{b_i^\mu}}{\Delta}$ to be increased
-	during $\es$
+\item Reducing excess of nodes in $V \setminus R$ might cause a larger $\alpha$ to be chosen in the following $\es$ subroutine, which could increase their $\sfrac{\abs{b_i^\mu}}{\Delta}$ values enough to be added to set $D$
 \end{enumerate}
 
 This alternation between augmenting, rescaling, and pushing flow from
@@ -746,7 +736,7 @@ easily extended to the original instance. This function essentially
 reverses the contraction operations by assigning a $\mu'$ value to the
 non-representative node (i.e. if edge $(p,q)$ was contracted and $p$ remained in the
 graph, assign $\mu'$ to $q$). The assigned $\mu'$ value is $\mu_p\gamma_{pq}$ if
-$p=t$ or $\frac{\mu_q}{\gamma_{pq}}$ if $p \neq q$. A final max flow is then run
+$p=t$ or $\frac{\mu_q}{\gamma_{pq}}$ if $p \neq t$. A final max flow is then run
 on the resulting optimal dual solution to get an optimal primal solution
 (Section~\ref{sec:motivate-dual}).
 
@@ -759,7 +749,7 @@ First note that since the stopping condition for the ``find contractible edge''
 is reducing the graph to one node, there can only be $n-1$ contractions. Therefore
 the analysis aims to put a strongly polynomial bound on the iterations between
 contractions (i.e. prove a contractible edge can be found within a polynomial
-number of steps).
+number of steps). \katie{can maybe cut the above paragraph since its already been stated in other sections above}
 %For analysis, we divide these iterations into the following categories:
 
 %\begin{enumerate}[(1),itemsep=0mm]
@@ -786,7 +776,7 @@ H, $\Delta$ must double before that node can enter H again; this allows us to
 bound the total number of times a node can enter $H$. Since $H$ is initially empty
 ($\Psi = 0$), we can use the bound to calculate the maximum possible increase in
 potential. Furthermore, since a node must have $\sfrac{e_i}{\Delta\mu} \geq d_i + 2$
-to be in $H$, the potential must always be positive. This allows us to use the
+to be in $H$, the potential must always be positive if there are nodes in $H$ or zero if there are no nodes in $H$. This allows us to use the
 total increase in potential to bound the number of shrinking iterations because
 we can only decrease the potential by less than the amount we increase it.
 
@@ -1057,7 +1047,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     solution is found. Each contraction collapses one node, so only $n$ contractions
     can occur. To identify and reason about contractible edges, we need a certificate
     (sufficient condition) for contractibility. This is an elaboration of the \emph{abundant edge}
-    idea from Section \ref{sec:2013-notation}.
+    idea from Section \ref{sec:2013-notation}. \katie{could reduce this intro section since info already contained elsewhere}
 
 	\subsection{Working with Infeasible Flows}\label{sec:infeasible}
 	The algorithm described in Section \ref{sec:2013} maintains a feasible flow
@@ -1066,8 +1056,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	flow around, leveling out the excesses. In contrast, the newer algorithm maintains
 	a possibly infeasible flow. Instead of spreading excesses around, it can cancel them
 	with deficits. Whereas leveling excesses could require augmenting between all pairs of
-	nodes (roughly an $O(n^3)$ operation), cancelling excess only requires identifying
-	a corresponding deficit for each excess. This is an informal argument for why the
+	nodes ($O(n^2)$ possible pairs), cancelling excess only requires identifying
+	a corresponding deficit for each excess (roughly $O(n)$). This is an informal argument for why the
 	newer algorithm is more efficient.
 	
 	More precisely, at each iteration of the algorithm we ensure that we have a
@@ -1146,7 +1136,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \[ \|\tilde{g}^\mu - g^\mu\|_\infty \leq \Def(g, \mu) \quad \text{and} \quad
        \Ex(\tilde{g}, \mu) \leq \Ex(g, \mu). \]
     The conclusion then follows by Lemma \ref{lem.bound-dist} and the triangle inequality.
-    
+    \katie{I think we could cut down this section too. A bit dense without adding intuition. Even though it's nice for completion}
 	As $g$ fits $\mu$, $g$ is supported on the tight edges $\tau(\mu)$. As
 	$\mu$ is safe, there is some feasible flow supported in $\tau(\mu)$. We first
     look for a feasible flow $\tilde{g}$ close to $g$. To that end, consider the
@@ -1228,7 +1218,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 		Since $\mu$ is safe, there is some flow $f'$ satisfying $\biu \leq (f')_i^\mu$
 		for all $i$ and $f'_e > 0$ only if $e$ is tight. Meanwhile, $\nfiu \leq \biu + 2$.
 		By an ordinary maximum flow computation on the tight edges defined by $\mu$
-		(\emph{cf.} \cite{Schrijver2002}, Corollary 11.2j),
+		(\emph{cf.} \cite{Schrijver2002}, Corollary 11.2),
 		it is possible to compute a flow $g$ which is not necessarily feasible but satisfies
 		\[ \lfloor \biu \rfloor \leq \biu \leq \nabla (f')_i^\mu
 		   \leq \nabla g_i^\mu \leq \nfiu \leq \max \{\nfiu, \lceil\biu\rceil\}. \]
@@ -1307,7 +1297,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     the scaling only occurs in the set $S$ of reachable nodes.
     (In the original paper, there are
     actually two sets $S$ and $\bar{S}$---this is necessary to bound the size
-    of the numbers used in the algorithm, but it is beyond the scope of this exposition.)
+    of the numbers used in the algorithm, but it is beyond the scope of this exposition.) \katie{delete this explanation in parentheses? Doesn't really add anything}
     
     Notionally, a scaling factor $\alpha > 1$ is increased continuously, and
     $\mu_i \gets \mu_i / \alpha$ for $i \in S$.
@@ -1638,19 +1628,6 @@ We presented and compared two strongly polynomial algorithms for the maximum gen
 	%value of the flow on one edge, that doesn't affect the objective piece for any
 	%other edge, whereas in the
     
-    %feedback 
-    \vspace{10mm}
-\todo{Main feedback from emails:} 
-
-\todo{(2) too many definitions}
-
-\todo{(3) paper needs more synthesis and should have explicit outline and more main ideas rather than full proofs}
-
-\todo{(4) make $\Delta$-scaling part more clear}
-
-\todo{(5) Section 4 too definition heavy; needs more intuition}
-
-	%feedback
 
 \setlength{\bibitemsep}{0pt}
 \nocite{*}
