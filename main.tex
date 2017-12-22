@@ -128,11 +128,11 @@
 	built on this work and developed an algorithm~\cite{Olver2017}
 	that is faster by a factor of
 	almost $O(n^2)$, resulting in a running time that is as fast as the best
-	weakly polynomial algorithms even for small parameter values. These
+	weakly polynomial algorithms even for small parameter values. \rewrite{These
 	algorithms take advantage of the structural similarities between the
 	generalized maximum flow problem and the minimum cost flow problem by
 	adapting techniques from well-known combinatorial min cost flow algorithms,
-	namely~\cite{Orlin1988}.
+namely~\cite{Orlin1988}.}
 	\frank{Many of the A papers have some related work. Add related work at the end if we have enough space.}
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
@@ -155,11 +155,11 @@
 
 	\subsection{Network Notation}\label{sec:notation}
 	%An instance of the generalized flow problem is specified as	
-	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$,
-	$t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
-	across the edges. We also make the assumption that m $\geq$ n. Although we have typically seen flow constraints defined in terms of
+	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$ (assume
+	$m \geq n$), $t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
+	across the edges. Although flow constraints are traditionally defined in terms of
 	edge capacities, recent work on the generalized problem defines flow
-	constraints using node demands $b \in \R^{V \setminus t}$ instead (and leave
+	constraints using node demands $b \in \R^{V \setminus t}$ instead (and leaves
 	edge capacities unbounded). Thus, an instance of the generalized flow problem
 	is specified as $(G, t, \gamma, b)$.
 	We adopt this formulation in our paper for
