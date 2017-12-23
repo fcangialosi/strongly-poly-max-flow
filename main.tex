@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsthm, amssymb}
+% add "showframe" param to geometry package below to see margin lines
 \usepackage[letterpaper, margin=1in]{geometry}
 \usepackage{microtype}
 \usepackage[shortlabels]{enumitem}
@@ -23,11 +24,14 @@
 \usepackage[colorinlistoftodos,textsize=tiny]{todonotes}
 \usepackage{comment}
 \usepackage{setspace}
+\usepackage{titling}
+
 
 \let\comment\todo
 \newcommand{\frank}[1]{\comment[nolist,color=blue!40]{@frank\\ #1}}
 \newcommand{\david}[1]{\comment[nolist,color=orange!40]{@david\\ #1}}
 \newcommand{\katie}[1]{\comment[nolist,color=green!40]{@katie\\ #1}}
+\newcommand{\tocut}[1]{\comment[nolist,color=yellow!40]{#1}}
 
 \addbibresource{main.bib}
 
@@ -99,12 +103,24 @@
 &&& #5
 }
 
+\newif\ifLAYOUTA
+\newif\ifLAYOUTB
+\LAYOUTAtrue
+\LAYOUTBfalse
+
+\ifLAYOUTA
+\setlength{\droptitle}{-4em}   % This is your set screw
+\fi
+
+
 \title{Strongly Polynomial Algorithms for Generalized Flow Maximization}
 \author{Francis Cangialosi \\ \texttt{frankc@mit.edu} \and Katie Lewis \\ \texttt{kmlewis@mit.edu} \and David Palmer \\ \texttt{drp@mit.edu}}
 \date{}
 
 \begin{document}
 \maketitle
+\vspace{-0.3cm}
+
 \section{Introduction}\label{sec:intro}
 	\subsection{Problem Definition}\label{sec:problem}
 	As in the traditional flow problem, given a
@@ -128,11 +144,15 @@
 	built on this work and developed an algorithm~\cite{Olver2017}
 	that is faster by a factor of
 	almost $O(n^2)$, resulting in a running time that is as fast as the best
-	weakly polynomial algorithms even for small parameter values. \rewrite{These
+	weakly polynomial algorithms even for small parameter values. 
+	\ifLAYOUTA
+	\else
+	\rewrite{These
 	algorithms take advantage of the structural similarities between the
 	generalized maximum flow problem and the minimum cost flow problem by
 	adapting techniques from well-known combinatorial min cost flow algorithms,
 namely~\cite{Orlin1988}.}
+	\fi
 	\frank{Many of the A papers have some related work. Add related work at the end if we have enough space.}
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
@@ -168,12 +188,16 @@ namely~\cite{Orlin1988}.}
 	capacities (and vice versa). 
 
 	Although there is no explicit specification of a source node, the concept of
-	node demands generalizes the concept of having multiple sources and multiple
+	node demands generalizes the concept of multiple sources and
 	sinks: nodes with negative demand $-b$ act as sources because they can create
 	up to $b$ units of flow, and nodes with positive demand $b$ act as sinks 
-	because they consume at least $b$ units of flow. Thus, (excluding $t$), we denote the subset of
-	nodes with negative demand as $\vsrc$, the subset of nodes with positive
+	because they consume at least $b$ units of flow. 
+	Thus, (excluding $t$), we denote
+	nodes with negative demand as $\vsrc$, nodes with positive
 	demand as $\vsink$, and the remaining nodes with zero demand as $\vz$.
+	%Thus, (excluding $t$), we denote the subset of $V$ with negative and
+	%positive demand as $\vsrc$ and $\vsink$, respectively, and the remaining nodes
+	%with zero demand as $\vz$.
 
 	For a subset of the nodes $S \subseteq V$, we define $\din(S)$ and
 	$\dout(S)$ to be the set of incoming and outgoing edges, respectively,
@@ -201,7 +225,11 @@ namely~\cite{Orlin1988}.}
 
 	We formulate the generalized flow maximization problem with demands as in the 2017
 	paper~\cite{Olver2017}:
+
+	\ifLAYOUTA
+	\else
 	\vspace{-0.5cm}
+	\fi
 %		\begin{align*}
 %		\text{max} \quad
 %		\nabla f_t& \\
@@ -225,9 +253,14 @@ namely~\cite{Orlin1988}.}
 	The dual linear program, given on the left below, has a variable $\eta_i$ for
 	every node $i$. 
 	Making the change of variables $\eta_i = - \mu_t / \mu_i$ yields the
-	dual optimization problem on the right.\frank{Hack for now. Rewrite above 
-		or change font size to	make this fit}
+	dual optimization problem on the right.
+	\frank{Should right-hand side use $i$ instead of $j$ too?}
+
+	\ifLAYOUTA
+    \vspace{0.5cm}
+	\else
     \vspace{-0.5cm}
+	\fi
 
 	\begin{tabular}{rcll}
 		\hspace*{-1.05cm}
@@ -262,6 +295,10 @@ namely~\cite{Orlin1988}.}
 }
 } & \hspace*{0.4cm}(D)
 \end{tabular}
+
+\ifLAYOUTA
+\newpage
+\fi
         
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and 
 	optimal labelings.
@@ -424,21 +461,22 @@ namely~\cite{Orlin1988}.}
     $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
     ordinary maximum flow on the tight graph---a strongly polynomial operation.
     Then it is easy to recover $f$ from $f^\mu$. We have shown how to reduce the generalized
-    flow problem to a combinatorial problem, computing an optimal set of tight edges.
+    flow problem to a combinatorial problem by computing an optimal set of tight edges.
     
-	\begin{example}\frank{consider putting in smaller caption and trying to shrink image}
-	Consider the flow network in
-	Figure~\ref{fig:ex-spanning}. By inspection, we can see that the maximum flow $f^{*}$
+	\begin{example}
+		To help visualize the connection between tight edges and optimal solutions, 
+	consider the flow network on the left in 
+	Figure~\ref{fig:ex-spanning}. By inspection, we can see that the optimal $f^{*}$
 	should send 8 units of flow from $i$ to $t$ and 8 units from $j$ to $t$,
-	resulting in 6 units at the sink. On the right, we show the three possible spanning
+	yielding 6 units at the sink. On the right, we show the three possible spanning
 	trees of tight edges for this graph.
 	For each tree, starting with $\mu_t = 1$, we can compute $\mu_i$
 	and $\mu_j$ based on the tight edges. In (a), the dual is not feasible because
 	$\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
 	In (b) and (c) all of the dual constraints are feasible,
 	but (b) produces a greater objective value ($-6$ vs. $-8$)
-	than (c). Solving a max flow on just the tight edges of (b) yields the max value
-	we expect, 6. The optimal collection of tight edges encodes all the information necessary \katie{possibly shorten it or shrink image? It provides some extra in comparison to the paper but takes up a lot of space}
+	than (c). (Note that the sign is negative because of our change of variable). Solving a max flow on just the tight edges of (b) yields the max value
+	we expect, 6. The optimal collection of tight edges encodes all the information necessary
 	to reconstruct the optimal solution.
 	\begin{figure*}[h]
 	\centering
@@ -451,8 +489,8 @@ namely~\cite{Orlin1988}.}
 		\includegraphics[width=.75\linewidth]{figs/tight-span-2}
 	\end{minipage}
 	\label{fig:ex-spanning}
-	\caption{(left) Example flow network. (right) All three possible tight
-	spanning trees and their respective dual solutions.
+	\caption{(left) Example flow network. (right) All three possible 
+	spanning trees of tight edges and their respective dual solutions.
 	Blue edges are tight ($\gamma^{\mu} = 1$), gray dashed edges are not.}
 	\end{figure*}
 	\end{example}
@@ -591,7 +629,10 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 	  $\max_{i \in V\setminus T} \nfiu - \biu$
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
 \item Find contractible edges and contract until a stopping condition is met
-	(\emph{cf.} Section \ref{sec:motivate-dual}(i)) in one of the following ways:
+	\katie{Why only (i) from 3.1 specifically? is the second case not possible for
+	this algorithm..?}
+	(\emph{cf.} Section \ref{sec:motivate-dual}(i)). Contractible edges are found
+	by repeatedly applying one of the following operations:
 	\begin{enumerate}
 		\item augment $\Delta$ units of flow
 		\item increase $\mu$ and decrease $\Delta$ by a constant factor
@@ -622,11 +663,14 @@ decreasing in the algorithm, we initialize it to the maximum feasible value.
 The algorithm maintains a relaxed \textbf{$\Delta$-conservative pair}.
 That is, it allows small (less than $\Delta$) flows along non-tight edges.
 The excess at each node is required to be at least the
+\katie{what is net inflow? net usually means in minus out}
 net inflow along non-tight edges. Thus, at any time, the flow can be made conservative
 (while remaining feasible) by zeroing flow along non-tight edges.
 The algorithm also maintains a uniform upper bound on excess,
 $\nfiu - \biu \leq 4(d_i + 2)\Delta$. As $\Delta$ decreases, the amount of flow on these non-tight
 edges decreases and the algorithm gets closer to an optimal solution.
+\katie{I'm a little weary of just stating this bound without any clarification
+or intuition. -frank}
 
 \subsection{Identifying Contractible Edges}
 \label{sec:findcontr2013}
@@ -693,6 +737,7 @@ This can continue until some node has excess equal to the upper bound $4(d_i + 2
 \end{enumerate}
 \end{itemize}
 Scaling is the only phase of the algorithm that changes the important ratio
+\katie{why is it important?}
 $\sfrac{\abs{b_i^\mu}}{\Delta}$.
 \begin{claim}
 The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing.
@@ -706,30 +751,44 @@ $\Delta$ is scaled (i.e. divided by $\alpha$).
 \end{proof}
 
 Since this ratio is non-decreasing, the algorithm is always making progress towards finding a
-contractible edge; however, this progress might be very slow if the nodes that are increased in set $V \setminus R$ have small $\sfrac{\abs{b_i^\mu}}{\Delta}$ values. In other words, investing time into $\es$ in this scenario gives small returns. To speed the process up, the algorithm prioritizes increasing the
+contractible edge; however, this progress might be very slow if the nodes that
+are increased in set $V \setminus R$ have small $\sfrac{\abs{b_i^\mu}}{\Delta}$
+values. In other words, investing time into the scaling phase in this scenario 
+yields small returns. To speed the process up, the algorithm prioritizes increasing the
 $\sfrac{\abs{b_i^\mu}}{\Delta}$ ratio for nodes that are already approaching the
-$20mn$ threshold; this progress is measured in comparison to n. We set a lower bound $\frac{1}{n}$ and add any node $i \in V-t$ with $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \frac{1}{n}$ to a set D, which indicates these nodes are getting close to becoming abundant (they're worth investing in). 
+$20mn$ threshold; this progress is measured in comparison to $n$. We set a lower
+bound $\frac{1}{n}$ and add any node $i \in V-t$ with
+$\sfrac{\abs{b_i^\mu}}{\Delta} \geq \frac{1}{n}$ to $D$, which indicates
+these nodes are getting close to becoming abundant (i.e., they're worth investing
+in).
 
+\frank{Currently trying to move this}
+\rewrite{
 If there are no augmentations to be made on a certain iteration, $\es$ is called
-if $D \cap V\setminus R \neq \varnothing$. Since $\es$ only increases
+if $D \cap V\setminus R \neq \varnothing$. 
+Since $\es$ only increases
 $\sfrac{\abs{b_i^\mu}}{\Delta}$ for nodes in $V\setminus R$, the subroutine will
 only be called if that set contains nodes that are close to reaching $20mn$. If
-there are no such nodes, a different subroutine, $\filtration$, is called first. \\ \\
-\textbf{\textsc{Redistributing Excess}} $\filtration$ (step 3c above) runs a modified max flow iteration on nodes in set $V \setminus R$;
+there are no such nodes, a different subroutine, $\filtration$, is called first. 
+}\\ \\
+\textbf{\textsc{Redistributing Excess}} $\filtration$ ((3c) above) runs a modified max flow iteration on nodes in set $V \setminus R$;
 the goal is to push flow directly to the sink from ``isolated'' nodes (nodes that cannot be augmented to on a tight path from the high excess nodes). The flow values computed in the max flow replace the current flows on
 edges contained in $V \setminus R$; all other edge flow values remain the same
 except for flow on edges going from nodes in $V \setminus R$  to $R$ which are set
-to zero. This subroutine can speed up finding contractible arcs
+to zero. This subroutine can speed up finding contractible edges
 in the following ways:
 
 \begin{enumerate}[(i),itemsep=0mm]
 \item Setting the flow to zero on edges from nodes in $V\setminus R$ to $R$
 	reduces the excess of nodes in $R$, which could cause the nodes to become
-	low-excess nodes that are reachable to augment to in future iterations
-\item Reducing excess of nodes in $V \setminus R$ might cause a larger $\alpha$ to be chosen in the following $\es$ subroutine, which could increase their $\sfrac{\abs{b_i^\mu}}{\Delta}$ values enough to be added to set $D$
+	low-excess nodes that are reachable to augment to in future iterations.
+\item Reducing excess of nodes in $V \setminus R$ might cause a larger $\alpha$
+	to be chosen in the following scaling phase, which could increase their
+	$\sfrac{\abs{b_i^\mu}}{\Delta}$ values enough to be added to set $D$.
 \end{enumerate}
 
-This alternation between augmenting, rescaling, and pushing flow from
+\tocut{think we can cut most if not all of this}
+\rewrite{This alternation between augmenting, rescaling, and pushing flow from
 $V \setminus R$ to $t$ continues until the graph is contracted into one node.
 The optimal solution, $\mu$, to the contracted instance of the dual can then be
 easily extended to the original instance. This function essentially
@@ -738,7 +797,7 @@ non-representative node (i.e. if edge $(p,q)$ was contracted and $p$ remained in
 graph, assign $\mu'$ to $q$). The assigned $\mu'$ value is $\mu_p\gamma_{pq}$ if
 $p=t$ or $\frac{\mu_q}{\gamma_{pq}}$ if $p \neq t$. A final max flow is then run
 on the resulting optimal dual solution to get an optimal primal solution
-(Section~\ref{sec:motivate-dual}).
+(Section~\ref{sec:motivate-dual}).}
 
 \subsection{Strongly Polynomial Bound} \label{sec:runtime2013}
 In this section we analyze a few key ideas that lead to a strongly polynomial
