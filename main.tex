@@ -285,7 +285,7 @@ namely~\cite{Orlin1988}.}
 		\fbox{
 	\begin{minipage}{0.4\textwidth}
     \begin{alignat*}{3}
-    \max &\quad &\mu_t \sum_{j \in V \setminus t} \frac{b_j}{\mu_j}  \\
+    \max &\quad &\mu_t \sum_{i \in V \setminus t} \frac{b_i}{\mu_i}  \\
     \text{s.t.}
     &   &\gij \mu_i &\leq \mu_j \quad &&\forall\; (i, j) \in E \\
     &   &\mu_i &\in \R_{>0} \cup \infty \quad &&\forall\; i \in V \setminus t \\
@@ -632,9 +632,9 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 	(\emph{cf.} Section \ref{sec:motivate-dual}(i)). Contractible edges are found
 	by repeatedly applying one of the following operations:
 	\begin{enumerate}
-		\item augment $\Delta$ units of flow
-		\item increase $\mu$ and decrease $\Delta$ by a constant factor
-		\item send flow from isolated parts of the graph directly to the sink
+		\item Augment $\Delta$ units of flow.
+		\item Increase $\mu$ and decrease $\Delta$ by a factor $\alpha > 1$.
+		\item Send flow from isolated parts of the graph directly to the sink.
 	\end{enumerate}
 \item Expand and find optimal primal solution via traditional max flow (\ref{sec:motivate-dual})
 \end{enumerate}
@@ -661,19 +661,21 @@ decreasing in the algorithm, we initialize it to the maximum feasible value.
 The algorithm maintains a relaxed \textbf{$\Delta$-conservative pair}.
 That is, it allows small (less than $\Delta$) flows along non-tight edges.
 The excess at each node is required to be at least the amount of incoming flow along non-tight edges. Thus, at any time, the flow can be made conservative (while remaining feasible) by zeroing flow along non-tight edges.
-The algorithm also maintains a uniform upper bound on excess,
-$\nfiu - \biu \leq 4(d_i + 2)\Delta$. As $\Delta$ decreases, the amount of flow on these non-tight
-edges decreases and the algorithm gets closer to an optimal solution.
-\katie{I'm a little weary of just stating this bound without any clarification
-or intuition. -frank}
+% The algorithm also maintains a uniform upper bound on excess,
+% $\nfiu - \biu \leq 4(d_i + 2)\Delta$.
+As $\Delta$ decreases, the amount of flow on these non-tight
+edges decreases.
 
 \subsection{Identifying Contractible Edges}
 \label{sec:findcontr2013}
 As discussed in Section \ref{sec:motivate-dual},
 the algorithm makes progress by finding contractible edges.
 As discussed in Section \ref{sec:cert-contract}, an edge is guaranteed
-to be contractible when it is abundant. The algorithm maintains a pair with
-a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$.
+to be contractible when it is abundant. The algorithm maintains a pair $(f, \mu)$ with
+a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$, whence
+$\Ex(f, \mu) \leq 16m\Delta$.
+\katie{I'm a little weary of just stating this bound without any clarification
+or intuition. -frank}
 Thus, an edge $(i, j)$ with $f_{ij}^\mu \geq 17m\Delta$ is abundant.
 However, it is simpler to keep track of a certificate which depends only
 on the dual variables $\mu$ as the flow $f$ changes:
@@ -683,7 +685,7 @@ have a contractible edge adjacent to it.
 \end{claim}
 \begin{proof}
 Suppose by way of contradiction that none of the edges adjacent to $i$ are
-contractible; this means that each edge $(i,j)$ and $(j,i)$ must have $f_{ij}^\mu < 17m\Delta$.
+contractible; this means that each edge $e$ must have $f_e^\mu < 17m\Delta$.
 Consider the two cases below and note that $m \geq n \geq d_i + 1$ (\ref{sec:notation}).
 \begin{enumerate}[itemsep=0mm]
 \item First suppose $b_i^\mu > 0$. Then we obtain a contradiction to the feasibility of $f$:
@@ -710,7 +712,8 @@ fall below the $(d_i + 2)\Delta$ bound. This requirement will help us bound the 
 
 \begin{itemize}
 \item \textbf{\textsc{Augmentation}} Each iteration of step (3) first looks to augment $\Delta$ units of flow on
-tight paths (highest-gain paths) from $H$ to $L$. If the algorithm augments,
+tight paths (highest-gain paths) from $H$ to $L$. This redistributes excess
+so as to balance it out. If the algorithm augments,
 $R$ is reset to $H$ and the next iteration begins.
 If the algorithm is not able to augment, then there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
@@ -719,7 +722,7 @@ flow from.
 \item \textbf{\textsc{Scaling}} The scaling phase resolves both potential problems by increasing $\mu$ in $R$ and
 decreasing $\Delta$ by a factor $\alpha > 1$ (step (3b) above). 
 \begin{enumerate}[(i),itemsep=0mm]
-\item Increasing $\mu$ in $R$ causes the ratio
+\item Increasing $\mu$ in $R$ causes
 $\gamma_{ij}^\mu$ to increase for edges from $R$
 to $V \setminus R$. This can cause an edge crossing this cut to become tight, which may add a low excess node to the set of reachable nodes.
 % $\alpha_1$ is chosen to be $min \{\frac{1}{\giij}: ij \in E[R, V \setminus R]\}$. Intuitively, we want to choose an $\alpha$ that will bring $\gamma_{ij} \frac{\mu_i}{\mu_j}$ as close to 1 as possible without going over 1.
@@ -742,7 +745,7 @@ $\Delta$ is scaled (i.e. divided by $\alpha$).
 \end{proof}
 
 Since this ratio is non-decreasing, the algorithm is always making progress towards finding a
-contractible edge; however, this progress might be very slow if the nodes that
+contractible edge; \rewrite{however, this progress might be very slow if the nodes that
 are increased in set $V \setminus R$ have small $\sfrac{\abs{b_i^\mu}}{\Delta}$
 values. In other words, investing time into the scaling phase in this scenario 
 yields small returns. To speed the process up, the algorithm prioritizes increasing the
@@ -751,7 +754,8 @@ $20mn$ threshold; this progress is measured in comparison to $n$. We set a lower
 bound $\frac{1}{n}$ and add any node $i \in V-t$ with
 $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \frac{1}{n}$ to $D$, which indicates
 these nodes are getting close to becoming abundant (i.e., they're worth investing
-in).
+in).} \katie{Do we ever say what happens to nodes in $D$? Otherwise, this paragraph could
+probably be cut too.}
 
 \frank{Currently trying to move this}
 \rewrite{
@@ -795,11 +799,6 @@ In this section we analyze a few key ideas that lead to a strongly polynomial
 runtime. The full (and lengthy) set of proofs for the runtime analysis can be
 found in \cite{article}.
 
-First note that since the stopping condition for the ``find contractible edge''
-is reducing the graph to one node, there can only be $n-1$ contractions. Therefore
-the analysis aims to put a strongly polynomial bound on the iterations between
-contractions (i.e. prove a contractible edge can be found within a polynomial
-number of steps).
 %For analysis, we divide these iterations into the following categories:
 
 %\begin{enumerate}[(1),itemsep=0mm]
@@ -815,22 +814,23 @@ number of steps).
  %   \item Neutral Iteration: Neither shrinking or expanding
 %\end{enumerate}
 
-To bound the number of iterations between contractions, we define the following potential function: 
-
-\[ \Psi \coloneqq \sum_{i \in H}  \lfloor \frac{e_i}{\Delta \mu_i} - (d_i + 1) \rfloor \]
+As noted in Section \ref{sec:motivate-dual}, there can only be $n-1$ contractions. Therefore
+the analysis aims to show a contractible edge can be found within a strongly polynomial time.
+To bound the number of iterations between contractions, we define the following potential function:
+\[ \Psi \coloneqq \sum_{i \in H} \left\lfloor \frac{\nfiu - \biu}{\Delta} - (d_i + 1) \right\rfloor \]
 
 The potential increases by $4(d_i + 2) - (d_i + 1) = 3d_i + 7$ when a node is
 added to $H$ (\textit{expanding iteration}) and decreases by $(d_i + 2) - (d_i + 1) = 1$
 when a node leaves $H$ (\textit{shrinking iteration}). Once a node leaves
-H, $\Delta$ must double before that node can enter H again; this allows us to
+$H$, $\Delta$ must double before that node can enter $H$ again; this allows us to
 bound the total number of times a node can enter $H$. Since $H$ is initially empty
 ($\Psi = 0$), we can use the bound to calculate the maximum possible increase in
-potential. Furthermore, since a node must have $\sfrac{e_i}{\Delta\mu} \geq d_i + 2$
-to be in $H$, the potential must always be positive if there are nodes in $H$ or zero if there are no nodes in $H$. This allows us to use the
+potential. Furthermore, since a node in $H$ must have $\nfiu - \biu \geq \Delta(d_i + 2)$,
+$\Psi$ is always nonnegative. This allows us to use the
 total increase in potential to bound the number of shrinking iterations because
 we can only decrease the potential by less than the amount we increase it.
 
-This gives us a strongly polynomial bound on the number of expanding and
+\rewrite{This gives us strongly polynomial bounds on the number of expanding and
 shrinking iterations; however, we must also prove that there are only a few
 \textit{neutral} iterations in between these expanding and shrinking iterations.
 This is where we note the importance of the set $D$ and the $\filtration$
@@ -845,9 +845,16 @@ will decrease enough such that $\es$ will cause one of these nodes to enter set
 $D$ or these low excess nodes will enter set $R$, allowing an augmentation
 (shrinking iteration) on the next iteration. Note the first option can only
 happen $n-1$ times because once a node enters $D$, it cannot leave
-($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.
+($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.}
+\katie{Could this be moved so that the importance of $D$ is clearer
+when you define it? Or could it be cut down?}
 
-The analysis above gives us a strongly polynomial bound on the total number of iterations. The maximum flow computation in $\filtration$ dominates the runtime per iteration. This gives a total runtime of $O(n^3m^2logn)$ (all other operations including initialization are dominated by this runtime).
+The analysis above gives us a strongly polynomial bound on the total number of iterations.
+\katie{What is considered one iteration? Is this the number of augmentations like in the analysis
+in section 5?}
+The maximum flow computation in $\filtration$ dominates the runtime per iteration.
+This gives a total runtime of $O(n^3m^2logn)$ (all other operations including initialization
+are dominated by this runtime).
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
@@ -1092,52 +1099,51 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	%%% TEMP %%%
     
     %\label{sec:2017-intro}
-    As in the initial strongly polynomial generalized flow algorithm, this algorithm makes progress by
-    identifying contractible edges and then contracting them until a dual optimal
-    solution is found. Each contraction collapses one node, so only $n$ contractions
-    can occur. To identify and reason about contractible edges, we need a certificate
-    (sufficient condition) for contractibility. This is an elaboration of the \emph{abundant edge}
-    idea from Section \ref{sec:2013-notation}. \katie{could reduce this intro section since info already contained elsewhere}
+%     As in the initial strongly polynomial generalized flow algorithm, this algorithm makes progress by
+%     identifying contractible edges and then contracting them until a dual optimal
+%     solution is found. Each contraction collapses one node, so only $n$ contractions
+%     can occur. To identify and reason about contractible edges, we need a certificate
+%     (sufficient condition) for contractibility. This is an elaboration of the \emph{abundant edge}
+%     idea from Section \ref{sec:2013-notation}. \katie{could reduce this intro section since info already contained elsewhere}
 
 	\subsection{Working with Infeasible Flows}\label{sec:infeasible}
 	The algorithm described in Section \ref{sec:2013} maintains a feasible flow
 	at all times. In order to produce a contractibility certificate, it has
 	to keep the excess at each node bounded. In order to do that, it has to spread
-	flow around, leveling out the excesses. In contrast, the newer algorithm maintains
-	a possibly infeasible flow. Instead of spreading excesses around, it can cancel them
-	with deficits. Whereas leveling excesses could require augmenting between all pairs of
-	nodes ($O(n^2)$ possible pairs), cancelling excess only requires identifying
-	a corresponding deficit for each excess (roughly $O(n)$). This is an informal argument for why the
-	newer algorithm is more efficient.
+	flow around, leveling out the excesses. In contrast, Olver and V\'egh \cite{Olver2017} maintain
+	a possibly infeasible flow. Excesses are sent to cancel with deficits instead of spreading them
+	around. Whereas leveling excesses could require augmenting between all pairs of
+	nodes (roughly $n^2$ pairs to consider), cancelling excess only requires identifying
+	a corresponding deficit for each excess (roughly $O(n)$). This gives some intuition
+    for why relaxing the feasibility requirement might be appealing.
 	
-	More precisely, at each iteration of the algorithm we ensure that we have a
-	\textbf{fitting pair}
-	of primal and dual solutions $(f,\mu)$:
+	More precisely, the algorithm maintains a \textbf{fitting pair}
+	of primal and dual solutions $(f,\mu)$. This is a relaxation of the idea of
+	conservative pair from Section \ref{sec:cert-contract}, wherein $f$ is not required
+    to be feasible:
 	\begin{definition}
 	A (not necessarily feasible) flow $f$ is said to \textbf{fit} a feasible dual solution $\mu$
-    if it satisfies the putative complementary slackness condition: $f_e > 0 \implies \giij = 1$.
+    if it satisfies the putative complementary slackness condition: $f_{ij} > 0 \implies \giij = 1$.
     In this case, we refer to $(f, \mu)$ as a \textbf{fitting pair}.
 	\end{definition}
-    Note: as $f$ is not required to be a feasible primal solution,
-    this definition is a relaxation of the idea of
-	conservative pair from Section \ref{sec:cert-contract}.
     
 	In lieu of maintaining a feasible $f$ at each step,
 	the algorithm ensures that $\mu$ is \textbf{safe}---i.e.,
     that a feasible $f$ fitting $\mu$ \emph{exists}---by preserving a
-	``safety certificate''. To simplify the exposition, we define 
+	cut property. To simplify the exposition, we define 
 	\begin{definition}
 		Recall that $\tau(\mu)$ denotes the set of tight edges under a dual labeling $\mu$.
 		Given $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ that does
 		not have any tight incoming edges 
-		($\din(S) \cap \tau(\mu) = \varnothing$). An \textbf{outward-loose cut}
-		does not have any tight outgoing edges ($\dout(S) \cap \tau(\mu) = \varnothing$). A \textbf{bi-loose cut}
-		is both inward- and outward-loose.
+		($\din(S) \cap \tau(\mu) = \varnothing$).
+%         An \textbf{outward-loose cut}
+% 		does not have any tight outgoing edges ($\dout(S) \cap \tau(\mu) = \varnothing$).
+%         A \textbf{bi-loose cut} is both inward- and outward-loose.
 	\end{definition}
 	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts because
 	there are no tight edges to flow along.
 	If $f$ is feasible, then it follows that the total demand inside an inward-loose
-	cut is nonpositive because otherwise $f$ would have to satisfy this demand by flowing
+	cut is nonpositive---otherwise $f$ would have to satisfy this demand by flowing
 	into the cut.
 	It turns out that this is a sufficient condition for the existence
 	of a feasible fitting flow:
@@ -1145,77 +1151,92 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	$\mu$ is safe if and only if for any inward-loose cut $S \subseteq \vnott$,
 	\[ \sum_{i \in S} \biu \leq 0. \]
 	\end{lemma}
-	This is Lemma 2.3 in \cite{Olver2017}, where it is described as a corollary of Hoffman's Circulation
-	Theorem, Theorem 11.2 in \cite{Schrijver2002}. We provide a proof for completeness:
-	\begin{proof}
-		Suppose the cut condition holds. Let $f$ be a flow on tight edges minimizing
-		the total deficit $\Def(f, \mu) = \sum_i \min\{0, \biu - \nfiu\}$. Let
-		$T^+$, $T^-$ be the sets of nodes with excess and deficit, respectively:
-		\[
-			T^+ = \{i \in V \mid \nfiu > \biu \} \qquad T^- = \{i \in V \mid \nfiu < \biu \}.
-		\]
-		Consider the residual graph of $f$ in the tight graph. If there were a path
-		connecting $T^+$ to $T^-$, then we could augment along the path
-		to reduce the total deficit. Therefore, there is no such path. Consider the
-		set $T$ of nodes from which $T^-$ is reachable along tight edges (including reverse edges).
-		The absence of a residual path from $T^+$ to $T^-$
-        implies that $T \cap T^+ = \varnothing$, whence
-		\[ \sum_{i \in T} \nfiu - \biu = \sum_{i \in T^-} \nfiu - \biu < 0. \]
-		By definition, $T$ is inward-loose. Therefore, the total flow into $T$ is zero.
-        Moreover, the total flow out of $T$ is zero, for otherwise there would be
-        residual tight edges into $T$. So
-		\[ 0 = \sum_{e \in \din(T)} f_e - \sum_{e \in \dout(T)} f_e
-		     = \sum_{i \in T} \nfiu < \sum_{i \in T} \biu, \]
-		contradicting our assumption. It follows that $T^- = \varnothing$, i.e., $f$
-		is feasible.
-	\end{proof}
+	This is a corollary of Hoffman's Circulation Theorem (\cite{Schrijver2002}, Theorem 11.2),
+    a standard result on existence
+    of (ordinary, not generalized) flows, applied to the tight graph under $\mu$.
+% 	\begin{proof}
+% 		Suppose the cut condition holds. Let $f$ be a flow on tight edges minimizing
+% 		the total deficit $\Def(f, \mu) = \sum_i \min\{0, \biu - \nfiu\}$. Let
+% 		$T^+$, $T^-$ be the sets of nodes with excess and deficit, respectively:
+% 		\[
+% 			T^+ = \{i \in V \mid \nfiu > \biu \} \qquad T^- = \{i \in V \mid \nfiu < \biu \}.
+% 		\]
+% 		Consider the residual graph of $f$ in the tight graph. If there were a path
+% 		connecting $T^+$ to $T^-$, then we could augment along the path
+% 		to reduce the total deficit. Therefore, there is no such path. Consider the
+% 		set $T$ of nodes from which $T^-$ is reachable along tight edges (including reverse edges).
+% 		The absence of a residual path from $T^+$ to $T^-$
+%         implies that $T \cap T^+ = \varnothing$, whence
+% 		\[ \sum_{i \in T} \nfiu - \biu = \sum_{i \in T^-} \nfiu - \biu < 0. \]
+% 		By definition, $T$ is inward-loose. Therefore, the total flow into $T$ is zero.
+%         Moreover, the total flow out of $T$ is zero, for otherwise there would be
+%         residual tight edges into $T$. So
+% 		\[ 0 = \sum_{e \in \din(T)} f_e - \sum_{e \in \dout(T)} f_e
+% 		     = \sum_{i \in T} \nfiu < \sum_{i \in T} \biu, \]
+% 		contradicting our assumption. It follows that $T^- = \varnothing$, i.e., $f$
+% 		is feasible.
+% 	\end{proof}
     
     \subsection{A Refined Contractibility Certificate}\label{sec:contract-cert}
     So long as the algorithm maintains the safety of $\mu$,
     we can obtain a feasible fitting flow $f$ at any time
     by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
-    Moreover, a modified version of Lemma $\ref{lem.bound-dist}$ applies to fitting
+    Moreover, a generalization of Lemma \ref{lem.bound-dist} applies to fitting
     pairs.
-    \begin{lemma} \label{lem.bound-dist2}
+    \begin{lemma} \label{lem.bound-dist1.5}
+    Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some feasible flow $\tilde{g}$
+    uniformly ``close'' to $g$:
+    \[ \|\tilde{g}^\mu - g^\mu\|_\infty \leq \Def(g, \mu) \quad \text{and} \quad
+       \Ex(\tilde{g}, \mu) \leq \Ex(g, \mu). \]
+    \end{lemma}
+    \begin{proof}[Proof Idea]
+    The proof is very similar to that of Lemma \ref{lem.bound-dist}. However, as both $f$ and
+    $\tilde{f}$ fit the same dual $\mu$, the analysis need only consider $f^\mu$ and $\tilde{f}^\mu$
+    as regular flows on $\tau(\mu)$. This simplifies the argument considerably. We omit the full proof
+    for brevity.
+    \end{proof}
+    \begin{corollary} \label{lem.bound-dist2}
     Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some optimal flow $g^*$
     uniformly ``close'' to $g$:
     \[ \|(g^*)^\mu - g^\mu\|_\infty \leq \Ex(g, \mu) + \Def(g, \mu). \]
-    \end{lemma}
+    \end{corollary}
     \begin{proof}
-    We show that there is a feasible $\tilde{g}$ fitting $\mu$ and satisfying
-    \[ \|\tilde{g}^\mu - g^\mu\|_\infty \leq \Def(g, \mu) \quad \text{and} \quad
-       \Ex(\tilde{g}, \mu) \leq \Ex(g, \mu). \]
-    The conclusion then follows by Lemma \ref{lem.bound-dist} and the triangle inequality.
-    \katie{I think we could cut down this section too. A bit dense without adding intuition. Even though it's nice for completion}
-	As $g$ fits $\mu$, $g$ is supported on the tight edges $\tau(\mu)$. As
-	$\mu$ is safe, there is some feasible flow supported in $\tau(\mu)$. We first
-    look for a feasible flow $\tilde{g}$ close to $g$. To that end, consider the
-    difference $f^\mu = \tilde{g}^\mu - g^\mu$, which is also supported in $\tau(\mu)$.
-    (If $f_{ij}$ are negative, we think of this as positive flow on the reverse edge $(j, i)$.)
-    Now minimize $\|f^\mu\|_1$, the total volume of difference,
-    among all feasible fitting flows $\tilde{g}$. Adding cycles only increases $\|f^\mu\|_1$.
-    Because $f$ is minimal with respect to this norm, it is acyclic. Thus it is a sum of
-    paths whose total flow value can be measured at their endpoints:
-    \[ \|f^\mu\|_\infty \leq \sum_i \max\{0, \nfiu\} = \sum_i \max\{0, -\nfiu\} = \frac{1}{2}\sum_i |\nfiu|
-     = \frac{1}{2}\sum_i |\nabla \tilde{g}^\mu_i - \nabla g^\mu_i|. \]
-    Now if $\nabla g_i^\mu < b_i^\mu$, then
-    \[ \nfiu = \nabla \tilde{g}_i^\mu - \nabla g_i^\mu
-     = (\nabla \tilde{g}_i^\mu - b_i^\mu) - (\nabla g_i^\mu - b_i^\mu) \geq b_i^\mu - \nabla g_i^\mu, \]
-    as $\nabla \tilde{g}_i^\mu \geq b_i^\mu$ everywhere. So the total value of $f$ is at least
-    $\Def(g, \mu)$. On the other hand, suppose it is more than $\Def(g, \mu)$. Then there
-    is some node $i$ where $\nfiu > \max\{0, \biu - \nabla g_i^\mu\}$. So there is some path
-    ending at $i$ whose value can be reduced to reduce $\|f\|_1$, while $\tilde{g}$
-    remains feasible. Therefore, $\|f^\mu\|_\infty \leq \Def(g, \mu)$. Because $\tilde{g}$ is feasible,
-    the paths shipping flow to fill the deficits of $g$ must begin at nodes at which $g$ has
-    excesses. Therefore, $\Ex(\tilde{g}, \mu) \leq \Ex(g, \mu)$.
+    Follows immediately from Lemma \ref{lem.bound-dist1.5}, Lemma \ref{lem.bound-dist},
+    and the triangle inequality.
     \end{proof}
     
-    Lemma \ref{lem.bound-dist2} suggests a more general certificate for contractibility:
-    \begin{lemma} \label{lem.contractibility}
-    Suppose $(g, \mu)$ is a fitting pair (with $g$ not necessarily feasible),
-    $\mu$ is safe, and $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$.
-    Then $e$ is contractible.
-    \end{lemma}
+%     \begin{proof}
+%     We show that there is a feasible $\tilde{g}$ fitting $\mu$ and satisfying
+%     \[ \|\tilde{g}^\mu - g^\mu\|_\infty \leq \Def(g, \mu) \quad \text{and} \quad
+%        \Ex(\tilde{g}, \mu) \leq \Ex(g, \mu). \]
+%     The conclusion then follows by Lemma \ref{lem.bound-dist} and the triangle inequality.
+%     \katie{I think we could cut down this section too. A bit dense without adding intuition. Even though it's nice for completion}
+% 	As $g$ fits $\mu$, $g$ is supported on the tight edges $\tau(\mu)$. As
+% 	$\mu$ is safe, there is some feasible flow supported in $\tau(\mu)$. We first
+%     look for a feasible flow $\tilde{g}$ close to $g$. To that end, consider the
+%     difference $f^\mu = \tilde{g}^\mu - g^\mu$, which is also supported in $\tau(\mu)$.
+%     (If $f_{ij}$ are negative, we think of this as positive flow on the reverse edge $(j, i)$.)
+%     Now minimize $\|f^\mu\|_1$, the total volume of difference,
+%     among all feasible fitting flows $\tilde{g}$. Adding cycles only increases $\|f^\mu\|_1$.
+%     Because $f$ is minimal with respect to this norm, it is acyclic. Thus it is a sum of
+%     paths whose total flow value can be measured at their endpoints:
+%     \[ \|f^\mu\|_\infty \leq \sum_i \max\{0, \nfiu\} = \sum_i \max\{0, -\nfiu\} = \frac{1}{2}\sum_i |\nfiu|
+%      = \frac{1}{2}\sum_i |\nabla \tilde{g}^\mu_i - \nabla g^\mu_i|. \]
+%     Now if $\nabla g_i^\mu < b_i^\mu$, then
+%     \[ \nfiu = \nabla \tilde{g}_i^\mu - \nabla g_i^\mu
+%      = (\nabla \tilde{g}_i^\mu - b_i^\mu) - (\nabla g_i^\mu - b_i^\mu) \geq b_i^\mu - \nabla g_i^\mu, \]
+%     as $\nabla \tilde{g}_i^\mu \geq b_i^\mu$ everywhere. So the total value of $f$ is at least
+%     $\Def(g, \mu)$. On the other hand, suppose it is more than $\Def(g, \mu)$. Then there
+%     is some node $i$ where $\nfiu > \max\{0, \biu - \nabla g_i^\mu\}$. So there is some path
+%     ending at $i$ whose value can be reduced to reduce $\|f\|_1$, while $\tilde{g}$
+%     remains feasible. Therefore, $\|f^\mu\|_\infty \leq \Def(g, \mu)$. Because $\tilde{g}$ is feasible,
+%     the paths shipping flow to fill the deficits of $g$ must begin at nodes at which $g$ has
+%     excesses. Therefore, $\Ex(\tilde{g}, \mu) \leq \Ex(g, \mu)$.
+%     \end{proof}
+    
+    Corollary \ref{lem.bound-dist2} suggests an appropriate definition of abundant edge
+    when working with infeasible flows. If $(g, \mu)$ is a fitting pair with $\mu$ safe and
+    $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$, then $e$ is contractible.
 
 %	The safety of $\mu$ is important because it keeps the distance between
 %	the (not necessarily feasible) primal $g$ we keep track of and the optimal
@@ -1236,17 +1257,17 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 %    }
 %    \end{figure}
 
-	\subsection{Plentiful Nodes and Contraction}
-    Lemma \ref{lem.contractibility} shows that a fitting pair with a very
-    large flow value on one edge serves as a certificate that that edge is contractible.
-    To develop a strongly polynomial algorithm, it remains to show that we can compute
-    such a fitting pair.
+%     Lemma \ref{lem.contractibility} shows that a fitting pair with a very
+%     large flow value on one edge serves as a certificate that that edge is contractible.
+%     To develop a strongly polynomial algorithm, it remains to show that we can compute
+%     such a fitting pair.
     
-    As stated above, both goals---bounded relabeled excess/deficit and
-    large flow value on one edge---depend on the primal
-    \emph{and} dual variables. In fact, we can associate each goal
-    with one of the variables so that the algorithm may more easily work toward both goals:
-    
+    As outlined in Section \ref{sec:cert-contract}, the algorithm
+    has a dual mandate---(i) bounding the relabeled excess and deficit and (ii)
+    obtaining a large relabeled flow value on an edge. Both goals depend on the primal
+    \emph{and} dual variables. As in Section \ref{sec:findcontr2013}, we can obtain
+    a more useful contractibility certificate by disentangling the two. The following
+    definition serves in place of abundant edge, and it only depends on the dual variables.
     \begin{definition}
     A node $i$ is \textbf{plentiful} with respect
     to the current primal-dual solution pair $(f,u)$ if its scaled absolute
@@ -1291,7 +1312,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 
 	In practice, the algorithm maintains a fitting pair $(f, \mu)$ satisfying
 	assumptions (i) and (ii) of Theorem \ref{thm:2017-contraction}. When it encounters
-	a plentiful node $i$, it computes a new integral flow $g$, uses it to identify
+	a plentiful node $i$, it computes a new integral flow $g$ as described in the proof,
+    uses it to identify
 	an abundant edge neighboring $i$, and then contracts the edge.
 	After contraction, $(g, \mu)$ is used to initialize the search for the next
 	plentiful node.
