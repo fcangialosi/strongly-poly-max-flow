@@ -629,8 +629,6 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 	  $\max_{i \in V\setminus T} \nfiu - \biu$
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
 \item Find contractible edges and contract until a stopping condition is met
-	\katie{Why only (i) from 3.1 specifically? is the second case not possible for
-	this algorithm..?}
 	(\emph{cf.} Section \ref{sec:motivate-dual}(i)). Contractible edges are found
 	by repeatedly applying one of the following operations:
 	\begin{enumerate}
@@ -662,10 +660,7 @@ decreasing in the algorithm, we initialize it to the maximum feasible value.
 
 The algorithm maintains a relaxed \textbf{$\Delta$-conservative pair}.
 That is, it allows small (less than $\Delta$) flows along non-tight edges.
-The excess at each node is required to be at least the
-\katie{what is net inflow? net usually means in minus out}
-net inflow along non-tight edges. Thus, at any time, the flow can be made conservative
-(while remaining feasible) by zeroing flow along non-tight edges.
+The excess at each node is required to be at least the amount of incoming flow along non-tight edges. Thus, at any time, the flow can be made conservative (while remaining feasible) by zeroing flow along non-tight edges.
 The algorithm also maintains a uniform upper bound on excess,
 $\nfiu - \biu \leq 4(d_i + 2)\Delta$. As $\Delta$ decreases, the amount of flow on these non-tight
 edges decreases and the algorithm gets closer to an optimal solution.
@@ -677,9 +672,7 @@ or intuition. -frank}
 As discussed in Section \ref{sec:motivate-dual},
 the algorithm makes progress by finding contractible edges.
 As discussed in Section \ref{sec:cert-contract}, an edge is guaranteed
-to be contractible when it is abundant---when its relabeled flow value
-under some conservative pair $(f, \mu)$
-exceeds $\Ex(f, \mu)$. The algorithm maintains a pair with
+to be contractible when it is abundant. The algorithm maintains a pair with
 a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$.
 Thus, an edge $(i, j)$ with $f_{ij}^\mu \geq 17m\Delta$ is abundant.
 However, it is simpler to keep track of a certificate which depends only
@@ -724,9 +717,7 @@ reachable low excess nodes to augment to or (ii) no high excess nodes to push
 flow from.
 \frank{Re-organize to match up with previous section without repeating too much}
 \item \textbf{\textsc{Scaling}} The scaling phase resolves both potential problems by increasing $\mu$ in $R$ and
-decreasing $\Delta$ by a factor $\alpha > 1$ (step (3b) above). $\alpha$ is
-notionally increased ``continuously'' until one of the following occurs, making room
-for augmentation to continue:
+decreasing $\Delta$ by a factor $\alpha > 1$ (step (3b) above). 
 \begin{enumerate}[(i),itemsep=0mm]
 \item Increasing $\mu$ in $R$ causes the ratio
 $\gamma_{ij}^\mu$ to increase for edges from $R$
@@ -808,7 +799,7 @@ First note that since the stopping condition for the ``find contractible edge''
 is reducing the graph to one node, there can only be $n-1$ contractions. Therefore
 the analysis aims to put a strongly polynomial bound on the iterations between
 contractions (i.e. prove a contractible edge can be found within a polynomial
-number of steps). \katie{can maybe cut the above paragraph since its already been stated in other sections above}
+number of steps).
 %For analysis, we divide these iterations into the following categories:
 
 %\begin{enumerate}[(1),itemsep=0mm]
