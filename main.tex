@@ -330,7 +330,6 @@ namely~\cite{Orlin1988}.}
     f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
 	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \]
     The relabeled dual problem is equivalent to the original dual problem. In particular,
-    \katie{I think we could probably cut out the two claims below. Might want to focus on the why and not how of relabeling (if that makes sense :))}
     \begin{claim}
     $f^\mu$ is a feasible (resp. optimal) solution to the relabeled primal problem with gains
     $\gamma^\mu$ and demands $b^\mu$ if and only if $f$ is a feasible (resp. optimal) solution
@@ -749,7 +748,7 @@ and all other values remain the same. Reducing excess of nodes in
 $V \setminus R$ might allow the next scaling phase to last longer and
 thus increase $\sfrac{\abs{\biu}}{\Delta}$ more.
 Simultaneously, zeroing the flow from $V\setminus R$ to $R$
-reduces the excess of nodes in $R$, which might open them up to accpet augmentations
+reduces the excess of nodes in $R$, which might open them up to accept augmentations
 in future round.
 \end{itemize}
 % Scaling is the only phase of the algorithm that changes the important ratio
@@ -813,16 +812,15 @@ found in \cite{article}.
 
 As noted in Section \ref{sec:motivate-dual}, there can only be $n-1$ contractions. Therefore
 the analysis aims to show a contractible edge can be found within a strongly polynomial time.
-To bound the number of iterations between contractions, we define the following potential function:
+We define the following potential function to bound denotes an iteration of step (3) defined at the beginning of Section~\ref{sec:2013}.
 \[ \Psi \coloneqq \sum_{i \in H} \left\lfloor \frac{\nfiu - \biu}{\Delta} - (d_i + 1) \right\rfloor \]
 
 Recall that $H$ denotes the set of ``high excess'' nodes.
 The potential increases by $4(d_i + 2) - (d_i + 1) = 3d_i + 7$ when a node is
-added to $H$ (this is called an \textit{expanding iteration}) \katie{What delimits a single iteration?}
+added to $H$ (this is called an \textit{expanding iteration})
 and decreases by $(d_i + 2) - (d_i + 1) = 1$
 when a node leaves $H$ (a \textit{shrinking iteration}). Once a node leaves
-$H$, $\Delta$ must double \katie{Isn't $\Delta$ monotonically decreasing?}
-before that node can enter $H$ again; this allows us to
+$H$, $\Delta$ must decrease by at least a factor of two before that node can enter $H$ again; this allows us to
 bound the total number of expanding iterations. Since $H$ is initially empty
 ($\Psi = 0$), we can use the bound on expanding iterations to bound the total increase in
 potential. Furthermore, since a node in $H$ must have $\nfiu - \biu \geq \Delta(d_i + 2)$,
@@ -850,8 +848,6 @@ happen $n-1$ times because once a node enters $D$, it cannot leave
 when you define it? Or could it be cut down?}
 
 The analysis above gives us a strongly polynomial bound on the total number of iterations.
-\katie{What is considered one iteration? Is this the number of augmentations like in the analysis
-in section 5?}
 The maximum flow computation in $\filtration$ dominates the runtime per iteration.
 This gives a total runtime of $O(n^3m^2\log n)$ (all other operations including initialization
 are dominated by this runtime).
