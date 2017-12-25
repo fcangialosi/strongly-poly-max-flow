@@ -618,14 +618,16 @@ A high-level overview of Végh's initial algorithm \cite{Vegh2013}
 is shown below. This algorithm is characterized by a scaling factor $\Delta$,
 which controls the amount of flow that can be augmented at each iteration and the threshold for
 determining which edges are contractible. Sections \ref{sec:findconserv2013} and
-\ref{sec:findcontr2013} expand on the details and provide intuition for steps
-(1) through (4) below. Section~\ref{sec:runtime2013} sketches the runtime
+\ref{sec:findcontr2013} expand on the details and provide intuition.
+Section~\ref{sec:runtime2013} sketches the runtime
 analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 
 \begin{enumerate}[(1),itemsep=0mm]
-\item Find an initial feasible flow $\bar{f}$ and set the initial $\Delta$ to
-	  $\max_{i \in V\setminus T} \nfiu - \biu$
+\item Find an initial feasible flow $\bar{f}$ and set initial $\Delta$ to
+	  %$\max_{i \in V\setminus T} \nfiu - \biu$
+	  the max relabeled excess of any node
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
+	\frank{Still need to talk about this somewhere}
 \item Find contractible edges and contract until a stopping condition is met
 	(\emph{cf.} Section \ref{sec:motivate-dual}(i)). Contractible edges are found
 	by repeatedly applying one of the following operations:
@@ -644,9 +646,17 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 
 \subsection{Finding and Maintaining Conservative Pairs}
 \label{sec:findconserv2013}
-Following from primal-dual slackness, the optimality conditions for the primal are (i) $\nfiu - \biu = 0$ for all $i \in \vnott$ and (ii) $\giij = 1$ if $f_{ij} > 0$. The first condition is achieved by slowly reducing an upper bound on the excess at each node as the algorithm continues. The second condition is achieved by finding and maintaining conservative pairs (Definition~\ref{def:conservative}) throughout the algorithm.
+Following from primal-dual slackness, the optimality conditions for the primal
+are (i) $\nfiu - \biu = 0$ for all $i \in \vnott$ and (ii) $\giij = 1$ if
+$f_{ij} > 0$. The first condition is achieved by slowly reducing an upper bound
+on the excess at each node as the algorithm continues. The second condition is
+achieved by finding and maintaining conservative pairs
+(Definition~\ref{def:conservative}) throughout the algorithm.
 
-To find an initial conservative pair $(f,\mu)$, we must find a feasible flow $\bar{f}$, eliminate any cycles, calculate the initial labels using $\mu_t \coloneqq 1$, and run a max flow to modify $\bar{f}$ with respect to $\mu$. $\bar{f} \equiv 0$ is a trivial
+To find an initial conservative pair $(f,\mu)$, we must find a feasible flow
+$\bar{f}$, \rewrite{eliminate any cycles}, calculate the initial labels using $\mu_t
+\coloneqq 1$, and run a max flow to \rewrite{modify $\bar{f}$ with respect to $\mu$.}
+$\bar{f} \equiv 0$ is a trivial
 feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by
 following the transformation in \cite{article} (this just requires
 adding a few additional edges and nodes). Once we have an initial conservative pair, we set the starting value of $\Delta$ equal to
@@ -672,8 +682,7 @@ As discussed in Section \ref{sec:cert-contract}, an edge is guaranteed
 to be contractible when it is abundant. The algorithm maintains a pair $(f, \mu)$ with
 a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$, whence
 $\Ex(f, \mu) \leq 16m\Delta$.
-\katie{I'm a little weary of just stating this bound without any clarification
-or intuition. -frank}
+\frank{We really need to clarify these numbers}
 Thus, an edge $(i, j)$ with $f_{ij}^\mu \geq 17m\Delta$ is abundant.
 However, it is simpler to keep track of a certificate which depends only
 on the dual variables $\mu$ as the flow $f$ changes:
@@ -724,8 +733,8 @@ to $V \setminus R$. This can cause an edge crossing this cut to become tight, wh
 This can continue until some node has excess equal to the upper bound $4(d_i + 2)\Delta$.
 \end{enumerate}
 \begin{claim}
-The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing during scaling.
-\frank{Consider rewriting without subroutine names}
+	The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing during scaling
+	(and not changed during any of the other phases).
 \end{claim}
 \begin{proof}
 $\alpha > 1$ by construction. The ratio does not change for nodes in $R$ since both
@@ -737,8 +746,12 @@ $\alpha$ because only $\Delta$ is divided by $\alpha$.
 \item \textbf{Redistributing Excess:} If $V \setminus R$ does not contain any
 nodes with large values of $\sfrac{\abs{b_i^\mu}}{\Delta}$,
 then scaling will be ineffective in producing a plentiful node.
+\frank{Plentiful not defined yet}
 As such, if $\sfrac{\abs{b_i^\mu}}{\Delta} < \sfrac{1}{n}$ for every node
+\frank{Need to be careful and consistent about writing style of "we" vs "the
+	algorithm" throughout}
 in $V \setminus R$, we delay scaling and focus on redistributing the excess in $V \setminus R$.
+\frank{Confusing because we say that augmentation also redistributes excess}
 We compute a modified max flow along tight edges in $V \setminus R$.
 The goal is to push flow directly to the sink from ``isolated''
 nodes (nodes that are not reachable along a tight path from $H$).
