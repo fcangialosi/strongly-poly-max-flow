@@ -79,6 +79,7 @@
 \DeclareMathOperator{\Def}{Def}
 
 \newcommand{\rewrite}[1]{\textcolor{red}{#1}}
+\newcommand{\cbb}[1]{\textcolor{orange}{#1}}
 \renewcommand{\todo}[1]{\hl{TODO: #1}}
 
 \newcommand{\lpeq}[1] {
@@ -628,8 +629,10 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 	  the max relabeled excess of any node
 \item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
 	\frank{Still need to talk about this somewhere}
-\item Find contractible edges and contract until a stopping condition is met
-	(\emph{cf.} Section \ref{sec:motivate-dual}(i)). Contractible edges are found
+\item Find contractible edges and contract until stopping condition is met
+	(\emph{cf.} Section \ref{sec:motivate-dual}(i)).
+	\katie{Is it true that only (i) is possible and not (ii)?}
+	Contractible edges are found
 	by repeatedly applying one of the following operations:
 	\begin{enumerate}
 		\item Augment $\Delta$ units of flow.
@@ -650,8 +653,8 @@ Following from primal-dual slackness, the optimality conditions for the primal
 are (i) $\nfiu - \biu = 0$ for all $i \in \vnott$ and (ii) $\giij = 1$ if
 $f_{ij} > 0$. The first condition is achieved by slowly reducing an upper bound
 on the excess at each node as the algorithm continues. The second condition is
-achieved by finding and maintaining conservative pairs
-(Definition~\ref{def:conservative}) throughout the algorithm.
+achieved by starting with an initial conservative pair (Definition~\ref{def:conservative})
+and maintaining throughout the algorithm.
 
 To find an initial conservative pair $(f,\mu)$, we must find a feasible flow
 $\bar{f}$, \rewrite{eliminate any cycles}, calculate the initial labels using $\mu_t
@@ -666,8 +669,9 @@ amount of flow augmented at each iteration, and it wouldn't be feasible to send
 more flow along a path than the maximum excess. Since $\Delta$ is monotonically
 decreasing in the algorithm, we initialize it to the maximum feasible value.
 
-The algorithm maintains a relaxed \textbf{$\Delta$-conservative pair}.
+\rewrite{The algorithm maintains} a relaxed \textbf{$\Delta$-conservative pair}.
 That is, it allows small (less than $\Delta$) flows along non-tight edges.
+\katie{why?}
 The excess at each node is required to be at least the amount of incoming flow along non-tight edges. Thus, at any time, the flow can be made conservative (while remaining feasible) by zeroing flow along non-tight edges.
 % The algorithm also maintains a uniform upper bound on excess,
 % $\nfiu - \biu \leq 4(d_i + 2)\Delta$.
@@ -1128,7 +1132,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	
 	More precisely, the algorithm maintains a \textbf{fitting pair}
 	of primal and dual solutions $(f,\mu)$. This is a relaxation of the idea of
-	conservative pair from Section \ref{sec:cert-contract}, wherein $f$ is not required
+	a conservative pair from Section \ref{sec:cert-contract}, wherein $f$ is not required
     to be feasible:
 	\begin{definition}
 	A (not necessarily feasible) flow $f$ is said to \textbf{fit} a feasible dual solution $\mu$
@@ -1139,7 +1143,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	In lieu of maintaining a feasible $f$ at each step,
 	the algorithm ensures that $\mu$ is \textbf{safe}---i.e.,
     that a feasible $f$ fitting $\mu$ \emph{exists}---by preserving a
-	cut property. To simplify the exposition, we define 
+		cut property. To simplify the exposition, \cbb{we start with a definition.}
 	\begin{definition}
 		Recall that $\tau(\mu)$ denotes the set of tight edges under a dual labeling $\mu$.
 		Given $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ that does
@@ -1501,8 +1505,8 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \label{lem:fsame}
     \end{lemma} 
     \begin{proof}
-    	As seen above, the scaling is designed so that $f_{ij}^\mu = f_{ij}/\mu_i$
-    	stays constant when both $i$ and $j$ are in $S$. Moreover, it maintains the
+			\cbb{As seen above, the scaling is designed so that $f_{ij}^\mu = f_{ij}/\mu_i$
+			stays constant when both $i$ and $j$ are in $S$}. Moreover, it maintains the
     	invariant that there is no flow across the cut $S$---so flow across $S$ is vacuously
     	preserved under scaling. Finally, scaling does not affect edges entirely
     	outside $S$.
@@ -1553,7 +1557,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
         $\fp$ remains a fitting pair throughout each epoch.
     \end{lemma}
     \begin{proof}
-    Suppose that at the beginning of the epoch $f$ fits $\mu$. That is, $\mu$
+    Suppose that, at the beginning of the epoch, $f$ fits $\mu$. That is, $\mu$
     is dual-feasible, and whenever
     $f_{ij} > 0$, $\giij = 1$. Augmentation only occurs along tight edges, thus
     maintaining the fitting property. Scaling only changes $\giij = \gij \mu_i / \mu_j$
@@ -1657,7 +1661,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     \begin{proof}
         At the beginning of the algorithm, the flow is feasible, so $\nfiu - \biu \geq 0$.
         Rounding decreases $\nfiu$ by less than one. Similarly, during each contraction,
-        the adjusted flow is computed with $nabla g_i^\mu \geq \lfloor \biu \rfloor$ everywhere.
+        the adjusted flow is computed with $\nabla g_i^\mu \geq \lfloor \biu \rfloor$ everywhere.
 
         Between contractions, the deficit can be modified by scaling and augmentation steps.
         Since $i \in \vsrc$, $\biu < 0$, and so $\biu$ can only decrease during scaling.
