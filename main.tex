@@ -143,7 +143,7 @@
 	(i.e. one that depends only on the number of nodes and edges in the graph,
 	and is independent of the size of their values). In 2017, Olver and Végh
 	built on this work and developed an algorithm~\cite{Olver2017}
-	that is faster by a factor of
+	that is faster than the original algorithm by a factor of
 	almost $O(n^2)$, resulting in a running time that is as fast as the best
 	weakly polynomial algorithms even for small parameter values. 
 	\ifLAYOUTA
@@ -165,7 +165,8 @@ namely~\cite{Orlin1988}.}
 	used in the rest of the paper. In Section~\ref{sec:motivate}, we develop the key techniques
 	shared by both algorithms used to achieve a strongly polynomial bound for this
 	problem. In Section~\ref{sec:2013}, we describe Végh's original $O(n^3m^2 \log n)$ strongly
-	polynomial algorithm developed in 2014 and provide intuition. In Section~\ref{sec:2017}, we describe Olver and
+	polynomial algorithm developed in 2013 and \rewrite{provide intuition}.
+	In Section~\ref{sec:2017}, we describe Olver and
 	Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key
 	aspects of the analysis that led way to the improved running time efficiency.
 	Finally, in Section~\ref{sec:discussion}, 
@@ -219,6 +220,10 @@ namely~\cite{Orlin1988}.}
 	it is always possible to increase the flow without violating any of the
 	constraints. There is extensive prior work on eliminating such
 	cycles~\cite{Vegh2013} so for the remainder of this discussion we assume they do not exist.
+	\frank{I want to come back to this and reread prior work because i'm not
+		totally sure that the unbounded thing is true -- also we don't assume they
+		do not exist because later we talk about cancelling them, need to set this
+	up better.}
 
 
 	\subsection{Linear Program Formulation}
@@ -244,7 +249,7 @@ namely~\cite{Orlin1988}.}
 %		as given in~\cite{Olver2017}:
 %
 
-    \begin{align*}\tag{P}
+	\begin{align*}\tag{P}\label{eqn:primal}
     \max \quad \nabla f_t& \\
     \text{s.t.} \quad
     \nabla f_i &\geq b_i \quad \forall i \in V \setminus t \\
@@ -254,7 +259,7 @@ namely~\cite{Orlin1988}.}
 	The dual linear program, given on the left below, has a variable $\eta_i$ for
 	every node $i$. 
 	Making the change of variables $\eta_i = - \mu_t / \mu_i$ yields the
-	dual optimization problem on the right.
+	dual optimization problem (used in~\cite{Olver2017}) on the right.
     
 	\ifLAYOUTA
     \vspace{0.5cm}
@@ -263,6 +268,7 @@ namely~\cite{Orlin1988}.}
 	\fi
 
 	\begin{tabular}{rcll}
+		\label{eqn:dual}
 		\hspace*{-1.05cm}
 	\resizebox{0.37\textwidth}{!}{
 		\fbox{
@@ -326,10 +332,11 @@ namely~\cite{Orlin1988}.}
 	Given a feasible dual solution $\mu$, we can apply the following \textbf{relabeling}
     transformation to obtain a new problem instance with gains $\gamma^\mu$ and demands $b^\mu$
     and a primal solution to the new instance:
-	\[ \gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
+		\begin{equation} \label{eqn:relabel} \tag{RE}
+			\gamma_{ij}^\mu \coloneqq \gamma_{ij} \frac{\mu_i}{\mu_j} \quad
 	b_i^\mu \coloneqq \frac{b_i}{\mu_i} \quad
     f_{ij}^\mu \coloneqq \frac{f_{ij}}{\mu_i} \quad
-	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \]
+	\nabla f_i^\mu \coloneqq \frac{\nabla f_i }{\mu_i} \end{equation}
     The relabeled dual problem is equivalent to the original dual problem. In particular,
     \begin{claim}
     $f^\mu$ is a feasible (resp. optimal) solution to the relabeled primal problem with gains
@@ -346,11 +353,11 @@ namely~\cite{Orlin1988}.}
     
     \begin{definition} \label{def.tight}
 	An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
-	For an optimal pair $(f, \mu)$, complementary slackness is exactly the condition that
+	For an optimal pair $(f, \mu)$, complementary slackness (\ref{eqn.cs}) is exactly the condition that
 	flow only flows along tight edges. We denote the set of tight edges under
 	$\mu$ by
     \[ \tau(\mu) = \{e \mid \geu = 1\}. \]
-    The \textbf{tight graph} consists of these edges and their endpoints.
+    The \textbf{tight graph} consists of only these edges and their endpoints.
 	\end{definition}
     
     \begin{definition} The \textbf{excess} of a flow at a node $i$ is the net flow left
@@ -377,7 +384,9 @@ namely~\cite{Orlin1988}.}
       %      * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
 	
 	A weakly polynomial algorithm is easily achievable by applying ellipsoid or
-	interior point methods to the linear program (P). To achieve a strongly polynomial
+	interior point methods to the linear program (\ref{eqn:primal}).
+	\frank{Let's add a citation here}
+	To achieve a strongly polynomial
 	bound, the linear program can be reduced to a combinatorial problem.
 	
 	Suppose an edge $(i, j)$ is known to be tight for any dual-optimal solution $\mu$. This
@@ -411,7 +420,7 @@ namely~\cite{Orlin1988}.}
 	either a spanning tree or a spanning forest depending on which of the following
 	cases occurs:
 	\begin{enumerate}[(i),itemsep=0mm]
-	\item the contracted graph has just one node remaining, i.e., every node has been merged
+		\item \label{case:contract-tree} the contracted graph has just one node remaining, i.e., every node has been merged
 	into the sink $t$. In this case, the set of previously identified
 	contractible edges forms a spanning tree. Given a value for $\mu_t$, the tightness
 	constraints then uniquely determine the values of the optimal $\mu$ at all other nodes.
@@ -429,7 +438,7 @@ namely~\cite{Orlin1988}.}
 %	an optimal dual over the original graph.
 	Each component of the tight forest has net demand zero under a suitable relabeling.
 	As such, the flows in separate components are independent, effectively reducing
-	the problem to case (i). The maximum flow value only depends on the flow in the
+	the problem to case \ref{case:contract-tree}. The maximum flow value only depends on the flow in the
 	tree component of $t$.
 %	objective
 %	value only depends on the flow on the tight tree component containing the sink $t$.
@@ -459,23 +468,27 @@ namely~\cite{Orlin1988}.}
     This is the conservation constraint of an ordinary maximum flow problem with demands
     $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
     ordinary maximum flow on the tight graph---a strongly polynomial operation.
-    Then it is easy to recover $f$ from $f^\mu$. We have shown how to reduce the generalized
+		Then it is easy to recover $f$ from $f^\mu$ (by undoing the scaling in ~\ref{eqn:relabel}).
+		Thus, we have shown how to reduce the generalized
     flow problem to a combinatorial problem by computing an optimal set of tight edges.
     
 	\begin{example}
 		To help visualize the connection between tight edges and optimal solutions, 
 	consider the flow network on the left in 
-	Figure~\ref{fig:ex-spanning}. By inspection, we can see that the optimal $f^{*}$
+	Figure~\ref{fig:ex-spanning}. Nodes $i$ and $j$ both have negative demand and can
+	thus act as sources for up to 8 units of flow. By inspection, we can see that the optimal $f^{*}$
 	should send 8 units of flow from $i$ to $t$ and 8 units from $j$ to $t$,
 	yielding 6 units at the sink. On the right, we show the three possible spanning
 	trees of tight edges for this graph.
 	For each tree, starting with $\mu_t = 1$, we can compute $\mu_i$
 	and $\mu_j$ based on the tight edges. In (a), the dual is not feasible because
 	$\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
-	In (b) and (c) all of the dual constraints are feasible,
+	In (b) and (c), all of the dual constraints are feasible,
 	but (b) produces a greater objective value ($-6$ vs. $-8$)
-	than (c). (Note that the sign is negative because of our change of variable). Solving a max flow on just the tight edges of (b) yields the max value
-	we expect, 6. The optimal collection of tight edges encodes all the information necessary
+	than (c). (Note that the sign is negative because of our change of variable
+	in~\hyperref[eqn:dual]{D}). Solving a max flow on just the tight edges of (b)
+	yields the optimal $\nabla f_t^{*}$ we expect:~6.
+  The optimal collection of tight edges encodes all the information necessary
 	to reconstruct the optimal solution.
 	\begin{figure*}[h]
 	\centering
@@ -508,7 +521,7 @@ namely~\cite{Orlin1988}.}
 	Végh \cite{Vegh2013}. The algorithms have in common the use of primal-dual pairs
 	as certificates for contractibility.
 
-	Complementary slackness tells us that if there is a primal optimal flow
+	From Section~\ref{sec:motivate-dual}, complementary slackness tells us that if there is a primal optimal flow
 	$f$ with positive value
 	on some edge $e$, then $e$ is tight with respect to \emph{every} dual
 	optimal solution---that
@@ -592,7 +605,7 @@ namely~\cite{Orlin1988}.}
     
     Since the dual scaling will be a node-wise operation, it is more convenient
     to use a node-wise certificate of contractibility than the edge-wise one described
-    above.
+		above.\frank{Seems out of place. Should be moved somewhere else}
     
 
 \section{The Initial Strongly Polynomial Algorithm}
@@ -626,12 +639,13 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 \begin{enumerate}[(1),itemsep=0mm]
 \item Find an initial feasible flow $\bar{f}$ and set initial $\Delta$ to
 	  %$\max_{i \in V\setminus T} \nfiu - \biu$
-	  the max relabeled excess of any node
-\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$
+	  the max relabeled excess of any node.
+\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$.
 	\frank{Still need to talk about this somewhere}
 \item Find contractible edges and contract until stopping condition is met
-	(\emph{cf.} Section \ref{sec:motivate-dual}(i)).
-	\katie{Is it true that only (i) is possible and not (ii)?}
+	(\emph{cf.} Section~\ref*{sec:motivate-dual} Case~\ref{case:contract-tree}).
+	\david{Any idea why (ii) is not possible in 2013? If yes and it's short,
+	please add, if not, just delete this and skip it.}
 	Contractible edges are found
 	by repeatedly applying one of the following operations:
 	\begin{enumerate}
@@ -639,7 +653,7 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 		\item Increase $\mu$ and decrease $\Delta$ by a factor $\alpha > 1$.
 		\item Send flow from isolated parts of the graph directly to the sink.
 	\end{enumerate}
-\item Expand and find optimal primal solution via traditional max flow (\ref{sec:motivate-dual})
+\item Expand and find optimal primal solution via traditional max flow (\ref{sec:motivate-dual}).
 \end{enumerate}
 
 %\begin{definition}
@@ -669,9 +683,11 @@ amount of flow augmented at each iteration, and it wouldn't be feasible to send
 more flow along a path than the maximum excess. Since $\Delta$ is monotonically
 decreasing in the algorithm, we initialize it to the maximum feasible value.
 
-\rewrite{The algorithm maintains} a relaxed \textbf{$\Delta$-conservative pair}.
-That is, it allows small (less than $\Delta$) flows along non-tight edges.
-\katie{why?}
+\rewrite{The algorithm maintains} a relaxed \textbf{$\Delta$-conservative pair},
+which allows small amounts of flow (less than $\Delta$ units) along non-tight
+edges.
+%That is, it allows small (less than $\Delta$) flows along non-tight edges.
+%\katie{why?}
 The excess at each node is required to be at least the amount of incoming flow along non-tight edges. Thus, at any time, the flow can be made conservative (while remaining feasible) by zeroing flow along non-tight edges.
 % The algorithm also maintains a uniform upper bound on excess,
 % $\nfiu - \biu \leq 4(d_i + 2)\Delta$.
