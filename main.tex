@@ -644,7 +644,7 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 	(\emph{cf.} Section~\ref{sec:motivate-dual}).\\
 	Contractible edges are found
 	by repeatedly applying one of the following operations:
-	\begin{enumerate}
+\begin{enumerate}[itemsep=0mm]
 		\item \label{step:2013-augment} Augment $\Delta$ units of flow.
 		\item \label{step:2013-scale} Increase $\mu$ and decrease $\Delta$ by a factor $\alpha > 1$.
 		\item \label{step:2013-filtration} Send flow from isolated parts of the graph directly to the sink.
@@ -666,15 +666,25 @@ on the excess at each node as the algorithm continues. The second condition is
 achieved by starting with an initial conservative pair (Definition~\ref{def:conservative})
 and maintaining throughout the algorithm.
 
-To find an initial conservative pair $(f,\mu)$, we must find a feasible flow
-$\bar{f}$, calculate the initial labels using $\mu_t
-\coloneqq 1$, and run a max flow to \rewrite{modify $\bar{f}$ with respect to $\mu$.}
-\question{What does it mean to modify it with respect to u?}
+To find an initial \hyperref[def:conservative]{conservative pair} $(f,\mu)$, we first need a feasible flow.
 $\bar{f} \equiv 0$ is a trivial
-feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by
+feasible solution to the capacitated version of the primal; this can be used to
+find an initial feasible solution for the uncapacitated version by
 following the transformation in \cite{article} (this just requires
-adding a few additional edges and nodes). Once we have an initial conservative pair, we set the starting value of $\Delta$ equal to
-$\max_{i \in V\setminus T} \nfiu - \biu$, which is the maximum relabeled excess
+adding a few additional edges and nodes).
+Next, we need a feasible $\mu$: starting with 
+$\mu_t \coloneqq 1$, we can use the CS property $\gij\mu_i = \mu_j$ to work
+backwards computing the remaining $\mu$.
+Finally, we can enforce that all edges with positive flow are tight by running 
+the \textsc{Tight-Flow} subroutine (described below).
+%which involves running a
+%traditional max-flow on a slightly modified $G$ and setting the flow to zero for
+%all non-tight edges.
+%calculate the initial labels using $\mu_t
+%\coloneqq 1$, and run a max flow to \rewrite{modify $\bar{f}$ with respect to $\mu$.}
+
+Once we have an initial conservative pair, we set the starting value of $\Delta$ equal to
+$\max_{i \in V\setminus T} \nfiu-\biu$, which is the maximum relabeled excess
 for any node (excluding $t$). This value is chosen because $\Delta$ controls the
 amount of flow augmented at each iteration, and it wouldn't be feasible to send
 more flow along a path than the maximum excess. Since $\Delta$ is monotonically
