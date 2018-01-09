@@ -905,7 +905,7 @@ This yields strongly polynomial bounds on the number of expanding and
 shrinking iterations; however, we must also prove that there are only a few
 ``neutral'' iterations in between the expanding and shrinking iterations.
 This is where we note the importance of the $\filtration$
-subroutine. For this analysis, let D be the set of nodes with
+subroutine. For this analysis, let $D$ be the set of nodes with
 $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$.
 On each iteration, if there is not an augmentation (shrinking iteration), then
 either $\es$ alone or $\filtration$ and $\es$ will be called. If $\es$ is called, then
@@ -921,8 +921,12 @@ $D$. Note that the latter can only
 happen $n-1$ times because once a node enters $D$, it cannot leave
 ($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.
 
-The analysis above gives us a strongly polynomial bound on the total number of iterations. It takes at most $O(mn\log n)$ iterations to find a contractible edge, and this happens $O(n)$ times (due to the stopping condition). The running time per iteration is dominated by $\filtration$, which takes $O(nm)$ time. Therefore, this gives an upper bound of $O(n^3m^2\log n)$ for the total runtime (all other operations including initialization
-are absorbed into this runtime).
+The analysis above gives us a strongly polynomial bound on the total number of
+iterations. It takes at most $O(mn\log n)$ iterations to find a contractible
+edge, and there are at most $O(n)$ iterations (due to the stopping condition). The running
+time per iteration is dominated by $\filtration$, which takes $O(nm)$ time.
+Therefore, this gives an upper bound of $O(n^3m^2\log n)$ for the total runtime
+(all other operations including initialization are absorbed into this runtime).
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
