@@ -1213,7 +1213,7 @@ improved running time.
 %         A \textbf{bi-loose cut} is both inward- and outward-loose.
 	\end{definition}
 	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts because
-	there are no tight edges to carry.
+	there are no tight edges to carry such flow.
 	If $f$ is feasible, then it follows that the total demand inside an inward-loose
 	cut is nonpositive---otherwise $f$ would have to satisfy this demand by flowing
 	into the cut.
@@ -1344,8 +1344,7 @@ improved running time.
     variables:
     \begin{definition}
     A node $i$ is \textbf{plentiful} with respect
-    to the current primal-dual solution pair $(f, \mu)$ if its relabeled absolute
-    demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
+    to the current primal-dual solution pair $(f, \mu)$ if $|b_i^{\mu}| \ge 3n(d_i + 1)$.
     \end{definition}
 	\begin{theorem} \label{thm:2017-contraction}
 		Let $(f, \mu)$ be a fitting pair such that
@@ -1369,8 +1368,7 @@ improved running time.
 		   \leq \nabla g_i^\mu \leq \nfiu \leq \max \{\nfiu, \lceil\biu\rceil\}. \]
 		Clearly, $\Ex(g, \mu) \leq 2n$ and $\Def(g, \mu) \leq n - 1$. (Note that the
 		sink $t$ is excluded from total excess and deficit.) Moreover, if $f$ is
-		integral, then the outer bounds above are integral; so
-		the computed flow $g$ will also be integral.
+		integral, then the outer bounds above are integral; so $g$ can be made integral.
 	
 		Suppose that $i \in \vsrc$. (The other case is similar.) We have
 		\[ \sum_{e \in \din(i)} g^\mu_e \geq
