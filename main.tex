@@ -124,13 +124,12 @@
 
 \section{Introduction}\label{sec:intro}
 	\subsection{Problem Definition}\label{sec:problem}
-	As in the traditional flow problem, given a
-	graph $G = (V,E)$, the generalized maximum flow problem aims to maximize the
-	total flow delivered to the sink node $t \in V$. Unlike the original flow
-	problem however, each edge contains a gain factor $\gamma_e > 0$, which scales
-	the flow passing through that edge. Intuitively, this scaling can be thought
-	of in terms of real world examples such as exchange rates between currencies
-	or physical transformations due to energy dissipation. The generalized maximum
+	Let $G = (V,E)$ be a graph. As in the ordinary maximum flow problem,
+    the generalized maximum flow problem aims to maximize the
+	total flow delivered to the sink node $t \in V$. Each edge $e$
+    is endowed with a gain factor $\gamma_e > 0$, which scales
+	the flow passing through that edge. Gains might represent exchange rates between currencies
+	or physical dissipation. The generalized maximum
 	flow problem lacks several nice properties that are present in the traditional
 	maximum flow problem, which makes it more challenging to solve. For example,
 	the generalized problem is usually thought to be non-integral and,
