@@ -484,9 +484,9 @@ namely~\cite{Orlin1988}.}
 	and $\mu_j$ based on the tight edges. In (a), the dual is not feasible because
 	$\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
 	In (b) and (c), all of the dual constraints are feasible,
-	but (c) produces a greater objective value ($-6$ vs. $-8$)
-	than (b). (Note that the sign is negative because of our change of variable
-	in~\hyperref[eqn:dual]{D}). Solving a max flow on just the tight edges of (c)
+	but (c) produces a greater objective value ($-6$)
+	than (b) ($-12$). (Note that the sign is negative because of our change of variables
+	in~(\hyperref[eqn:dual]{D})). Solving a max flow on just the tight edges of (c)
 	yields the optimal $\nabla f_t^{*}$ we expect:~6.
   The optimal collection of tight edges encodes all the information necessary
 	to reconstruct the optimal solution.
@@ -528,9 +528,10 @@ namely~\cite{Orlin1988}.}
 	is, $e$ is contractible. So a primal optimal flow provides a certificate
 	for contractibility.
 	It would seem this is of no use to us, as computing a primal optimal flow is the entire
-	problem we are trying to solve. However,
+	problem we are trying to solve.
+    
+    However,
 	an optimal flow is a vastly superfluous certificate.
-	
 	Suppose instead that we have any flow $g$ and a bound on the difference
 	between $g$ and an optimal
 	flow $g^*$. Then if $g$ had a sufficiently large value on some edge $e$, we would know that
@@ -578,10 +579,11 @@ namely~\cite{Orlin1988}.}
     \[ 1 \geq \gamma^\mu(C) = \gamma(C) = \gamma^{\mu^*}(C) \geq 1, \]
     as $\gamma^\mu \leq 1$ on $E_g$ and $\gamma^{\mu^*} \leq 1$ on $E_{g^*}$.
     As $\gamma(C) = 1$, we can slightly modify $g^*$ over the whole cycle to
-    decrease $\|h\|_1$, contradicting the assumption on $g^*$.
+    decrease $\|h\|_1$, contradicting the choice of $g^*$ to minimize $\|h\|_1$.
     \end{proof}
     
-    Now $h$ may be decomposed into a set of paths. Because $h$ is supported in $E_g$ and
+    As $h$ is acyclic, it may be decomposed into paths.
+    Because $h$ is supported in $E_g$ and
     $\gamma^\mu \leq 1$ on $E_g$, flow can only decrease along these paths.
     As such, the total flow along any edge is at most the total flow leaving nodes:
     \[ \|h^\mu\|_\infty \leq \sum_i \max\,\{0, -\nabla h_i^\mu\}
