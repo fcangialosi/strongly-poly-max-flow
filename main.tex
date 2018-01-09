@@ -483,9 +483,9 @@ namely~\cite{Orlin1988}.}
 	and $\mu_j$ based on the tight edges. In (a), the dual is not feasible because
 	$\gamma_{it}\mu_i = 4 \nleq 1 = \mu_t$.
 	In (b) and (c), all of the dual constraints are feasible,
-	but (b) produces a greater objective value ($-6$ vs. $-8$)
-	than (c). (Note that the sign is negative because of our change of variable
-	in~\hyperref[eqn:dual]{D}). Solving a max flow on just the tight edges of (b)
+	but (c) produces a greater objective value ($-6$ vs. $-8$)
+	than (b). (Note that the sign is negative because of our change of variable
+	in~\hyperref[eqn:dual]{D}). Solving a max flow on just the tight edges of (c)
 	yields the optimal $\nabla f_t^{*}$ we expect:~6.
   The optimal collection of tight edges encodes all the information necessary
 	to reconstruct the optimal solution.
@@ -601,8 +601,11 @@ namely~\cite{Orlin1988}.}
     In the scaling phases, the dual variables $\mu$ are adjusted so that
     the values $|\biu|$ will increase. In the complementary augmentation phases,
     the algorithm spreads excesses around to keep them small.
+		\frank{This is talking only about the 2013 one, not about both, and says
+		"the"}
     
     Since the dual scaling will be a node-wise operation, it is more convenient
+		in both algorithms
     to use a node-wise certificate of contractibility than the edge-wise one described
 		above.\frank{Seems out of place. Should be moved somewhere else}
     
@@ -639,12 +642,9 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 \item Find an initial feasible flow $\bar{f}$ and set initial $\Delta$ to
 	  %$\max_{i \in V\setminus T} \nfiu - \biu$
 	  the max relabeled excess of any node.
-\item Run a cycle-canceling algorithm to get a conservative labeling, $\mu$.
-	\frank{Still need to talk about this somewhere}
-\item Find contractible edges and contract until stopping condition is met
-	(\emph{cf.} Section~\ref*{sec:motivate-dual} Case~\ref{case:contract-tree}).
-	\david{Any idea why (ii) is not possible in 2013? If yes and it's short,
-	please add, if not, just delete this and skip it.}
+\item Run a cycle-canceling algorithm, then compute an initial conservative labeling, $\mu$.
+\item \label{step:2013-contract} Find contractible edges and contract until stopping condition is met
+	(\emph{cf.} Section~\ref{sec:motivate-dual}).\\
 	Contractible edges are found
 	by repeatedly applying one of the following operations:
 	\begin{enumerate}
@@ -672,6 +672,7 @@ and maintaining throughout the algorithm.
 To find an initial conservative pair $(f,\mu)$, we must find a feasible flow
 $\bar{f}$, \rewrite{eliminate any cycles}, calculate the initial labels using $\mu_t
 \coloneqq 1$, and run a max flow to \rewrite{modify $\bar{f}$ with respect to $\mu$.}
+\katie{What does it mean to modify it with respect to u?}
 $\bar{f} \equiv 0$ is a trivial
 feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by
 following the transformation in \cite{article} (this just requires
@@ -724,17 +725,26 @@ Consider the two cases below and note that $m \geq n \geq d_i + 1$ (\ref{sec:not
          > -17d_im\Delta + 20nm\Delta \geq 3nm\Delta + 17m\Delta. \qedhere \]
 \end{enumerate}
 \end{proof}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{figs/lh.pdf}
+\caption{
+\label{fig:lh}
+Number line showing values of excess when node $i$ is in set $L$ or $H$.
+}
+\end{figure}
 While finding and contracting edges, the algorithm maintains several sets of nodes.
 At any time, let $L$ be the set of ``low excess'' nodes with $\nfiu - \biu < (d_i +1)\Delta$.
 Let $H$ be the set of ``high excess'' nodes. A node enters $H$ when its excess hits the upper bound
 $4(d_i + 2)\Delta$, and it stays in $H$ until its excess falls below $(d_i + 2)\Delta$. Finally,
 let $R$ be the set of nodes reachable along tight paths from $H$. The algorithm generally
-seeks to spread excess from $H$ to $L$:
+seeks to spread excess from $H$ to $L$ along tight paths:
 
 \begin{itemize}
 \item \textbf{Augmentation:} Each iteration of step (3) first looks to augment $\Delta$ units of flow on
-tight paths from $H$ to $R \cap L$. This redistributes excess
-so as to balance it out. After augmentation,
+tight paths from $H$ to $R \cap L$. This redistributes excess in order to
+improve the balance of excess across the graph. After augmentation,
 $R$ is reset to $H$ and the next iteration begins. \katie{Why is $R$ reset to $H$? Couldn't
 there still be nodes in $R$ which are neither in $H$ nor in $L$?}
 If the algorithm is not able to augment, then there must either be (i) no
@@ -843,8 +853,9 @@ found in \cite{article}.
 %\end{enumerate}
 
 As noted in Section \ref{sec:motivate-dual}, there can only be $n-1$ contractions. Therefore
-the analysis aims to show a contractible edge can be found within a strongly polynomial time.
-We define the following potential function to bound the number of iterations of step (3) defined at the beginning of Section~\ref{sec:2013}.
+the analysis aims to show a contractible edge can be found in strongly polynomial time.
+We define the following potential function to bound the number of iterations of
+step~\ref{step:2013-contract} defined at the beginning of Section~\ref{sec:2013}.
 \[ \Psi \coloneqq \sum_{i \in H} \left\lfloor \frac{\nfiu - \biu}{\Delta} - (d_i + 1) \right\rfloor \]
 
 Recall that $H$ denotes the set of ``high excess'' nodes.
