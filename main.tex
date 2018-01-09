@@ -71,7 +71,7 @@
 \newcommand{\tf}{\textsc{Tight-Flow}}
 \newcommand{\ppn}{\textsc{Produce-Plentiful-Node}}
 \newcommand{\filtration}{\textsc{De-Isolation}}
-\newcommand{\es}{\textsc{Elementary-Step}}
+\newcommand{\es}{\textsc{Scaling}}
 
 \newcommand{\xands}{X \cap S}
 \newcommand{\xnots}{X \setminus S}
@@ -172,8 +172,7 @@ namely~\cite{Orlin1988}.}
 	In Section~\ref{sec:2017}, we describe Olver and
 	Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key
 	aspects of the analysis that led way to the improved running time efficiency.
-	Finally, in Section~\ref{sec:discussion}, \rewrite{we conclude}.
-	\question{A little abrupt. Is there a better way to say this?}
+	Finally, in Section~\ref{sec:discussion}, we conclude with a brief summary of techniques utilized by both strongly polynomial algorithms and how the two algorithms differ.
     
 \section{Preliminaries}\label{sec:prelim}
 
@@ -455,7 +454,7 @@ namely~\cite{Orlin1988}.}
 %	reduction to the dual problem (D).
 %    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
     complementary slackness dictates that any optimal flow $f$ is supported only on
-    the tight edges---$\giij = 1$ 
+    the tight edges--- i.e., $\giij = 1$ 
     whenever $f_{ij} > 0$. As such, the conservation
     constraint for the relabeled optimum flow $f^\mu$ takes the form
     \[ \biu \leq \nfiu
@@ -464,7 +463,7 @@ namely~\cite{Orlin1988}.}
     This is the conservation constraint of an ordinary maximum flow problem with demands
     $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
     ordinary maximum flow on the tight graph---a strongly polynomial operation.
-		Then it is easy to recover $f$ from $f^\mu$ (by undoing the scaling in ~\ref{eqn:relabel}).
+		Then it is easy to recover $f$ from $f^\mu$ (by undoing the scaling in~\ref{eqn:relabel}).
 		Thus, we have shown how to reduce the generalized
     flow problem to a combinatorial problem by computing an optimal set of tight edges.
     
@@ -639,7 +638,7 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 \item Find an initial feasible flow $\bar{f}$ and set initial $\Delta$ to
 	  %$\max_{i \in V\setminus T} \nfiu - \biu$
 	  the max relabeled excess of any node.
-\item Compute an initial conservative labeling, $\mu$.
+\item Compute an initial conservative labeling, $\mu$, and find initial conservative pair ($f,\mu$).
 \item \label{step:2013-contract} Find contractible edges and contract until stopping condition is met
 	(\emph{cf.} Section~\ref{sec:motivate-dual}).\\
 	Contractible edges are found
@@ -664,7 +663,7 @@ are (i) $\nfiu - \biu = 0$ for all $i \in \vnott$ and (ii) $\giij = 1$ if
 $f_{ij} > 0$. The first condition is achieved by slowly reducing an upper bound
 on the excess at each node as the algorithm continues. The second condition is
 achieved by starting with an initial conservative pair (Definition~\ref{def:conservative})
-and maintaining throughout the algorithm.
+and maintaining it throughout the algorithm.
 
 To find an initial \hyperref[def:conservative]{conservative pair} $(f,\mu)$, we first need a feasible flow.
 $\bar{f} \equiv 0$ is a trivial
@@ -676,9 +675,7 @@ Next, we need a feasible $\mu$: starting with
 $\mu_t \coloneqq 1$, we can use the CS property $\gij\mu_i = \mu_j$ to work
 backwards computing the remaining $\mu$.
 Finally, we can enforce that all edges with positive flow are tight by running 
-the \textsc{Tight-Flow} subroutine (described below).
-\question{Need to define tight-flow later or describe inline here. I just couldn't
-think of a good way to describe it concisely in-line}
+the \textsc{Tight-Flow} subroutine, which is essentially a standard max flow operation on a modified graph (with lower/upper bounds and an added source). The new flow found in \textsc{Tight-Flow} is used to replace the flow values on each tight edge, while the flow on non-tight edges is set to zero. 
 %which involves running a
 %traditional max-flow on a slightly modified $G$ and setting the flow to zero for
 %all non-tight edges.
@@ -709,8 +706,7 @@ As discussed in Section \ref{sec:motivate-dual},
 the algorithm makes progress by finding contractible edges.
 As discussed in Section \ref{sec:cert-contract}, an edge is guaranteed
 to be contractible when it is abundant. The algorithm maintains a pair $(f, \mu)$ with
-a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$, whence
-\question{What is whence supposed to mean here? Might be clearer to use a different word}
+a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$, thus
 $\Ex(f, \mu) \leq 16m\Delta$.
 Thus, an edge $(i, j)$ with $f_{ij}^\mu \geq 17m\Delta$ is abundant.
 However, it is simpler to keep track of a certificate which depends only
@@ -776,8 +772,6 @@ to $V \setminus R$. This can cause an edge crossing this cut to become tight, wh
 \item Decreasing $\Delta$ decreases the threshold for entering $H$, which may
 	allow more nodes to be considered high excess.
 This can continue until some node has excess equal to the upper bound $4(d_i + 2)\Delta$.
-\question{Why does it have to reach the upper bound to be added to $H$?}
-\question{"This CAN continue" or "does continue"...?}
 \end{enumerate}
 \begin{claim}
 	The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing during scaling
@@ -890,12 +884,11 @@ $\Psi$ is always nonnegative. This allows us to use the
 total increase in potential to bound the total decrease in potential, and, in turn,
 the number of shrinking iterations.
 
-\question{This entire paragraph doesn't make much sense, most likely because those two things aren't defined anywhere}
 This gives us strongly polynomial bounds on the number of expanding and
 shrinking iterations; however, we must also prove that there are only a few
 \textit{neutral} iterations in between these expanding and shrinking iterations.
-This is where we note the importance of the set $D$ and the $\filtration$
-subroutine. On each iteration, if there is not an augmentation (shrinking), then
+This is where we note the importance of the $\sfrac{1}{n}$ threshold and the $\filtration$
+subroutine. For this analysis, we will define D as the set of nodes with $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$ On each iteration, if there is not an augmentation (shrinking), then
 either $\es$ or $\filtration$ and $\es$ will be called. If $\es$ is called, then
 this means set $V \setminus R$ has at least one node in $D$ that will have its
 $\sfrac{\abs{b_i^\mu}}{\Delta}$ increased by $\alpha$. Since this node is in D,
@@ -907,12 +900,9 @@ $D$ or these low excess nodes will enter set $R$, allowing an augmentation
 (shrinking iteration) on the next iteration. Note the first option can only
 happen $n-1$ times because once a node enters $D$, it cannot leave
 ($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.
-\katie{$D$ and $\es$ need to be defined somewhere above}
-The analysis above gives us a strongly polynomial bound on the total number of iterations.
-The maximum flow computation in $\filtration$ dominates the runtime per iteration.
-This gives a total runtime of $O(n^3m^2\log n)$ (all other operations including initialization
-are dominated by this runtime).
-\question{Where does this runtime come from?}
+
+The analysis above gives us a strongly polynomial bound on the total number of iterations. It takes at most $O(mnlogn)$ iterations to find a contractible edge and, since the stopping condition is contracting the graph down to one node, this happens O(n) times. The running time per iteration is dominated by $\filtration$, which takes O(nm) time. Therefore, this gives an upper bound of $O(n^3m^2\log n)$ for the total runtime (all other operations including initialization
+are absorbed into this runtime).
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
