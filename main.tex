@@ -598,13 +598,13 @@ namely~\cite{Orlin1988}.}
     In the scaling phases, the dual variables $\mu$ are adjusted so that
     the values $|\biu|$ will increase. In the complementary augmentation phases,
     the algorithm spreads excesses around to keep them small.
-		\frank{This is talking only about the 2013 one, not about both, and says
+		\question{This is talking only about the 2013 one, not about both, and says
 		"the"}
     
     Since the dual scaling will be a node-wise operation, it is more convenient
 		in both algorithms
     to use a node-wise certificate of contractibility than the edge-wise one described
-		above.\frank{Centralize definition of plentiful node here?}
+		above.\question{Centralize definition of plentiful node here?}
     
 
 \section{The Initial Strongly Polynomial Algorithm}
@@ -677,6 +677,8 @@ $\mu_t \coloneqq 1$, we can use the CS property $\gij\mu_i = \mu_j$ to work
 backwards computing the remaining $\mu$.
 Finally, we can enforce that all edges with positive flow are tight by running 
 the \textsc{Tight-Flow} subroutine (described below).
+\question{Need to define tight-flow later or describe inline here. I just couldn't
+think of a good way to describe it concisely in-line}
 %which involves running a
 %traditional max-flow on a slightly modified $G$ and setting the flow to zero for
 %all non-tight edges.
@@ -1491,6 +1493,15 @@ improved running time.
 %    be able to make progress in the next iteration of the first step. Below, we show
 %    in Lemma~\ref{lem:scaling} that the augmentations in the first step similarly ensure
 %    that the algorithm can make progress in the second step.
+    \begin{figure}[b!]
+    \centering
+    \includegraphics[width=\textwidth]{figs/alpha.pdf}
+    \caption{
+    \label{fig:alpha}
+		Informal analogy showing how the dual is scaled at each iteration just
+		enough to keep the dual feasible and the primal bounded.
+    }
+    \end{figure}
 
 	Intuitively, scaling is
 	akin to filling a basin with water. As illustrated in
@@ -1502,15 +1513,6 @@ improved running time.
 	causes $i$ to be added to $S$, as $S$ is now reachable along a tight
 	path from $i$. Updating $S$ during scaling maintains the invariant that
 	$S$ is inward-loose.
-    \begin{figure}[b!]
-    \centering
-    \includegraphics[width=\textwidth]{figs/alpha.pdf}
-    \caption{
-    \label{fig:alpha}
-		Informal analogy showing how the dual is scaled at each iteration just
-		enough to keep the dual feasible and the primal bounded.
-    }
-    \end{figure}
 		
 %	Scaling $\alpha$ past one of these points in a single iteration would break the constraint.
 %	Thus, at each scaling step, we can only increase $\alpha$ by at most one
