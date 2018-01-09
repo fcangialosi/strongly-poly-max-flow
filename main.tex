@@ -1509,21 +1509,27 @@ improved running time.
     \includegraphics[width=\textwidth]{figs/alpha.pdf}
     \caption{
     \label{fig:alpha}
-		Informal analogy showing how the dual is scaled at each iteration just
-		enough to keep the dual feasible and the primal bounded.
+		Informal analogy showing an example of how scaling $\alpha$ expands $S$
+		just enough so that the next augmentation phase can make progress.
     }
     \end{figure}
 
 	Intuitively, scaling is
-	akin to filling a basin with water. As illustrated in
+	akin to filling a basin with water. As illustrated in the example in
 	Figure~\ref{fig:alpha},	imagine a basin with various levels,
 	where the height of the water represents $\alpha$ and each
 	level corresponds to a vertex on the boundary of $S$. The area under water
 	represents $S$.
-	As $\alpha$ rises, an incoming edge $(i, j)$ becomes tight. This in turn
+	As $\alpha$ rises, an incoming edge, for example $(i, j)$ at label (b),
+	becomes tight. This in turn
 	causes $i$ to be added to $S$, as $S$ is now reachable along a tight
 	path from $i$. Updating $S$ during scaling maintains the invariant that
-	$S$ is inward-loose.
+	$S$ is inward-loose. Eventually, some node $k \in S$ (either a newly added
+	node or
+	one that was there previously) is scaled to the point where its excess is 1,
+	for example at label (d).
+	At this point augmentation can make progress, so scaling finishes and the next
+	iteration of augmentation begins.
 		
 %	Scaling $\alpha$ past one of these points in a single iteration would break the constraint.
 %	Thus, at each scaling step, we can only increase $\alpha$ by at most one
