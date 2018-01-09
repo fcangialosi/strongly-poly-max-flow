@@ -601,12 +601,13 @@ namely~\cite{Orlin1988}.}
     obtaining a large relabeled flow value on an edge.
     Both goals depend on both the primal
     and dual variables. We can obtain
-    a more useful contractibility certificate by disentangling the two. Both algorithms
-    detailed below depend on a node-wise contractibility certificate in which the
+    a more useful contractibility certificate by disentangling the two. In particular, both algorithms
+    detailed below employ a node-wise contractibility certificate in which the
     relevant quantity at a node $i$ is the relabeled demand $\biu$. A node with a very
     large value of $|\biu|$ is known as a \textbf{plentiful node}. The specific definition
     of plentiful node differs between the two algorithms (\emph{cf.} Sections \ref{sec:findcontr2013}
-    and \ref{sec:contract-cert}).
+    and \ref{sec:contract-cert}), but in both cases it is constructed to guarantee that a plentiful
+    node borders an abundant edge.
     
     Aiming to produce a plentiful node as a contractibility certificate, both algorithms
     consist of alternating \emph{scaling} and \emph{augmentation} phases.
@@ -635,7 +636,7 @@ namely~\cite{Orlin1988}.}
 
 
 A high-level overview of Végh's initial algorithm \cite{Vegh2013}
-is shown below. This algorithm is characterized by a scaling factor $\Delta$,
+is shown below. Progress is parameterized by a scaling factor $\Delta$,
 which controls the amount of flow that can be augmented at each iteration and the threshold for
 determining which edges are contractible. Sections \ref{sec:findconserv2013} and
 \ref{sec:findcontr2013} expand on the details and provide intuition.
@@ -656,7 +657,7 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 		\item \label{step:2013-scale} Increase $\mu$ and decrease $\Delta$ by a factor $\alpha > 1$.
 		\item \label{step:2013-filtration} Send flow from isolated parts of the graph directly to the sink.
 	\end{enumerate}
-\item Expand and find optimal primal solution via traditional max flow (\ref{sec:motivate-dual}).
+\item Compute optimal primal solution from set of tight edges (\emph{cf.} Section \ref{sec:motivate-dual}).
 \end{enumerate}
 
 %\begin{definition}
@@ -668,10 +669,10 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 \label{sec:findconserv2013}
 Following from primal-dual slackness, the optimality conditions for the primal
 are (i) $\nfiu - \biu = 0$ for all $i \in \vnott$ and (ii) $\giij = 1$ if
-$f_{ij} > 0$. The first condition is achieved by slowly reducing an upper bound
-on the excess at each node as the algorithm continues. The second condition is
-achieved by starting with an initial conservative pair (Definition~\ref{def:conservative})
-and maintaining it throughout the algorithm.
+$f_{ij} > 0$. The first condition is achieved by incrementally reducing a uniform upper bound
+on node excess. The second condition is
+achieved by approximating a conservative pair (Definition~\ref{def:conservative})
+with increasing fidelity over the course of the algorithm.
 
 To find an initial \hyperref[def:conservative]{conservative pair} $(f,\mu)$, we first need a feasible flow.
 $\bar{f} \equiv 0$ is a trivial
