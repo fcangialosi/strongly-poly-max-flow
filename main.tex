@@ -1380,8 +1380,8 @@ improved running time.
 		= -\nabla g^\mu_i \geq -b_i^\mu - \Ex(g, \mu), \]
 		where the last inequality is because $\nabla g_i^\mu - \biu$ appears
 		as a term in $\Ex(g, \mu)$ if it is positive. Now
-		\[ -b_i^\mu - \Ex(g, \mu) > 3n(d_i + 1) - 2n > 3nd_i > 3n|\dout(i)| \]
-		So there is some edge $e \in \dout(i)$ with
+		\[ -b_i^\mu - \Ex(g, \mu) > 3n(d_i + 1) - 2n > 3nd_i > 3n|\din(i)| \]
+		So there is some edge $e \in \din(i)$ with
 		$g^\mu_e > 3n > \Ex(g, \mu) + \Def(g, \mu)$. This is an abundant and contractible
 		edge.
 	\end{proof}
@@ -1427,13 +1427,12 @@ improved running time.
     \begin{itemize}
     \item \textbf{Augmentation:} Reduce the total excess and deficit of the fitting flow $f$
     by augmenting as much flow as possible, one unit at a time, along tight paths from nodes with
-		excess to nodes with deficit. We focus
-		on tight paths because these are the highest-gain paths. Formally, let
-    $D$ (``destinations'') be the union of the sink $t$ and all nodes with 
+		excess to nodes with deficit. (Augmenting along tight paths maintains a fitting pair.)
+        Formally, let $T$ be the union of the sink $t$ and all nodes with 
 		deficit ($\nabla f_i^{\mu} < b_i^{\mu}$) and let $S$ (``sources'') be the
-		set of all nodes $i$ for which $D$ is reachable from $i$ along a tight path
-		in the residual graph. Continue augmenting along tight paths from $i$ to
-		a node in $D$ as long as there is some $i \in S$ for which the following conditions hold:
+		set of all nodes $i$ for which $T$ is reachable from $i$ along a tight path
+		in the residual graph. Continue augmenting from $S$ to $T$
+        as long as there is some $i \in S$ for which the following conditions hold:
 		%Let $S$ (``sources'') be
     %the set of all nodes $i$ for which
     \begin{enumerate}[(i)]
@@ -1445,7 +1444,7 @@ improved running time.
     \item \textbf{Scaling:} Work toward producing a plentiful node by scaling the
     dual $\mu$ to increase $|b^\mu|$. Any excesses created during this
     phase must be cancelled by augmentation. In order to make this possible,
-		only nodes in the set $S$ are scaled. 
+		only nodes in the ``reachable'' set $S$ are scaled. 
     %the scaling only occurs in the set $S$ of reachable nodes.
     
     Notionally, a scaling factor $\alpha > 1$ is increased continuously, and
@@ -1526,14 +1525,14 @@ improved running time.
 	represents $S$.
 	As $\alpha$ rises, an incoming edge, for example $(i, j)$ at label (b),
 	becomes tight. This in turn
-	causes $i$ to be added to $S$, as $S$ is now reachable along a tight
+	causes $i$ to be added to $S$, as $T$ is now reachable along a tight
 	path from $i$. Updating $S$ during scaling maintains the invariant that
 	$S$ is inward-loose. Eventually, some node $k \in S$ (either a newly added
 	node or
-	one that was there previously) is scaled to the point where its excess is 1,
-	for example at label (d).
-	At this point augmentation can make progress, so scaling finishes and the next
-	iteration of augmentation begins.
+	one that was there previously) either becomes plentiful or is scaled to the point
+    where its relabeled excess is 1, for example at label (d) in the figure.
+	In the latter case, augmentation can make progress, so the next
+	round of augmentation begins.
 		
 %	Scaling $\alpha$ past one of these points in a single iteration would break the constraint.
 %	Thus, at each scaling step, we can only increase $\alpha$ by at most one
@@ -1552,7 +1551,7 @@ improved running time.
 %	(e.g. at point (d)), or the stopping condition where the plentiful node
 %	constraint becomes tight.
 
-    In practice, $\alpha$ and $S$ can be updated via a modified Dijkstra's algorithm.
+    In practice, $\alpha$ and $S$ can be updated via a modified Dijkstra's algorithm as follows.
     Let $c_{ij} = - \log \gij$ be the ``cost'' of edge $(i, j)$.
     Then $(i, j)$ is tight exactly when
     \[ c_{ij} = \log \mu_i - \log \mu_j. \]
@@ -1560,7 +1559,7 @@ improved running time.
     and $S$ is a ``frontier.'' Scaling $\mu$ by $\alpha^{-1}$ in $S$ amounts to adding
     $\log \alpha$ to the distance of every node in $S$. Each new node added to $S$
     is the closest node under the costs $c_{ij}$, and it is encountered when $\log \alpha$
-    reaches its distance.
+    rises to reach its distance.
     Dijkstra's algorithm with costs $c_{ij}$ will compute the maximum distance $\log \alpha$,
     and it can be terminated when either a plentiful node or an excess greater than
     one is encountered.
@@ -1591,6 +1590,8 @@ improved running time.
     Lemma~\ref{lem:fsame}, scaling never changes the value of $f^{\mu}$ at all.
     Finally, at a contraction, a new integral flow is computed.
     \end{proof}
+    Because $f^\mu$ is always integral and excess is always immediately augmented away,
+    the excess at every node stays bounded by $2$.
 %    \begin{lemma}
 %        \label{lem:scaling}
 %        For all nodes with non-zero demand in $S$, scaling $\mu$ in the second step
@@ -1642,7 +1643,7 @@ improved running time.
         solution even though we haven't kept track of it.
     \end{lemma}
     \begin{proof}[Proof Sketch]
-	Only the scaling steps modify $\mu$, so it suffices to show that one scaling step,
+	Only the scaling rounds modify $\mu$, so it suffices to show that one scaling step,
 	during which at most one node is added to $S$,
 	preserves safety. Assume that $\mu$ is initially safe, and
 	assume by way of contradiction that the updated labeling $\mu'$ is no longer safe.
@@ -1656,9 +1657,8 @@ improved running time.
     \[ b^{\mu'}(X) = \frac{1}{\alpha}b^{\mu}(X \cap S) + b^{\mu}(X \setminus S) \]
     Either $b^{\mu}(X \cap S)$ or $b^{\mu}(X \setminus S)$ must be positive.
     
-    Suppose $b^\mu(X \cap S) > 0$.
-    Observe that $\din(X \cap S) \subseteq (\din(X) \cap E[S]) \cup \din(S)$, where $E[S]$
-    denotes the edges entirely inside $S$.
+    Suppose $b^\mu(X \cap S) > 0$. Let $E[S]$ denote the set of edges with both endpoints in $S$.
+    Observe that $\din(X \cap S) \subseteq (\din(X) \cap E[S]) \cup \din(S)$.
     By definition of $S$, $\din(S) \cap \tau(\mu) = \varnothing$. Moreover,
     $E[S] \cap \tau(\mu) \subseteq E[S] \cap \tau(\mu')$. So
     \[ \din(X) \cap E[S] \cap \tau(\mu) \subseteq \din(X) \cap \tau(\mu) = \varnothing. \]
@@ -1668,8 +1668,8 @@ improved running time.
     The case where $b^\mu(X \setminus S) > 0$ is similar, though slightly more complicated.
     \end{proof}
 
-    In summary, we have shown that the primal and dual steps always allow room for the other to make progress, and collectively each iteration of the two steps strictly increases $|\biu|$ towards
-    the definition of a plentiful node. Thus, the subroutine will eventually produce one. We have also shown that the updates it makes to $f$ and $\mu$ do not violate any of the previous conditions stated for being able to ultimately derive a primal optimal solution once our fitting pair finds the dual optimal. 
+    In summary, we have shown that augmentation and scaling maintain a fitting pair $(f, \mu)$ with
+    $\mu$ safe and $\Ex(f, \mu)$ bounded, while increasing $|\biu|$. This will eventually produce a plentiful node.
 
 \iffalse
 	 \subsection{Finding a feasible flow}
@@ -1697,7 +1697,7 @@ improved running time.
 	 \leq \lceil \nabla \bar{f}^\mu_i \rceil. \]
 	The result is a fitting pair such that $f^\mu$ is integral and satisfies
 	\[ \biu - 1 \leq \nfiu \leq \biu - 2. \]
-	The first epoch begins with this fitting pair.
+	The algorithm proper begins with this fitting pair.
 
     \subsection{Running Time Analysis}
     The algorithm consists of three basic types of operations: scaling, augmentation, and contraction.
@@ -1711,7 +1711,7 @@ improved running time.
     when either (i) a node has become plentiful, leading to a contraction, or (ii) a node has an
     excess greater than $1$, leading to a new augmentation round.
     If the scaling is done by Dijkstra's algorithm as
-    described in Section \label{sec:sub-ppn},
+    described in Section \ref{sec:sub-ppn},
     the cost of each scaling phase (and thus the overall cost per augmentation) is
     $O(m + n \log n)$.
 
@@ -1749,13 +1749,13 @@ improved running time.
     Define two potential functions
     \begin{align*}
     \Psi(\mu) &= - \sum_{i \in \vsrc} \biu \\
-    \Phi(f, \mu) &= \sum_{i \in \vsrc} \nfiu + \Psi(\mu) = \sum_{i \in \vsrc} \nfiu - \biu
-                 \leq \Ex(\mu)
+    \Phi(f, \mu) &= \Psi(\mu) + \sum_{i \in \vsrc} \nfiu = \sum_{i \in \vsrc} \nfiu - \biu
     \end{align*}
     By Lemma \ref{lem:deficit-bound}, $\Phi(f, \mu) \geq -\Def(f, \mu) \geq -n$
     throughout the algorithm. Similarly, $\Phi(f, \mu) \leq \Ex(f, \mu) \leq 2n$.
     Finally, it follows from Lemma \ref{lem:deficit-bound} that at most $n$ augmentations
-    may end in $\vsrc$, thus not decreasing $\Phi$. So after $r$ augmentations,
+    may end in $\vsrc$. All augmentations start in $\vsrc$, so
+    all other augmentations decrease $\Phi$. So after $r$ augmentations,
     $\Phi$ has decreased by at least $r - n$. Its total decrease is bounded by $2n - -n = 3n$,
     so there must be a corresponding increase of at least $r - 4n$ during scaling. So
     $\Psi$ also increases by at least $r - 4n$, as $f^\mu$ is constant under scaling.
@@ -1772,7 +1772,7 @@ improved running time.
 \section{Conclusion}\label{sec:discussion} 
 
 We presented and compared two strongly polynomial algorithms for the maximum generalized flow problem.
-Both algorithms take a combinatorial solution by computing a set of tight edges consistent
+Both algorithms take a combinatorial approach by computing a set of tight edges consistent
 with an optimal dual solution. In both cases, this set is built up inductively by
 contracting edges. Finally, in both cases, a pair of primal and dual solutions is used to
 construct certificates of contractibility.
