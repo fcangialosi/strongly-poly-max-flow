@@ -31,7 +31,7 @@
 \newcommand{\frank}[1]{\comment[nolist,color=blue!40]{@frank\\ #1}}
 \newcommand{\david}[1]{\comment[nolist,color=orange!40]{@david\\ #1}}
 \newcommand{\katie}[1]{\comment[nolist,color=green!40]{@katie\\ #1}}
-\newcommand{\tocut}[1]{\comment[nolist,color=yellow!40]{#1}}
+\newcommand{\question}[1]{\comment[nolist,color=red!40]{#1}}
 
 \addbibresource{main.bib}
 
@@ -70,7 +70,7 @@
 
 \newcommand{\tf}{\textsc{Tight-Flow}}
 \newcommand{\ppn}{\textsc{Produce-Plentiful-Node}}
-\newcommand{\filtration}{\textsc{Filtration}}
+\newcommand{\filtration}{\textsc{De-Isolation}}
 \newcommand{\es}{\textsc{Elementary-Step}}
 
 \newcommand{\xands}{X \cap S}
@@ -157,7 +157,6 @@
 	adapting techniques from well-known combinatorial min cost flow algorithms,
 namely~\cite{Orlin1988}.}
 	\fi
-	\frank{Many of the A papers have some related work. Add related work at the end if we have enough space.}
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
 	In this paper, we aim to
@@ -174,6 +173,7 @@ namely~\cite{Orlin1988}.}
 	Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key
 	aspects of the analysis that led way to the improved running time efficiency.
 	Finally, in Section~\ref{sec:discussion}, \rewrite{we conclude}.
+	\question{A little abrupt. Is there a better way to say this?}
     
 \section{Preliminaries}\label{sec:prelim}
 
@@ -344,8 +344,7 @@ namely~\cite{Orlin1988}.}
     $\gamma^\mu$ and demands $b^\mu$,
     then the vertex-wise product $\mu\bar{\mu}^*$ is an optimal solution to the original dual problem.
     \end{claim}
-    We will often use relabeling to simplify the problem while preserving its structure.\frank{I think this sentence is important, but the above claims are a bit confusing. Can we be slightly less formal and summarize the claims in one or two sentences?}
-    
+    \noindent Thus, the algorithms will use relabeling to simplify the problem while preserving its structure.
     \begin{definition} \label{def.tight}
 	An edge $e$ is known as \textbf{tight} with respect to $\mu$ if $\gamma_e^\mu =1$.
 	For an optimal pair $(f, \mu)$, complementary slackness (\ref{eqn.cs}) is exactly the condition that
@@ -380,7 +379,9 @@ namely~\cite{Orlin1988}.}
 	
 	A weakly polynomial algorithm is easily achievable by applying ellipsoid or
 	interior point methods to the linear program
-	(\ref{eqn:primal})~\cite{Tardos1998}.
+	(\ref{eqn:primal}).
+	\question{This is the only place I can see adding related work without having
+	to move other stuff around. Should we add a few sentences?}
 	To achieve a strongly polynomial
 	bound, the linear program can be reduced to a combinatorial problem.
 	
@@ -603,7 +604,7 @@ namely~\cite{Orlin1988}.}
     Since the dual scaling will be a node-wise operation, it is more convenient
 		in both algorithms
     to use a node-wise certificate of contractibility than the edge-wise one described
-		above.\frank{Seems out of place. Should be moved somewhere else}
+		above.\frank{Centralize definition of plentiful node here?}
     
 
 \section{The Initial Strongly Polynomial Algorithm}
@@ -644,9 +645,9 @@ analysis of the algorithm, showing how it achieves a strongly polynomial bound.
 	Contractible edges are found
 	by repeatedly applying one of the following operations:
 	\begin{enumerate}
-		\item Augment $\Delta$ units of flow.
-		\item Increase $\mu$ and decrease $\Delta$ by a factor $\alpha > 1$.
-		\item Send flow from isolated parts of the graph directly to the sink.
+		\item \label{step:2013-augment} Augment $\Delta$ units of flow.
+		\item \label{step:2013-scale} Increase $\mu$ and decrease $\Delta$ by a factor $\alpha > 1$.
+		\item \label{step:2013-filtration} Send flow from isolated parts of the graph directly to the sink.
 	\end{enumerate}
 \item Expand and find optimal primal solution via traditional max flow (\ref{sec:motivate-dual}).
 \end{enumerate}
@@ -666,9 +667,9 @@ achieved by starting with an initial conservative pair (Definition~\ref{def:cons
 and maintaining throughout the algorithm.
 
 To find an initial conservative pair $(f,\mu)$, we must find a feasible flow
-$\bar{f}$, \rewrite{eliminate any cycles}, calculate the initial labels using $\mu_t
+$\bar{f}$, calculate the initial labels using $\mu_t
 \coloneqq 1$, and run a max flow to \rewrite{modify $\bar{f}$ with respect to $\mu$.}
-\katie{What does it mean to modify it with respect to u?}
+\question{What does it mean to modify it with respect to u?}
 $\bar{f} \equiv 0$ is a trivial
 feasible solution to the capacitated version of the primal; this can be used to find an initial feasible solution for the uncapacitated representation by
 following the transformation in \cite{article} (this just requires
@@ -679,7 +680,7 @@ amount of flow augmented at each iteration, and it wouldn't be feasible to send
 more flow along a path than the maximum excess. Since $\Delta$ is monotonically
 decreasing in the algorithm, we initialize it to the maximum feasible value.
 
-\rewrite{The algorithm maintains} a relaxed \textbf{$\Delta$-conservative pair},
+The algorithm maintains a relaxed \textbf{$\Delta$-conservative pair},
 which allows small amounts of flow (less than $\Delta$ units) along non-tight
 edges.
 %That is, it allows small (less than $\Delta$) flows along non-tight edges.
@@ -697,8 +698,8 @@ the algorithm makes progress by finding contractible edges.
 As discussed in Section \ref{sec:cert-contract}, an edge is guaranteed
 to be contractible when it is abundant. The algorithm maintains a pair $(f, \mu)$ with
 a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$, whence
+\question{What is whence supposed to mean here? Might be clearer to use a different word}
 $\Ex(f, \mu) \leq 16m\Delta$.
-\frank{We really need to clarify these numbers}
 Thus, an edge $(i, j)$ with $f_{ij}^\mu \geq 17m\Delta$ is abundant.
 However, it is simpler to keep track of a certificate which depends only
 on the dual variables $\mu$ as the flow $f$ changes:
@@ -722,6 +723,11 @@ Consider the two cases below and note that $m \geq n \geq d_i + 1$ (\ref{sec:not
 \end{enumerate}
 \end{proof}
 
+The algorithm maintains several sets of nodes. 
+Let $L$ be the set of ``low excess'' nodes with $\nfiu - \biu < (d_i +1)\Delta$.
+Let $H$ be the set of ``high excess'' nodes. A node enters $H$ when its excess hits the upper bound
+$4(d_i + 2)\Delta$, and it stays in $H$ until its excess falls below $(d_i + 2)\Delta$. 
+These bounds are illustrated in Figure~\ref{fig:lh}.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\textwidth]{figs/lh.pdf}
@@ -731,32 +737,35 @@ Number line showing values of excess when node $i$ is in set $L$ or $H$.
 (\textbf{Not to scale}.)
 }
 \end{figure}
-While finding and contracting edges, the algorithm maintains several sets of nodes.
-At any time, let $L$ be the set of ``low excess'' nodes with $\nfiu - \biu < (d_i +1)\Delta$.
-Let $H$ be the set of ``high excess'' nodes. A node enters $H$ when its excess hits the upper bound
-$4(d_i + 2)\Delta$, and it stays in $H$ until its excess falls below $(d_i + 2)\Delta$. Finally,
-let $R$ be the set of nodes reachable along tight paths from $H$. The algorithm generally
+
+Finally, let $R$ be the set of nodes reachable along tight paths from $H$ (which is a
+superset of $H$). The algorithm generally
 seeks to spread excess from $H$ to $L$ along tight paths:
 
 \begin{itemize}
-\item \textbf{Augmentation:} Each iteration of step (3) first looks to augment $\Delta$ units of flow on
+	\item \textbf{\ref{step:2013-augment} Augmentation:} Each iteration of
+		step~\ref{step:2013-contract} first looks to augment $\Delta$ units of flow on
 tight paths from $H$ to $R \cap L$. This redistributes excess in order to
-improve the balance of excess across the graph. After augmentation,
-$R$ is reset to $H$ and the next iteration begins. \katie{Why is $R$ reset to $H$? Couldn't
-there still be nodes in $R$ which are neither in $H$ nor in $L$?}
-If the algorithm is not able to augment, then there must either be (i) no
+improve the balance of excess across the graph. 
+%After augmentation,
+%$R$ is reset to $H$ and the next iteration begins. 
+%If the algorithm is not able to augment, then
+When the algorithm is no longer able to augment,
+there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
 flow from.
-\frank{Re-organize to match up with previous section without repeating too much}
-\item \textbf{Scaling:} The scaling phase resolves both potential problems by increasing $\mu$ in $R$ and
-decreasing $\Delta$ by a factor $\alpha > 1$ (step (3b) above). 
+\item \textbf{\ref{step:2013-scale} Scaling:} The scaling phase resolves both potential problems by increasing $\mu$ in $R$ and
+decreasing $\Delta$ by the same factor $\alpha > 1$. 
 \begin{enumerate}[(i),itemsep=0mm]
 \item Increasing $\mu$ in $R$ causes
 $\gamma_{ij}^\mu$ to increase for edges from $R$
 to $V \setminus R$. This can cause an edge crossing this cut to become tight, which may add a low excess node to the set of reachable nodes.
 % $\alpha_1$ is chosen to be $min \{\frac{1}{\giij}: ij \in E[R, V \setminus R]\}$. Intuitively, we want to choose an $\alpha$ that will bring $\gamma_{ij} \frac{\mu_i}{\mu_j}$ as close to 1 as possible without going over 1.
-\item Decreasing $\Delta$ decreases the lower threshold for $H$, which might create more high excess nodes.
+\item Decreasing $\Delta$ decreases the threshold for entering $H$, which may
+	allow more nodes to be considered high excess.
 This can continue until some node has excess equal to the upper bound $4(d_i + 2)\Delta$.
+\question{Why does it have to reach the upper bound to be added to $H$?}
+\question{"This CAN continue" or "does continue"...?}
 \end{enumerate}
 \begin{claim}
 	The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing during scaling
@@ -769,26 +778,27 @@ and $\Delta$ are divided by $\alpha$.
 In $V \setminus R$, the ratio is multiplied by
 $\alpha$ because only $\Delta$ is divided by $\alpha$. 
 \end{proof}
-\item \textbf{Redistributing Excess:} If $V \setminus R$ does not contain any
+\item \textbf{\ref{step:2013-filtration} De-isolation:} If $V \setminus R$ does not contain any
 nodes with large values of $\sfrac{\abs{b_i^\mu}}{\Delta}$,
 then scaling will be ineffective in producing a plentiful node.
-\frank{Plentiful not defined yet}
 As such, if $\sfrac{\abs{b_i^\mu}}{\Delta} < \sfrac{1}{n}$ for every node
-\frank{Need to be careful and consistent about writing style of "we" vs "the
-	algorithm" throughout}
-in $V \setminus R$, we delay scaling and focus on redistributing the excess in $V \setminus R$.
-\frank{Confusing because we say that augmentation also redistributes excess}
-We compute a modified max flow along tight edges in $V \setminus R$.
-The goal is to push flow directly to the sink from ``isolated''
-nodes (nodes that are not reachable along a tight path from $H$).
-The computed max flow values replaces the current flow on
+in $V \setminus R$, we delay scaling and focus on pushing
+%redistributing the excess in $V \setminus R$.
+%We compute a modified max flow along tight edges in $V \setminus R$.
+%The goal is to push
+flow directly to the sink from ``isolated''
+nodes (i.e. those that are not reachable along a tight path from $H$).
+The subroutine computes a modified max flow along tight edges in $V \setminus R$,
+which
+%The computed max flow values
+replaces the current flow on edges
 inside $V \setminus R$; flow on edges going from $V \setminus R$ to $R$ is zeroed,
 and all other values remain the same. Reducing excess of nodes in
 $V \setminus R$ might allow the next scaling phase to last longer and
 thus increase $\sfrac{\abs{\biu}}{\Delta}$ more.
 Simultaneously, zeroing the flow from $V\setminus R$ to $R$
 reduces the excess of nodes in $R$, which might open them up to accept augmentations
-in future round.
+in a future iteration.
 \end{itemize}
 % Scaling is the only phase of the algorithm that changes the important ratio
 % \katie{why is it important?}
@@ -868,7 +878,8 @@ $\Psi$ is always nonnegative. This allows us to use the
 total increase in potential to bound the total decrease in potential, and, in turn,
 the number of shrinking iterations.
 
-\rewrite{This gives us strongly polynomial bounds on the number of expanding and
+\question{This entire paragraph doesn't make much sense, most likely because those two things aren't defined anywhere}
+This gives us strongly polynomial bounds on the number of expanding and
 shrinking iterations; however, we must also prove that there are only a few
 \textit{neutral} iterations in between these expanding and shrinking iterations.
 This is where we note the importance of the set $D$ and the $\filtration$
@@ -883,14 +894,13 @@ will decrease enough such that $\es$ will cause one of these nodes to enter set
 $D$ or these low excess nodes will enter set $R$, allowing an augmentation
 (shrinking iteration) on the next iteration. Note the first option can only
 happen $n-1$ times because once a node enters $D$, it cannot leave
-($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.}
-\katie{Could this be moved so that the importance of $D$ is clearer
-when you define it? Or could it be cut down?}
-
+($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.
+\katie{$D$ and $\es$ need to be defined somewhere above}
 The analysis above gives us a strongly polynomial bound on the total number of iterations.
 The maximum flow computation in $\filtration$ dominates the runtime per iteration.
 This gives a total runtime of $O(n^3m^2\log n)$ (all other operations including initialization
 are dominated by this runtime).
+\question{Where does this runtime come from?}
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
 
@@ -1372,28 +1382,31 @@ improved running time.
 
     \subsection{Producing a Plentiful Node}
     \label{sec:sub-ppn}
-		\frank{Replace any instances of "algorithm" in this section with "subroutine
-		to be clear}
-		\frank{When I used the term epoch here,
-		I was referring to the "subroutine" \textsc{Produce Plentiful Node} as an epoch,
-		as we don't give it a name anywhere else. The epochs are demarcated by contractions. Is
-		this incorrect? -- David}
-		The algorithm starts with a feasible fitting pair and consists of a sequence
-    of epochs, each dedicated to identifying a contractible edge via a plentiful node.
-    Each epoch alternates between the following augmentation and scaling
-		phases:\frank{we need to rewrite this. each epoch does not find a plentiful
-		node, there's only one produced at the end, we need to make this distinction
-		from the outer loop in the main algorithm where this is the case}
+		%\frank{Replace any instances of "algorithm" in this section with "subroutine
+		%to be clear}
+		%\frank{When I used the term epoch here,
+		%I was referring to the "subroutine" \textsc{Produce Plentiful Node} as an epoch,
+		%as we don't give it a name anywhere else. The epochs are demarcated by contractions. Is
+		%this incorrect? -- David}
+		%The algorithm starts with a feasible fitting pair and consists of a sequence
+    %of epochs, each dedicated to identifying a contractible edge via a plentiful node.
+    %Each epoch alternates between the following augmentation and scaling
+		%phases:\frank{we need to rewrite this. each epoch does not find a plentiful
+		%node, there's only one produced at the end, we need to make this distinction
+		%from the outer loop in the main algorithm where this is the case}
+		In order to find a plentiful node for a fitting pair $(f,\mu)$, the algorithm uses a subroutine
+		which alternates between the following augmentation and scaling phases until
+		a node becomes plentiful:
     \begin{itemize}
     \item \textbf{Augmentation:} Reduce the total excess and deficit of the fitting flow $f$
     by augmenting as much flow as possible, one unit at a time, along tight paths from nodes with
-		excess to nodes with deficit. Again we focus
+		excess to nodes with deficit. We focus
 		on tight paths because these are the highest-gain paths. Formally, let
     $D$ (``destinations'') be the union of the sink $t$ and all nodes with 
 		deficit ($\nabla f_i^{\mu} < b_i^{\mu}$) and let $S$ (``sources'') be the
 		set of all nodes $i$ for which $D$ is reachable from $i$ along a tight path
 		in the residual graph. Continue augmenting along tight paths from $i$ to
-		a node in  $D$ as long as there is some $i \in S$ for which the following conditions hold:
+		a node in $D$ as long as there is some $i \in S$ for which the following conditions hold:
 		%Let $S$ (``sources'') be
     %the set of all nodes $i$ for which
     \begin{enumerate}[(i)]
@@ -1405,7 +1418,8 @@ improved running time.
     \item \textbf{Scaling:} Work toward producing a plentiful node by scaling the
     dual $\mu$ to increase $|b^\mu|$. Any excesses created during this
     phase must be cancelled by augmentation. In order to make this possible,
-    the scaling only occurs in the set $S$ of reachable nodes.
+		only nodes in the set $S$ are scaled. 
+    %the scaling only occurs in the set $S$ of reachable nodes.
     
     Notionally, a scaling factor $\alpha > 1$ is increased continuously, and
     $\mu_i \gets \mu_i / \alpha$ for $i \in S$.
@@ -1528,8 +1542,8 @@ improved running time.
     \label{lem:fsame}
     \end{lemma} 
     \begin{proof}
-			\cbb{As seen above, the scaling is designed so that $f_{ij}^\mu = f_{ij}/\mu_i$
-			stays constant when both $i$ and $j$ are in $S$}. Moreover, it maintains the
+			As seen above, the scaling is designed so that $f_{ij}^\mu = f_{ij}/\mu_i$
+			stays constant when both $i$ and $j$ are in $S$. Moreover, it maintains the
     	invariant that there is no flow across the cut $S$---so flow across $S$ is vacuously
     	preserved under scaling. Finally, scaling does not affect edges entirely
     	outside $S$.
