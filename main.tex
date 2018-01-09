@@ -676,16 +676,18 @@ with increasing fidelity over the course of the algorithm.
 
 To find an initial \hyperref[def:conservative]{conservative pair} $(f,\mu)$, we first need a feasible flow.
 $\bar{f} \equiv 0$ is a trivial
-feasible solution to the capacitated version of the primal; this can be used to
-find an initial feasible solution for the uncapacitated version by
-following the transformation in \cite{article} (this just requires
-adding a few additional edges and nodes).
-Next, we need a feasible $\mu$: starting with 
-$\mu_t \coloneqq 1$, we can use the CS property $\gij\mu_i = \mu_j$ to work
-backwards computing the remaining $\mu$.
-Finally, we can enforce that all edges with positive flow are tight by running 
+feasible solution to the capacitated version of the primal problem; this can be transformed
+into an initial feasible solution $f$ for our uncapacitated problem by
+following the transformation in \cite{article} (linear in the number of edges).
+Next, we need a feasible $\mu$. Starting with 
+$\mu_t \coloneqq 1$, we set $\mu_i$ to the maximum value of $1/\gamma_e$ for $e$ on any path
+from $i$ to $t$. This can be efficiently computed by using a multiplicative version
+of Dijkstra's algorithm (or equivalently, using Dijkstra's algorithm with edge
+costs $-\log \gamma_e$---see Section \ref{sec:sub-ppn} below).
+Finally, we modify $f$ to restrict flow to tight edges under $\mu$.
 %the \textsc{Tight-Flow} subroutine, which is essentially 
-a standard max flow operation on a modified graph (with lower/upper bounds and an added source)
+This requires computing a standard maximum flow on a modified graph
+(with lower/upper bounds and an added source)
 and then zeroing flow on non-tight edges.
 %. The new flow found in \textsc{Tight-Flow} is used to replace the flow values on each tight edge, while the flow on non-tight edges is set to zero. 
 %which involves running a
@@ -694,12 +696,12 @@ and then zeroing flow on non-tight edges.
 %calculate the initial labels using $\mu_t
 %\coloneqq 1$, and run a max flow to \rewrite{modify $\bar{f}$ with respect to $\mu$.}
 
-Once we have an initial conservative pair, we set the starting value of $\Delta$ equal to
-$\max_{i \in V\setminus T} \nfiu-\biu$, which is the maximum relabeled excess
-for any node (excluding $t$). This value is chosen because $\Delta$ controls the
-amount of flow augmented at each iteration, and it wouldn't be feasible to send
-more flow along a path than the maximum excess. Since $\Delta$ is monotonically
-decreasing in the algorithm, we initialize it to the maximum feasible value.
+Armed with an initial conservative pair, we set the initial value of $\Delta$ to
+$\max_{i \in V\setminus T} \nfiu-\biu$, the maximum relabeled excess.
+This value is chosen because $\Delta$ controls the
+amount of flow sent along each augmenting path, which can be no more than
+the maximum excess. $\Delta$ is monotonically
+decreasing from here on.
 
 The algorithm maintains a relaxed \textbf{$\Delta$-conservative pair},
 which allows small amounts of flow (less than $\Delta$ units) along non-tight
@@ -710,7 +712,7 @@ The excess at each node is required to be at least the amount of incoming flow a
 % The algorithm also maintains a uniform upper bound on excess,
 % $\nfiu - \biu \leq 4(d_i + 2)\Delta$.
 As $\Delta$ decreases, the amount of flow on these non-tight
-edges decreases.
+edges decreases so that the $\Delta$-conservative pair approaches a conservative pair.
 
 \subsection{Identifying Contractible Edges}
 \label{sec:findcontr2013}
@@ -756,13 +758,13 @@ These bounds are illustrated in Figure~\ref{fig:lh}.
 \includegraphics[width=\textwidth]{figs/lh.pdf}
 \caption{
 \label{fig:lh}
-Number line showing values of excess when node $i$ is in set $L$ or $H$.
-(\textbf{Not to scale}.)
+Number line showing values of excess when node $i$ is in set $L$ or $H$
+(\emph{not to scale}).
 }
 \end{figure}
 
-Finally, let $R$ be the set of nodes reachable along tight paths from $H$ (which is a
-superset of $H$). The algorithm generally
+Finally, let $R$ be the set of nodes reachable along tight paths from $H$. (In particular,
+$H \subseteq R$.) The algorithm generally
 seeks to spread excess from $H$ to $L$ along tight paths:
 
 \begin{itemize}
@@ -782,22 +784,22 @@ decreasing $\Delta$ by the same factor $\alpha > 1$.
 \begin{enumerate}[(i),itemsep=0mm]
 \item Increasing $\mu$ in $R$ causes
 $\gamma_{ij}^\mu$ to increase for edges from $R$
-to $V \setminus R$. This can cause an edge crossing this cut to become tight, which may add a low excess node to the set of reachable nodes.
+to $V \setminus R$. This can cause an edge crossing this cut to become tight, growing $R$.
+In particular, this may make a low-excess node reachable.
 % $\alpha_1$ is chosen to be $min \{\frac{1}{\giij}: ij \in E[R, V \setminus R]\}$. Intuitively, we want to choose an $\alpha$ that will bring $\gamma_{ij} \frac{\mu_i}{\mu_j}$ as close to 1 as possible without going over 1.
-\item Decreasing $\Delta$ decreases the threshold for entering $H$, which may
-	allow more nodes to be considered high excess.
-This can continue until some node has excess equal to the upper bound $4(d_i + 2)\Delta$.
+\item $\Delta$ can decrease until some node $i$ has excess equal to the upper bound $4(d_i + 2)\Delta$.
+At this point $i$ has become a high-excess node.
 \end{enumerate}
 \begin{claim}
-	The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing during scaling
-	(and not changed during any of the other phases).
+	The ratio $\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing during scaling and
+    increases for nodes $i \in V \setminus R$.
+	(Note: it is also constant during the other phases.)
 \end{claim}
 \begin{proof}
 $\alpha > 1$ by construction. The ratio does not change for nodes in $R$ since both
-both $\biu = b_i/\mu_i$
-and $\Delta$ are divided by $\alpha$.
+$\biu = b_i/\mu_i$ and $\Delta$ are divided by $\alpha$.
 In $V \setminus R$, the ratio is multiplied by
-$\alpha$ because only $\Delta$ is divided by $\alpha$. 
+$\alpha$ because $\Delta$ is divided by $\alpha$. 
 \end{proof}
 \item \textbf{\ref{step:2013-filtration} De-isolation:} If $V \setminus R$ does not contain any
 nodes with large values of $\sfrac{\abs{b_i^\mu}}{\Delta}$,
@@ -809,13 +811,13 @@ in $V \setminus R$, we delay scaling and focus on pushing
 %The goal is to push
 flow directly to the sink from ``isolated''
 nodes (i.e. those that are not reachable along a tight path from $H$).
-The subroutine computes a modified max flow along tight edges in $V \setminus R$,
+This goal is achieved by computing a max flow along tight edges in $V \setminus R$,
 which
 %The computed max flow values
 replaces the current flow on edges
 inside $V \setminus R$; flow on edges going from $V \setminus R$ to $R$ is zeroed,
 and all other values remain the same. Reducing excess of nodes in
-$V \setminus R$ might allow the next scaling phase to last longer and
+$V \setminus R$ potentially allows the next scaling phase to last longer and
 thus increase $\sfrac{\abs{\biu}}{\Delta}$ more.
 Simultaneously, zeroing the flow from $V\setminus R$ to $R$
 reduces the excess of nodes in $R$, which might open them up to accept augmentations
@@ -899,14 +901,17 @@ $\Psi$ is always nonnegative. This allows us to use the
 total increase in potential to bound the total decrease in potential, and, in turn,
 the number of shrinking iterations.
 
-This gives us strongly polynomial bounds on the number of expanding and
+This yields strongly polynomial bounds on the number of expanding and
 shrinking iterations; however, we must also prove that there are only a few
-\textit{neutral} iterations in between these expanding and shrinking iterations.
+``neutral'' iterations in between the expanding and shrinking iterations.
 This is where we note the importance of the $\sfrac{1}{n}$ threshold and the $\filtration$
-subroutine. For this analysis, we will define D as the set of nodes with $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$ On each iteration, if there is not an augmentation (shrinking), then
-either $\es$ or $\filtration$ and $\es$ will be called. If $\es$ is called, then
-this means set $V \setminus R$ has at least one node in $D$ that will have its
-$\sfrac{\abs{b_i^\mu}}{\Delta}$ increased by $\alpha$. Since this node is in D, $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$, which means
+subroutine. For this analysis, let D be the set of nodes with
+$\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$.
+On each iteration, if there is not an augmentation (shrinking), then
+either $\es$ alone or $\filtration$ and $\es$ will be called. If $\es$ is called, then
+$V \setminus R \cap D$ contained at least one node $i$, which will have its
+$\sfrac{\abs{b_i^\mu}}{\Delta}$ increased by $\alpha$. Since $i \in D$,
+$\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$, which means
 it will become abundant in a strongly polynomial number of iterations. If
 $\filtration$ is called first, then the excess of nodes in set $V \setminus R$
 will decrease enough such that $\es$ will cause one of these nodes to enter set
