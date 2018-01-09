@@ -379,8 +379,8 @@ namely~\cite{Orlin1988}.}
       %      * Draw parallels between min cost flow and generalized max flow (give more clear and intuitive explanation than the Truemper paper)
 	
 	A weakly polynomial algorithm is easily achievable by applying ellipsoid or
-	interior point methods to the linear program (\ref{eqn:primal}).
-	\frank{Let's add a citation here}
+	interior point methods to the linear program
+	(\ref{eqn:primal})~\cite{Tardos1998}.
 	To achieve a strongly polynomial
 	bound, the linear program can be reduced to a combinatorial problem.
 	
@@ -1088,8 +1088,11 @@ are dominated by this runtime).
 
 \section{A Faster Strongly Polynomial Algorithm}\label{sec:2017}
 
-The most recent strongly polynomial algorithm developed by Olver and Végh \cite{Olver2017} takes the same overall approach as the original algorithm~\cite{Vegh2013}, but introduces several key ideas that improve the running time by a factor of almost $O(n^2)$. 
-In this section, we describe the algorithm, tying core ideas back to previous work, and highlighting and providing intuition for the novel ideas that contribute to the improved running time.\katie{Think we could probably cut this last sentence} 
+The most recent strongly polynomial algorithm developed by Olver and Végh
+\cite{Olver2017} takes the same overall approach as the original
+algorithm~\cite{Vegh2013}, but introduces several novel ideas that improve the running time by a factor of almost $O(n^2)$. 
+In this section, we describe the algorithm and provide intuition for the
+improved running time.
  %A highlight of the difficulties in
 %previous algorithms and the subsequent solutions from this algorithm are
 %summarized in Table~\ref{tab:improvements}.
@@ -1147,7 +1150,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	at all times. In order to produce a contractibility certificate, it has
 	to keep the excess at each node bounded. In order to do that, it has to spread
 	flow around, leveling out the excesses. In contrast, Olver and V\'egh \cite{Olver2017} maintain
-	a possibly infeasible flow. Excesses are sent to cancel with deficits instead of spreading them
+	a possibly infeasible flow, introducing the possibility of deficit at a node. Excesses are sent to cancel with deficits instead of spreading them
 	around. Whereas leveling excesses could require augmenting between all pairs of
 	nodes (roughly $n^2$ pairs to consider), cancelling excess only requires identifying
 	a corresponding deficit for each excess (roughly $O(n)$). This gives some intuition
@@ -1166,7 +1169,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 	In lieu of maintaining a feasible $f$ at each step,
 	the algorithm ensures that $\mu$ is \textbf{safe}---i.e.,
     that a feasible $f$ fitting $\mu$ \emph{exists}---by preserving a
-		cut property. To simplify the exposition, \cbb{we start with a definition.}
+		cut property. To simplify the exposition, we start with a definition.
 	\begin{definition}
 		Recall that $\tau(\mu)$ denotes the set of tight edges under a dual labeling $\mu$.
 		Given $\mu$, an \textbf{inward-loose cut} is a set $S \subseteq V$ that does
@@ -1367,7 +1370,7 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
 %    \todo{Prove theorem 3.1 more succinctly and clearly}.
 %    \end{proof}
 
-    \subsection{Scaling and Augmentation}
+    \subsection{Producing a Plentiful Node}
     \label{sec:sub-ppn}
 		\frank{Replace any instances of "algorithm" in this section with "subroutine
 		to be clear}
@@ -1403,9 +1406,6 @@ In this section, we describe the algorithm, tying core ideas back to previous wo
     dual $\mu$ to increase $|b^\mu|$. Any excesses created during this
     phase must be cancelled by augmentation. In order to make this possible,
     the scaling only occurs in the set $S$ of reachable nodes.
-    (In the original paper, there are
-    actually two sets $S$ and $\bar{S}$---this is necessary to bound the size
-    of the numbers used in the algorithm, but it is beyond the scope of this exposition.) \katie{delete this explanation in parentheses? Doesn't really add anything}
     
     Notionally, a scaling factor $\alpha > 1$ is increased continuously, and
     $\mu_i \gets \mu_i / \alpha$ for $i \in S$.
