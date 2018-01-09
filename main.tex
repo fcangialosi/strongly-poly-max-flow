@@ -904,23 +904,24 @@ the number of shrinking iterations.
 This yields strongly polynomial bounds on the number of expanding and
 shrinking iterations; however, we must also prove that there are only a few
 ``neutral'' iterations in between the expanding and shrinking iterations.
-This is where we note the importance of the $\sfrac{1}{n}$ threshold and the $\filtration$
+This is where we note the importance of the $\filtration$
 subroutine. For this analysis, let D be the set of nodes with
 $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$.
-On each iteration, if there is not an augmentation (shrinking), then
+On each iteration, if there is not an augmentation (shrinking iteration), then
 either $\es$ alone or $\filtration$ and $\es$ will be called. If $\es$ is called, then
 $V \setminus R \cap D$ contained at least one node $i$, which will have its
 $\sfrac{\abs{b_i^\mu}}{\Delta}$ increased by $\alpha$. Since $i \in D$,
-$\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$, which means
-it will become abundant in a strongly polynomial number of iterations. If
-$\filtration$ is called first, then the excess of nodes in set $V \setminus R$
-will decrease enough such that $\es$ will cause one of these nodes to enter set
-$D$ or these low excess nodes will enter set $R$, allowing an augmentation
-(shrinking iteration) on the next iteration. Note the first option can only
+$\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$, so $i$ will become plentiful
+after $O(\log (n^2 m)) = O(\log n)$ halvings of $\Delta$. This bounds the
+number of pure scalings in terms of the number of expanding iterations.
+If $\filtration$ is called first, then the excess of nodes in $V \setminus R$
+will decrease enough such that the next $\es$ round will either grow $R$, allowing an augmentation
+(shrinking iteration) on the next iteration, or grow
+$D$. Note that the latter can only
 happen $n-1$ times because once a node enters $D$, it cannot leave
 ($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.
 
-The analysis above gives us a strongly polynomial bound on the total number of iterations. It takes at most $O(mnlogn)$ iterations to find a contractible edge and this happens $O(n)$ times (due to the stopping condition). The running time per iteration is dominated by $\filtration$, which takes $O(nm)$ time. Therefore, this gives an upper bound of $O(n^3m^2\log n)$ for the total runtime (all other operations including initialization
+The analysis above gives us a strongly polynomial bound on the total number of iterations. It takes at most $O(mn\log n)$ iterations to find a contractible edge, and this happens $O(n)$ times (due to the stopping condition). The running time per iteration is dominated by $\filtration$, which takes $O(nm)$ time. Therefore, this gives an upper bound of $O(n^3m^2\log n)$ for the total runtime (all other operations including initialization
 are absorbed into this runtime).
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
@@ -1181,8 +1182,9 @@ improved running time.
 	at all times. In order to produce a contractibility certificate, it has
 	to keep the excess at each node bounded. In order to do that, it has to spread
 	flow around, leveling out the excesses. In contrast, Olver and V\'egh \cite{Olver2017} maintain
-	a possibly infeasible flow, introducing the possibility of deficit at a node. Excesses are sent to cancel with deficits instead of spreading them
-	around. Whereas leveling excesses could require augmenting between all pairs of
+	a possibly infeasible flow, introducing the possibility of deficit at a node. Rather than
+    spreading excesses around to level them, this algorithm sends them
+    to cancel with deficits. Whereas leveling excesses could require augmenting between all pairs of
 	nodes (roughly $n^2$ pairs to consider), cancelling excess only requires identifying
 	a corresponding deficit for each excess (roughly $O(n)$). This gives some intuition
     for why relaxing the feasibility requirement might be appealing.
@@ -1211,7 +1213,7 @@ improved running time.
 %         A \textbf{bi-loose cut} is both inward- and outward-loose.
 	\end{definition}
 	If $f$ is a flow fitting $\mu$, then there is no flow into inward-loose cuts because
-	there are no tight edges to flow along.
+	there are no tight edges to carry.
 	If $f$ is feasible, then it follows that the total demand inside an inward-loose
 	cut is nonpositive---otherwise $f$ would have to satisfy this demand by flowing
 	into the cut.
