@@ -129,8 +129,11 @@
 	total flow delivered to the sink node $t \in V$. Each edge $e$
     is endowed with a gain factor $\gamma_e > 0$, which scales
 	the flow passing through that edge. Gains might represent exchange rates between currencies
-	or physical dissipation. The generalized maximum
-	flow problem lacks several nice properties that are present in the traditional
+	or dissipation of a physical quantity. Setting $\gamma_e \equiv 1$
+    recovers the ordinary maximum flow problem.
+    
+    The generalized maximum
+	flow problem lacks several nice properties of the ordinary
 	maximum flow problem, which makes it more challenging to solve. For example,
 	the generalized problem is usually thought to be non-integral and,
 	due to the gain factors, the total supply is not necessarily equal to the total
@@ -139,8 +142,9 @@
     
 	Until recently, the best known algorithms were all weakly polynomial. In
 	2013, Végh developed the first strongly polynomial algorithm~\cite{Vegh2013}
-	(i.e. one that depends only on the number of nodes and edges in the graph,
-	and is independent of the size of their values). In 2017, Olver and Végh
+% 	(i.e. one that depends only on the number of nodes and edges in the graph,
+% 	and is independent of the size of their values).
+    In 2017, Olver and Végh
 	built on this work and developed an algorithm~\cite{Olver2017}
 	that is faster than the original algorithm by a factor of
 	almost $O(n^2)$, resulting in a running time that is as fast as the best
