@@ -182,7 +182,7 @@ namely~\cite{Orlin1988}.}
 	%An instance of the generalized flow problem is specified as	
 	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$ (assume
 	$m \geq n$), $t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
-	across the edges. Although flow constraints are traditionally defined in terms of
+	along edges. Although flow constraints are traditionally defined in terms of
 	edge capacities, recent work on the generalized problem defines flow
 	constraints using node demands $b \in \R^{V \setminus t}$ instead (and leaves
 	edge capacities unbounded). Thus, an instance of the generalized flow problem
@@ -192,12 +192,11 @@ namely~\cite{Orlin1988}.}
 	node demands can be easily transformed to an equivalent problem with
 	capacities (and vice versa). 
 
-	Although there is no explicit specification of a source node, the concept of
-	node demands generalizes the concept of multiple sources and
-	sinks: nodes with negative demand $-b$ act as sources because they can create
-	up to $b$ units of flow, and nodes with positive demand $b$ act as sinks 
-	because they consume at least $b$ units of flow. 
-	Thus, (excluding $t$), we denote
+	Although there is no explicit specification of a source node,
+    nodes with negative demand $b$ act as sources that can create
+	up to $-b$ units of flow, and nodes with positive demand $b$ act as sinks 
+	that can consume at least $b$ units of flow. 
+	Thus $V \setminus t$ is comprised of
 	nodes with negative demand as $\vsrc$, nodes with positive
 	demand as $\vsink$, and the remaining nodes with zero demand as $\vz$.
 	%Thus, (excluding $t$), we denote the subset of $V$ with negative and
