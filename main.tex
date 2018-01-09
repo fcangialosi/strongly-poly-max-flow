@@ -120,16 +120,17 @@
 
 \begin{document}
 \maketitle
-\vspace{-0.3cm}
+\vspace{-0.1cm}
 
 \section{Introduction}\label{sec:intro}
 	\subsection{Problem Definition}\label{sec:problem}
-	Let $G = (V,E)$ be a graph. As in the ordinary maximum flow problem,
-    the generalized maximum flow problem aims to maximize the
-	total flow delivered to the sink node $t \in V$. Each edge $e$
-    is endowed with a gain factor $\gamma_e > 0$, which scales
-	the flow passing through that edge. Gains might represent exchange rates between currencies
-	or dissipation of a physical quantity. Setting $\gamma_e \equiv 1$
+	Let $G = (V,E)$ be a graph. In the generalized maximum flow problem---as in the
+    ordinary maximum flow problem---the aim is to maximize the
+	total flow delivered to a sink node $t \in V$. The difference is that in the generalized
+    problem, each edge $e$ is endowed with a gain factor $\gamma_e > 0$, which scales
+	the flow passing through that edge. Gains might, for example, represent
+    exchange rates between currencies
+	or dissipation rates of a physical quantity. Setting $\gamma_e \equiv 1$
     recovers the ordinary maximum flow problem.
     
     The generalized maximum
@@ -141,7 +142,7 @@
 	since the flow along a path is not equal at every edge along that path.
     
 	Until recently, the best known algorithms were all weakly polynomial. In
-	2013, Végh developed the first strongly polynomial algorithm~\cite{Vegh2013}
+	2013, Végh developed the first strongly polynomial algorithm~\cite{Vegh2013}.
 % 	(i.e. one that depends only on the number of nodes and edges in the graph,
 % 	and is independent of the size of their values).
     In 2017, Olver and Végh
@@ -160,8 +161,8 @@ namely~\cite{Orlin1988}.}
     
 	\subsection{Structure and Contributions of the Paper}\label{sec:structure}
 	In this paper, we aim to
-	familiarize the reader with the recent algorithmic developments for the
-	generalized flow maximization problem and provide intuition for the techniques
+	familiarize the reader with recent algorithmic developments on the
+	generalized maximum flow problem and to build intuition for the techniques
 	used to achieve a strongly polynomial result. In Section~\ref{sec:prelim}, we formalize
     the problem as a linear program and give an overview of the notation
 	used in the rest of the paper. In Section~\ref{sec:motivate}, we develop the key techniques
@@ -171,24 +172,22 @@ namely~\cite{Orlin1988}.}
 	time analysis. 
 	In Section~\ref{sec:2017}, we describe Olver and
 	Végh's faster $O((m + n\log n)mn\log(n^2 / m))$ algorithm and highlight key
-	aspects of the analysis that led way to the improved running time efficiency.
-	Finally, in Section~\ref{sec:discussion}, we conclude with a brief summary of techniques utilized by both strongly polynomial algorithms and how the two algorithms differ.
+	aspects of the analysis that led to the improved running time efficiency.
+	Finally, in Section~\ref{sec:discussion}, we conclude with a brief summary of
+    the techniques of both algorithms and of how they differ.
     
 \section{Preliminaries}\label{sec:prelim}
 
 	\subsection{Network Notation}\label{sec:notation}
 	%An instance of the generalized flow problem is specified as	
 	Let $G=(V,E)$ be a directed graph with $n=\abs{V}$ and $m=\abs{E}$ (assume
-	$m \geq n$), $t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of flow gains
-	along edges. Although flow constraints are traditionally defined in terms of
-	edge capacities, recent work on the generalized problem defines flow
-	constraints using node demands $b \in \R^{V \setminus t}$ instead (and leaves
-	edge capacities unbounded). Thus, an instance of the generalized flow problem
+	$m \geq n$), $t \in V$ be a sink node and $\gamma \in \R_{>0}^E$ be the vector of gains
+	along edges. We follow recent work on the generalized problem in realizing flow
+	constraints via node demands $b \in \R^{V \setminus t}$, leaving
+	edge capacities unbounded. (Note that the two formulations are equivalent:
+    \emph{cf.}~\cite{Vegh2013}.)
+    Thus, an instance of the generalized flow problem
 	is specified as $(G, t, \gamma, b)$.
-	We adopt this formulation in our paper for
-	convenience of analysis. As shown in~\cite{Vegh2013}, any problem defined with
-	node demands can be easily transformed to an equivalent problem with
-	capacities (and vice versa). 
 
 	Although there is no explicit specification of a source node,
     nodes with negative demand $b$ act as sources that can create
@@ -201,12 +200,12 @@ namely~\cite{Orlin1988}.}
 	%positive demand as $\vsrc$ and $\vsink$, respectively, and the remaining nodes
 	%with zero demand as $\vz$.
 
-	For a subset of the nodes $S \subseteq V$, we define $\din(S)$ and
-	$\dout(S)$ to be the set of incoming and outgoing edges, respectively. By
-    abuse of notation, we write $\din(i)$ and $\dout(i)$ for $\din(\{i\})$ and $\dout(\{i\})$.
+	For a subset $S \subseteq V$, we denote by $\din(S)$ and
+	$\dout(S)$ the sets of incoming and outgoing edges, respectively. Abusing notation,
+    we also write $\din(i)$ and $\dout(i)$ for $\din(\{i\})$ and $\dout(\{i\})$.
 	The total degree of a node $i \in v$ is then $d_i = |\din(i) \cup \dout(i)|$.
 
-	The net flow at a node $i$ is the amount of flow that
+	The \textbf{net flow} at a node $i$ is the amount of flow that
 	reaches that node (scaled by the gain factor on the incoming edges) minus the
 	amount of flow that leaves the node:
 	$$ \nfi \coloneqq \sum_{e \in \din(i)} \gamma_e f_e - \sum_{e \in \dout(i)} f_e.$$
@@ -216,7 +215,7 @@ namely~\cite{Orlin1988}.}
 	-\gamma_{ij}f_{ij}$. If the cumulative gain of a cycle $C$ ($\prod_{e \in C} \gamma_e$)
 	in $G_f$ is greater than 1, we call $C$ a ``flow-generating cycle.'' 
 	This captures the idea of arbitrage: sending a unit of flow around the cycle
-	generates a net surplus. Such cycles could make the problem unbounded;
+	generates a net surplus. Such cycles could make the problem unbounded as
 	it is always possible to increase the flow without violating any of the
 	constraints. There is extensive prior work on detecting and eliminating such
 	cycles~(\emph{cf.} \cite{Vegh2013})
@@ -303,18 +302,21 @@ namely~\cite{Orlin1988}.}
 	A dual solution $\mu$ is known as a \emph{labeling}, and we can speak of feasible and 
 	optimal labelings.
     We make the simplifying assumption that the sink is
-	reachable from every node, which ensures $\mu$ will be finite. (\cite{Olver2017} shows a simple transformation that allows us to guarantee this assumption.) 
+	reachable from every node, which ensures $\mu$ will be finite. (See \cite{Olver2017} for
+    a simple transformation that allows us to guarantee this assumption.)
+    Imagine that
+	the nodes represent currencies and the gains represent exchange rates between those currencies.
+	A maximum generalized flow is a currency trading strategy that maximizes the amount of currency
+	$t$ at the end. We can interpret a label $\mu_i$ as the value of one dollar in currency $i$.
+	Then the dual constraint
+    $\gamma_{ij} \mu_i \leq \mu_j$ means that the valuation does not permit arbitrage.
+    
 	Complementary slackness requires that for an optimal flow $f^*$ and optimal labeling $\mu^*$,
     \begin{equation}\label{eqn.cs} \tag{CS}
     f^*_{ij} > 0 \implies \gamma_{ij}\mu^*_i = \mu^*_j.
     \end{equation}
-	This suggests a particular interpretation of the dual variables. Imagine that
-	the nodes represent currencies and the gains represent exchange rates between those currencies.
-	A maximum generalized flow is the currency trading strategy that maximizes the value in currency
-	$t$ at the end. We can interpret a label $\mu_i$ as the value of one dollar in currency $i$.
-	The dual constraint $\gamma_{ij} \mu_i \leq \mu_j$ means that under the labeling $\mu$,
-	it is not possible to create value by converting currencies.
-	The complementary slackness condition means that the currency trading strategy
+	In our currency trading interpretation,
+	the complementary slackness condition means that the optimal currency trading strategy
 	only makes trades that exactly preserve value.
 	
     % $\mu$ is a value assignment. We're rewriting the problem in a different
@@ -350,16 +352,16 @@ namely~\cite{Orlin1988}.}
 	flow only flows along tight edges. We denote the set of tight edges under
 	$\mu$ by
     \[ \tau(\mu) = \{e \mid \geu = 1\}. \]
-    The \textbf{tight graph} consists of only these edges and their endpoints.
+    The \textbf{tight graph} consists of these edges and their endpoints.
 	\end{definition}
     
-    \begin{definition} The \textbf{excess} of a flow at a node $i$ is the net flow left
+    \begin{definition} The \textbf{excess} of a flow $f$ at a node $i$ is the net flow left
     there after subtracting demand, $\nfi - b_i$. When this quantity is negative, it is
     described as \textbf{deficit}. Given $f$ and $\mu$, we can define relabeled excess
     at a node similarly as $\nfiu - \biu$.
     
     Given flow values and labels, the \textbf{total excess and deficit}
-    of the flow with respect to the labels is defined as follows:
+    of the flow with respect to the labels are defined as follows:
 	\begin{align*}
 	\Ex(f,\mu)  &\coloneqq \sum_{i \in V \setminus t} \max \{ \nfiu - \biu, 0 \} &
 	\Def(f,\mu) &\coloneqq \sum_{i \in V \setminus t} \max \{ \biu - \nfiu, 0 \}
@@ -379,8 +381,8 @@ namely~\cite{Orlin1988}.}
 	A weakly polynomial algorithm is easily achievable by applying ellipsoid or
 	interior point methods to the linear program
 	(\ref{eqn:primal}).
-	\question{This is the only place I can see adding related work without having
-	to move other stuff around. Should we add a few sentences?}
+% 	\question{This is the only place I can see adding related work without having
+% 	to move other stuff around. Should we add a few sentences?}
 	To achieve a strongly polynomial
 	bound, the linear program can be reduced to a combinatorial problem.
 	
@@ -389,8 +391,9 @@ namely~\cite{Orlin1988}.}
     A tight constraint of this form reduces the dimension of the solution
     space by one and is equivalent to removing one variable from optimization.
     We might as well remove one of the variables entirely by collapsing the edge $(i, j)$,
-    leaving a single node $j$ with a single dual variable $\mu_j$, and summing the
-    demands $b_i$ and $b_j$. This operation is called an \textbf{edge contraction},
+    merging node $i$ into node $j$ with a single dual variable $\mu_j$, and summing the
+    demands $b_i$ and $b_j$. (When either $i$ or $j$ is $t$, the other's demand is simply absorbed.)
+    This operation is called an \textbf{edge contraction},
     and it preserves the dual objective and the constraints on edges other than $(i, j)$.
     An edge $e$ which is tight under any dual-optimal solution is accordingly
     called \textbf{contractible}.
@@ -408,19 +411,20 @@ namely~\cite{Orlin1988}.}
 	edge at a time and contracts it. 
     (As an additional simplification, if the contraction leads to parallel edges,
 	only the one with the highest gain is maintained---there is no reason to send
-	flow along an edge of lower gain when one of higher gain is available.)
+	flow along an edge of lower gain over a parallel one of higher gain.)
 	There can be at most $n - 1$ contractions
 	before the graph is left with a single node. The set of guaranteed-tight edges identified
 	over the course of the contractions is acyclic, and it takes the form of
 	either a spanning tree or a spanning forest depending on which of the following
-	cases occurs:
+	termination conditions occurs:
 	\begin{enumerate}[(i),itemsep=0mm]
-		\item \label{case:contract-tree} the contracted graph has just one node remaining, i.e., every node has been merged
+	\item \label{case:contract-tree} The contracted graph has just one node remaining,
+    i.e., every node has been merged
 	into the sink $t$. In this case, the set of previously identified
 	contractible edges forms a spanning tree. Given a value for $\mu_t$, the tightness
 	constraints then uniquely determine the values of the optimal $\mu$ at all other nodes.
 	
-	\item the contracted graph has multiple nodes, but the (merged, relabeled)
+	\item The contracted graph has multiple nodes, but the (merged, relabeled)
 	demands $\biu$ are all zero. In this case, the dual objective on the contracted
 	graph is identically zero. Meanwhile $f \equiv 0$ is primal-feasible on the contracted
 	graph, with a primal objective value of zero. By strong duality, $f \equiv 0$ is optimal.
@@ -433,7 +437,8 @@ namely~\cite{Orlin1988}.}
 %	an optimal dual over the original graph.
 	Each component of the tight forest has net demand zero under a suitable relabeling.
 	As such, the flows in separate components are independent, effectively reducing
-	the problem to case \ref{case:contract-tree}. The maximum flow value only depends on the flow in the
+	the problem to case \ref{case:contract-tree} for each component.
+    The maximum flow value only depends on the flow in the
 	tree component of $t$.
 %	objective
 %	value only depends on the flow on the tight tree component containing the sink $t$.
@@ -454,18 +459,18 @@ namely~\cite{Orlin1988}.}
 %	reduction to the dual problem (D).
 %    Given optimal dual labels $\mu$, consider the primal problem relabeled by $\mu$.
     complementary slackness dictates that any optimal flow $f$ is supported only on
-    the tight edges--- i.e., $\giij = 1$ 
+    the tight edges---i.e., $\giij = 1$ 
     whenever $f_{ij} > 0$. As such, the conservation
     constraint for the relabeled optimum flow $f^\mu$ takes the form
     \[ \biu \leq \nfiu
     = \sum_{(j,i) \in \din(i)} \gamma_{ji}^{\mu} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}
     = \sum_{(j,i) \in \din(i)} \fu_{ji} - \sum_{(i,j) \in \dout(i)} \fu_{ij}. \]
     This is the conservation constraint of an ordinary maximum flow problem with demands
-    $b^\mu$, and indeed one can compute the optimal $f^\mu$ as an
-    ordinary maximum flow on the tight graph---a strongly polynomial operation.
-		Then it is easy to recover $f$ from $f^\mu$ (by undoing the scaling in~\ref{eqn:relabel}).
-		Thus, we have shown how to reduce the generalized
-    flow problem to a combinatorial problem by computing an optimal set of tight edges.
+    $b^\mu$. Indeed, one can compute the optimal $f^\mu$ as an
+    ordinary maximum flow on the tight graph---a strongly polynomial computation.
+	Then it is easy to recover $f$ from $f^\mu$ (by undoing the scaling in~(\ref{eqn:relabel})).
+	Thus, we have shown how to reduce the generalized
+    flow problem to a combinatorial problem---namely, computing an optimal set of tight edges.
     
 	\begin{example}
 		To help visualize the connection between tight edges and optimal solutions, 
@@ -589,22 +594,23 @@ namely~\cite{Orlin1988}.}
     if $f^\mu_e > \Ex(f, \mu)$.
     Lemma \ref{lem.bound-dist} shows that abundant edges are contractible.
     
-    The contractibility certificate developed above determines the broad outlines
-    for any contraction-based generalized flow algorithm. The algorithm's objective
-    is to increase the maximum edge flow while keeping the total excess bounded.
-    In order to achieve this, it will have to increase the demand values. Thus, the algorithm
-    will consist of alternating \emph{scaling} and \emph{augmentation} phases.
-    In the scaling phases, the dual variables $\mu$ are adjusted so that
-    the values $|\biu|$ will increase. In the complementary augmentation phases,
-    the algorithm spreads excesses around to keep them small.
-		\question{This is talking only about the 2013 one, not about both, and says
-		"the"}
+    Any algorithm seeking to find an abundant edge
+    has a dual mandate---(i) bounding the relabeled excess and (ii)
+    obtaining a large relabeled flow value on an edge.
+    Both goals depend on both the primal
+    and dual variables. We can obtain
+    a more useful contractibility certificate by disentangling the two. Both algorithms
+    detailed below depend on a node-wise contractibility certificate in which the
+    relevant quantity at a node $i$ is the relabeled demand $\biu$. A node with a very
+    large value of $|\biu|$ is known as a \textbf{plentiful node}. The specific definition
+    of plentiful node differs between the two algorithms (\emph{cf.} Sections \ref{sec:findcontr2013}
+    and \ref{sec:contract-cert}).
     
-    Since the dual scaling will be a node-wise operation, it is more convenient
-		in both algorithms
-    to use a node-wise certificate of contractibility than the edge-wise one described
-		above.\question{Centralize definition of plentiful node here?}
-    
+    Aiming to produce a plentiful node as a contractibility certificate, both algorithms
+    consist of alternating \emph{scaling} and \emph{augmentation} phases.
+    The scaling phases adjust the dual variables $\mu$ to increase
+    the values $|\biu|$. The complementary augmentation phases spread or cancel
+    excesses to keep them bounded.
 
 \section{The Initial Strongly Polynomial Algorithm}
 \label{sec:2013}
@@ -675,7 +681,10 @@ Next, we need a feasible $\mu$: starting with
 $\mu_t \coloneqq 1$, we can use the CS property $\gij\mu_i = \mu_j$ to work
 backwards computing the remaining $\mu$.
 Finally, we can enforce that all edges with positive flow are tight by running 
-the \textsc{Tight-Flow} subroutine, which is essentially a standard max flow operation on a modified graph (with lower/upper bounds and an added source). The new flow found in \textsc{Tight-Flow} is used to replace the flow values on each tight edge, while the flow on non-tight edges is set to zero. 
+%the \textsc{Tight-Flow} subroutine, which is essentially 
+a standard max flow operation on a modified graph (with lower/upper bounds and an added source)
+and then zeroing flow on non-tight edges.
+%. The new flow found in \textsc{Tight-Flow} is used to replace the flow values on each tight edge, while the flow on non-tight edges is set to zero. 
 %which involves running a
 %traditional max-flow on a slightly modified $G$ and setting the flow to zero for
 %all non-tight edges.
@@ -706,14 +715,17 @@ As discussed in Section \ref{sec:motivate-dual},
 the algorithm makes progress by finding contractible edges.
 As discussed in Section \ref{sec:cert-contract}, an edge is guaranteed
 to be contractible when it is abundant. The algorithm maintains a pair $(f, \mu)$ with
-a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$, thus
+a uniform bound on the excess $\nfiu - \biu \leq (4d_i + 8)\Delta$, whence
 $\Ex(f, \mu) \leq 16m\Delta$.
 Thus, an edge $(i, j)$ with $f_{ij}^\mu \geq 17m\Delta$ is abundant.
-However, it is simpler to keep track of a certificate which depends only
-on the dual variables $\mu$ as the flow $f$ changes:
+As long as this bound is maintained, the following plentiful node certificate,
+which depends only on the dual variables $\mu$, guarantees the existence
+of an adjacent contractible edge:
+\begin{definition}
+A node $i$ is \textbf{plentiful} if $\abs{b_i^\mu} \geq 20nm\Delta$.
+\end{definition}
 \begin{claim}
-If a node $i$ has $\abs{b_i^\mu} \geq 20nm\Delta$, then it must
-have a contractible edge adjacent to it.
+If $i$ is a plentiful node, then there is a contractible edge adjacent to it.
 \end{claim}
 \begin{proof}
 Suppose by way of contradiction that none of the edges adjacent to $i$ are
@@ -758,7 +770,7 @@ improve the balance of excess across the graph.
 %After augmentation,
 %$R$ is reset to $H$ and the next iteration begins. 
 %If the algorithm is not able to augment, then
-When the algorithm is no longer able to augment,
+When the algorithm can no longer augment,
 there must either be (i) no
 reachable low excess nodes to augment to or (ii) no high excess nodes to push
 flow from.
@@ -891,8 +903,7 @@ This is where we note the importance of the $\sfrac{1}{n}$ threshold and the $\f
 subroutine. For this analysis, we will define D as the set of nodes with $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$ On each iteration, if there is not an augmentation (shrinking), then
 either $\es$ or $\filtration$ and $\es$ will be called. If $\es$ is called, then
 this means set $V \setminus R$ has at least one node in $D$ that will have its
-$\sfrac{\abs{b_i^\mu}}{\Delta}$ increased by $\alpha$. Since this node is in D,
-its $\sfrac{\abs{b_i^\mu}}{\Delta}$ value is at least $\sfrac{1}{n}$, which means
+$\sfrac{\abs{b_i^\mu}}{\Delta}$ increased by $\alpha$. Since this node is in D, $\sfrac{\abs{b_i^\mu}}{\Delta} \geq \sfrac{1}{n}$, which means
 it will become abundant in a strongly polynomial number of iterations. If
 $\filtration$ is called first, then the excess of nodes in set $V \setminus R$
 will decrease enough such that $\es$ will cause one of these nodes to enter set
@@ -901,7 +912,7 @@ $D$ or these low excess nodes will enter set $R$, allowing an augmentation
 happen $n-1$ times because once a node enters $D$, it cannot leave
 ($\sfrac{\abs{b_i^\mu}}{\Delta}$ is non-decreasing) unless it is contracted.
 
-The analysis above gives us a strongly polynomial bound on the total number of iterations. It takes at most $O(mnlogn)$ iterations to find a contractible edge and, since the stopping condition is contracting the graph down to one node, this happens O(n) times. The running time per iteration is dominated by $\filtration$, which takes O(nm) time. Therefore, this gives an upper bound of $O(n^3m^2\log n)$ for the total runtime (all other operations including initialization
+The analysis above gives us a strongly polynomial bound on the total number of iterations. It takes at most $O(mnlogn)$ iterations to find a contractible edge and this happens $O(n)$ times (due to the stopping condition). The running time per iteration is dominated by $\filtration$, which takes $O(nm)$ time. Therefore, this gives an upper bound of $O(n^3m^2\log n)$ for the total runtime (all other operations including initialization
 are absorbed into this runtime).
 
 %This algorithm achieves a strongly polynomial runtime by improving upon scaling techniques used in previous weakly polynomial algorithms such as FAT-PATH \cite{Goldberg:1991:CAG:105014.105022} and also by integrating the concepts of abundant and contractible edges from Orlin's minimum cost flow algorithm \cite{Orlin1988}. 
@@ -1233,7 +1244,7 @@ improved running time.
     we can obtain a feasible fitting flow $f$ at any time
     by running an ordinary maximum flow algorithm restricted to the tight graph of $\mu$.
     Moreover, a generalization of Lemma \ref{lem.bound-dist} applies to fitting
-    pairs.
+    pairs:
     \begin{lemma} \label{lem.bound-dist1.5}
     Suppose $(g, \mu)$ is a fitting pair with $\mu$ safe. Then there is some feasible flow $\tilde{g}$
     uniformly ``close'' to $g$:
@@ -1284,10 +1295,6 @@ improved running time.
 %     the paths shipping flow to fill the deficits of $g$ must begin at nodes at which $g$ has
 %     excesses. Therefore, $\Ex(\tilde{g}, \mu) \leq \Ex(g, \mu)$.
 %     \end{proof}
-    
-    Corollary \ref{lem.bound-dist2} suggests an appropriate definition of abundant edge
-    when working with infeasible flows. If $(g, \mu)$ is a fitting pair with $\mu$ safe and
-    $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$, then $e$ is contractible.
 
 %	The safety of $\mu$ is important because it keeps the distance between
 %	the (not necessarily feasible) primal $g$ we keep track of and the optimal
@@ -1313,24 +1320,30 @@ improved running time.
 %     To develop a strongly polynomial algorithm, it remains to show that we can compute
 %     such a fitting pair.
     
-    As outlined in Section \ref{sec:cert-contract}, the algorithm
-    has a dual mandate---(i) bounding the relabeled excess and deficit and (ii)
-    obtaining a large relabeled flow value on an edge. Both goals depend on the primal
-    \emph{and} dual variables. As in Section \ref{sec:findcontr2013}, we can obtain
-    a more useful contractibility certificate by disentangling the two. The following
-    definition serves in place of abundant edge, and it only depends on the dual variables.
+%     As outlined in Section \ref{sec:cert-contract}, the algorithm
+%     has a dual mandate---(i) bounding the relabeled excess and deficit and (ii)
+%     obtaining a large relabeled flow value on an edge. Both goals depend on the primal
+%     \emph{and} dual variables. As in Section \ref{sec:findcontr2013}, we can obtain
+%     a more useful contractibility certificate by disentangling the two. The following
+%     definition serves in place of abundant edge, and it only depends on the dual variables.
+    
+    Corollary \ref{lem.bound-dist2} suggests an appropriate definition of abundant edge
+    when working with infeasible flows: if $(g, \mu)$ is a fitting pair with $\mu$ safe and
+    $g^\mu_e > \Ex(g, \mu) + \Def(g, \mu)$, then $e$ is contractible. As in Section
+    \ref{sec:findcontr2013}, there is a corresponding node-wise certificate depending only on the dual
+    variables:
     \begin{definition}
     A node $i$ is \textbf{plentiful} with respect
-    to the current primal-dual solution pair $(f,u)$ if its scaled absolute
+    to the current primal-dual solution pair $(f, \mu)$ if its relabeled absolute
     demand is large relative to the size of the graph: $|b_i^{\mu}| \ge 3n(d_i + 1)$.
     \end{definition}
 	\begin{theorem} \label{thm:2017-contraction}
 		Let $(f, \mu)$ be a fitting pair such that
 		\begin{enumerate}[(i)]
 			\item $\mu$ is safe.
-			\item Excess is uniformly bounded: $\nabla f_i^\mu - \biu \leq 2$ everywhere.
-			\item $i$ is a plentiful node.
+			\item Relabeled excess is uniformly bounded: $\nabla f_i^\mu - \biu \leq 2$ everywhere.
 		\end{enumerate}
+        Let $i$ be a plentiful node with respect to $(f, \mu)$.
 		Then a contractible edge neighboring $i$ can be found in strongly polynomial time.
 	\end{theorem}
 	\begin{proof}
