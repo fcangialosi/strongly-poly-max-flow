@@ -196,39 +196,38 @@ namely~\cite{Orlin1988}.}
     nodes with negative demand $b$ act as sources that can create
 	up to $-b$ units of flow, and nodes with positive demand $b$ act as sinks 
 	that can consume at least $b$ units of flow. 
-	Thus $V \setminus t$ is comprised of
-	nodes with negative demand as $\vsrc$, nodes with positive
-	demand as $\vsink$, and the remaining nodes with zero demand as $\vz$.
+	$V \setminus t$ is comprised of
+	nodes with negative demand, which we denote $\vsrc$, nodes with positive
+	demand, $\vsink$, and nodes with zero demand, $\vz$.
 	%Thus, (excluding $t$), we denote the subset of $V$ with negative and
 	%positive demand as $\vsrc$ and $\vsink$, respectively, and the remaining nodes
 	%with zero demand as $\vz$.
 
 	For a subset of the nodes $S \subseteq V$, we define $\din(S)$ and
-	$\dout(S)$ to be the set of incoming and outgoing edges, respectively,
-	and let $d_i = |\din(\{i\}) \cup \dout(\{i\})|$ be the total degree of a
-	node $i \in V$.
+	$\dout(S)$ to be the set of incoming and outgoing edges, respectively. By
+    abuse of notation, we write $\din(i)$ and $\dout(i)$ for $\din(\{i\})$ and $\dout(\{i\})$.
+	The total degree of a node $i \in v$ is then $d_i = |\din(i) \cup \dout(i)|$.
 
-	Then we can define the net flow at a node $i$ as the amount of flow that
-	reaches a node (scaled by the gain factor on the incoming edges) minus the
+	The net flow at a node $i$ is the amount of flow that
+	reaches that node (scaled by the gain factor on the incoming edges) minus the
 	amount of flow that leaves the node:
 	$$ \nfi \coloneqq \sum_{e \in \din(i)} \gamma_e f_e - \sum_{e \in \dout(i)} f_e.$$
-	The residual graph $G_f = (V,E_f)$ is defined as in the traditional problem,
-	except the reverse residual edges $(j,i) \in E_f$ have inverted gain 
+	The residual graph $G_f = (V,E_f)$ is defined as in the traditional maximum flow problem,
+	except that the reverse residual edges $(j,i) \in E_f$ have inverted gains 
 	$\gamma_{ji} = 1 / \gamma_{ij}$ and negated flow $f_{ji} =
 	-\gamma_{ij}f_{ij}$. If the cumulative gain of a cycle $C$ ($\prod_{e \in C} \gamma_e$)
 	in $G_f$ is greater than 1, we call $C$ a ``flow-generating cycle.'' 
 	This captures the idea of arbitrage: sending a unit of flow around the cycle
 	generates a net surplus. Such cycles could make the problem unbounded;
 	it is always possible to increase the flow without violating any of the
-	constraints. There is extensive prior work on eliminating such
-	cycles~\cite{Vegh2013} so for the remainder of this discussion we assume they do not exist.
+	constraints. There is extensive prior work on detecting and eliminating such
+	cycles~(\emph{cf.} \cite{Vegh2013})
+    so for the remainder of this discussion we assume they do not exist.
 
 	\subsection{Linear Program Formulation}
 	\label{sec:lp}
 
-	We formulate the generalized flow maximization problem with demands as in the 2017
-	paper~\cite{Olver2017}:
-
+	We formulate the generalized flow maximization problem with node demands as in~\cite{Olver2017}:
 	\ifLAYOUTA
 	\else
 	\vspace{-0.5cm}
